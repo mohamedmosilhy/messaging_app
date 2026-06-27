@@ -4,11 +4,11 @@ import {
   RegisterSuccessResponse,
 } from "../types/register.types";
 
+import "dotenv/config";
+
 import bcrypt from "bcryptjs";
 import { Prisma } from "@/generated/prisma/client";
 import { ConflictError } from "@/app/lib/errors/ConflictError";
-
-const SALT_ROUNDS = parseInt(process.env["HASHING_SALT"] || "10", 10);
 
 export async function register(
   data: RegisterRequest,
@@ -38,7 +38,10 @@ export async function register(
   }
 
   // hash password
-  const passwordHash = await bcrypt.hash(data.password, SALT_ROUNDS);
+  const passwordHash = await bcrypt.hash(
+    data.password,
+    parseInt(process.env.HASHING_SALT || "10", 10),
+  );
 
   // create user
   try {

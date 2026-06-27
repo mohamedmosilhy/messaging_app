@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { register, RegisterValidation } from "@/app/features/auth/index";
+import { login, LoginValidation } from "@/app/features/auth/index";
 import { AppError } from "@/app/lib/errors/AppError";
 import { formatZodErrors } from "@/app/utils/formatZodErrors";
 
 export async function POST(req: NextRequest) {
   try {
-    //// TODO:check aunthentication
-
     const body = await req.json();
-
-    const zodObject = RegisterValidation.safeParse(body);
+    const zodObject = LoginValidation.safeParse(body);
 
     if (!zodObject.success) {
       const formattedErrors = formatZodErrors(zodObject.error);
+
       return NextResponse.json(
         {
           success: false,
@@ -22,10 +20,10 @@ export async function POST(req: NextRequest) {
         },
         { status: 400 },
       );
-    } else {
-      const res = await register(zodObject.data);
-      return NextResponse.json(res, { status: 201 });
     }
+
+    const res = await login(zodObject.data);
+    return NextResponse.json(res, { status: 200 });
   } catch (error) {
     if (error instanceof AppError) {
       return NextResponse.json(
