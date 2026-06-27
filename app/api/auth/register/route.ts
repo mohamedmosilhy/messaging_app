@@ -1,0 +1,53 @@
+import { NextRequest, NextResponse } from "next/server";
+
+import { register, RegisterValidation } from "@/app/features/auth/index";
+import { AppError } from "@/app/lib/errors/AppError";
+import { formatZodErrors } from "@/app/utils/formatZodErrors";
+
+export async function POST(req: NextRequest) {
+  try {
+    // check aunthentication
+    const body = await req.json();
+
+    const zodObject = RegisterValidation.strict().safeParse(body);
+    console.log(zodObject.success);
+    if (!zodObject.success) {
+      console.dir(zodObject.error.issues, { depth: null });
+    }
+    if (!zodObject.success) {
+      const formattedErrors = formatZodErrors(zodObject.error);
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Validation failed.",
+          errors: formattedErrors,
+        },
+        { status: 400 },
+      );
+    } else {
+      const res = await register(zodObject.data);
+      return NextResponse.json(res, { status: 201 });
+    }
+  } catch (error) {
+    if (error instanceof AppError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+          errors: error.errors,
+        },
+        {
+          status: error.statusCode,
+        },
+      );
+    }
+    console.error(error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal server error.",
+      },
+      { status: 500 },
+    );
+  }
+}
