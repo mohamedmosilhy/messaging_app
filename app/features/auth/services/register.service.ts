@@ -8,6 +8,8 @@ import bcrypt from "bcryptjs";
 import { Prisma } from "@/generated/prisma/client";
 import { ConflictError } from "@/app/lib/errors/ConflictError";
 
+const SALT_ROUNDS = parseInt(process.env["HASHING_SALT"] || "10", 10);
+
 export async function register(
   data: RegisterRequest,
 ): Promise<RegisterSuccessResponse> {
@@ -36,7 +38,7 @@ export async function register(
   }
 
   // hash password
-  const passwordHash = await bcrypt.hash(data.password, 10);
+  const passwordHash = await bcrypt.hash(data.password, SALT_ROUNDS);
 
   // create user
   try {

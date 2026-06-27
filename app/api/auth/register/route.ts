@@ -10,10 +10,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const zodObject = RegisterValidation.strict().safeParse(body);
-    console.log(zodObject.success);
-    if (!zodObject.success) {
-      console.dir(zodObject.error.issues, { depth: null });
-    }
+
     if (!zodObject.success) {
       const formattedErrors = formatZodErrors(zodObject.error);
       return NextResponse.json(
