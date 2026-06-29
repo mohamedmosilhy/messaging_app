@@ -10,9 +10,12 @@ export { RegisterValidation } from "./schemas/register.schema";
 
 // ------------------------------------
 
-export { login } from "./services/login.service";
+export { verifyCredentials } from "./services/verify-credentials.service";
 
-export type { LoginRequest, LoginSuccessResponse } from "./types/login.types";
+export type {
+  VerifyCredentialsRequest,
+  VerifyCredentialsResponse,
+} from "./types/auth-user";
 
 export { LoginValidation } from "./schemas/login.schema";
 
