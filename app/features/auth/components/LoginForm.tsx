@@ -38,8 +38,12 @@ export const LoginForm = () => {
 
           if (res?.error) {
             setError({ general: res.error });
+            setTimeout(() => {
+              setError({});
+            }, 1000);
+            return;
           }
-
+          setFormData({ email: "", password: "" });
           router.push("/dashboard");
         } catch (error) {
           setError({ general: "An error occurred. Please try again." });
