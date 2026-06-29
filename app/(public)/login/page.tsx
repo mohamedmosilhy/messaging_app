@@ -1,18 +1,11 @@
 "use client";
 
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { LoginForm } from "@/app/features/auth/components/LoginForm";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const login = async () => {
-    const res = await signIn("credentials", {
-      email: "mohamedexample.com",
-      password: "Password123!",
-      redirect: false,
-    });
-    console.log(res);
-    router.push("/dashboard");
-  };
-  return <button onClick={login}>Login</button>;
+  return (
+    <section className="flex flex-col items-center justify-center min-h-screen py-2">
+      <LoginForm />
+    </section>
+  );
 }
