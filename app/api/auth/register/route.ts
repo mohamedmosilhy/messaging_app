@@ -3,12 +3,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { register, RegisterValidation } from "@/app/features/auth/index";
 import { AppError } from "@/app/lib/errors/AppError";
 import { formatZodErrors } from "@/app/utils/formatZodErrors";
+import { auth } from "@/auth";
 
 export async function POST(req: NextRequest) {
   try {
-    //// TODO:check aunthentication
+    const session = await auth();
 
+    if (session) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "You are already authenticated.",
+        },
+        {
+          status: 403,
+        },
+      );
+    }
     const body = await req.json();
+    console.log("body", body);
 
     const zodObject = RegisterValidation.safeParse(body);
 

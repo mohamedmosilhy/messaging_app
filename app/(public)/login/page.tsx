@@ -7,7 +7,7 @@ export default function LoginPage() {
   const router = useRouter();
   const login = async () => {
     const res = await signIn("credentials", {
-      email: "mohamed@example.com",
+      email: "mohamedexample.com",
       password: "Password123!",
       redirect: false,
     });

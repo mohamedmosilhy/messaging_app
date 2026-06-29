@@ -20,3 +20,5 @@ export type {
 export { LoginValidation } from "./schemas/login.schema";
 
 // ------------------------------------
+
+export { RegisterForm } from "./components/RegisterForm";

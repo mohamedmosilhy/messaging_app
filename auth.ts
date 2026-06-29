@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { LoginValidation, verifyCredentials } from "./app/features/auth";
 import { UnauthorizedError } from "./app/lib/errors/UnauthorizedError";
-import { VerifyCredentialsRequest } from "./app/features/auth";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -12,25 +11,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: {},
       },
       async authorize(credentials) {
-        const email = credentials?.email;
-        const password = credentials?.password;
-
-        if (typeof email !== "string" || typeof password !== "string") {
+        if (
+          typeof credentials?.email !== "string" ||
+          typeof credentials?.password !== "string"
+        ) {
           return null;
         }
+
+        const { email, password } = credentials;
         try {
           const zodObject = LoginValidation.safeParse({
             email,
             password,
           });
           if (!zodObject.success) {
-            throw new Error("validation error");
+            return null;
           }
-          const data: VerifyCredentialsRequest = {
-            email: zodObject.data?.email,
-            password: zodObject.data?.password,
-          };
-          const user = await verifyCredentials(data);
+          const user = await verifyCredentials(zodObject.data);
           return user;
         } catch (error) {
           if (error instanceof UnauthorizedError) {
@@ -50,7 +47,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   callbacks: {
     async jwt({ token, user }) {
-      // user only come to jwt in the firt login then in every request jwt use the token
+      // `user` is only available immediately after a successful login.
+      // On subsequent requests, only `token` is available.
       if (user) {
         token.id = user.id;
       }
