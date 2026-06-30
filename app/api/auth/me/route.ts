@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
-import { requireCurrentUserId } from "@/app/utils/requireCurrentUserId";
+
 import { AppError } from "@/app/lib/errors/AppError";
+import { getCurrentUser } from "@/app/features/users";
 
 export async function GET() {
   try {
-    const userId = await requireCurrentUserId();
+    const res = await getCurrentUser();
 
-    return NextResponse.json({
-      success: true,
-      userId,
-    });
+    return NextResponse.json(res);
   } catch (error) {
     if (error instanceof AppError) {
       return NextResponse.json(
