@@ -1,7 +1,7 @@
 import { prisma } from "@/app/lib/prisma";
 import {
   CurrentUserResponse,
-  publicUserSelect,
+  currentUserSelect,
 } from "../types/current-user.types";
 import { requireCurrentUserId } from "@/app/utils/requireCurrentUserId";
 import { NotFoundError } from "@/app/lib/errors/NotFoundError";
@@ -13,7 +13,7 @@ export async function getCurrentUser(): Promise<CurrentUserResponse> {
     where: {
       id: userId,
     },
-    select: publicUserSelect,
+    select: currentUserSelect,
   });
 
   if (!user) {

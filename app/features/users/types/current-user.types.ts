@@ -10,7 +10,7 @@ export type CurrentUserResponse = {
   };
 };
 
-export const publicUserSelect = {
+export const currentUserSelect = {
   id: true,
   email: true,
   username: true,
