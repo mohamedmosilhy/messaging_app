@@ -2,6 +2,7 @@ import SignoutButton from "@/app/features/auth/components/SignoutButton";
 import { getCurrentUser } from "@/app/features/users";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import Link from "next/link"; // 1. Import Link
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -22,6 +23,13 @@ export default async function DashboardPage() {
         <div>bio: {currUser.data.bio}</div>
       </div>
       <SignoutButton />
+
+      <Link
+        href="/settings/profile"
+        className="inline-block bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+      >
+        Edit Profile
+      </Link>
     </section>
   );
 }

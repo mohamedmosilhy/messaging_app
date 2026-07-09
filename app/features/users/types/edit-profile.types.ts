@@ -10,3 +10,9 @@ export type EditProfileResponse = {
   success: true;
   data: PublicProfile;
 };
+
+export type EditProfileError = {
+  success: false;
+  message: string;
+  errors?: Record<string, string>;
+};
