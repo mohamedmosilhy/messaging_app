@@ -8,5 +8,12 @@ export default function SignoutButton() {
       callbackUrl: "/login",
     });
   };
-  return <button onClick={signout}>Sign Out</button>;
+  return (
+    <button
+      onClick={signout}
+      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 m-1 rounded"
+    >
+      Sign Out
+    </button>
+  );
 }

@@ -100,7 +100,11 @@ export const RegisterForm = () => {
         )}
       </div>
       {error.general && <p className="text-red-500 text-sm">{error.general}</p>}
-      <button type="submit" disabled={isSubmitting}>
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 disabled:opacity-50"
+      >
         Register
       </button>
     </form>

@@ -82,7 +82,11 @@ export const LoginForm = () => {
         )}
       </div>
       {error.general && <p className="text-red-500 text-sm">{error.general}</p>}
-      <button type="submit" disabled={isSubmitting}>
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 disabled:opacity-50"
+      >
         login
       </button>
     </form>
