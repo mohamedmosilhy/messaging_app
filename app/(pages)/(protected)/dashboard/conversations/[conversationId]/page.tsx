@@ -1,3 +1,5 @@
+import ConversationContent from "@/app/features/messaging/components/ConversationContent";
+
 export default async function ConversationPage({
   params,
 }: {
@@ -5,5 +7,5 @@ export default async function ConversationPage({
 }) {
   const { conversationId } = await params;
 
-  return <div>Conversation: {conversationId}</div>;
+  return <ConversationContent conversationId={conversationId} />;
 }

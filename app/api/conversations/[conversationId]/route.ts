@@ -1,12 +1,18 @@
-import { openConversation } from "@/app/features/messaging";
+import { getConversation } from "@/app/features/messaging";
 import { AppError } from "@/app/lib/errors/AppError";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ conversationId: string }> },
+) {
   try {
-    const body = await req.json();
+    console.log(await params);
+    const { conversationId } = await params;
 
-    const res = await openConversation(body);
+    const res = await getConversation({
+      conversationId,
+    });
 
     return NextResponse.json(res);
   } catch (error) {

@@ -1,7 +1,7 @@
 import { requireCurrentUserId } from "@/app/utils/requireCurrentUserId";
 import {
-  openConversationRequest,
-  openConversationResponse,
+  OpenConversationRequest,
+  OpenConversationResponse,
 } from "../types/conversation.types";
 import { ValidationError } from "@/app/lib/errors/ValidationError";
 import { prisma } from "@/app/lib/prisma";
@@ -10,8 +10,8 @@ import { ForbiddenError } from "@/app/lib/errors/ForbiddenError";
 import { Prisma } from "@/generated/prisma/client";
 
 export async function openConversation(
-  req: openConversationRequest,
-): Promise<openConversationResponse> {
+  req: OpenConversationRequest,
+): Promise<OpenConversationResponse> {
   // validations
   const currUserId = await requireCurrentUserId();
 

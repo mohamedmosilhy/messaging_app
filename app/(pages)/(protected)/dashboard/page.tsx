@@ -30,6 +30,13 @@ export default async function DashboardPage() {
       >
         Edit Profile
       </Link>
+
+      <Link
+        href="/search"
+        className="inline-block bg-blue-500 text-white py-2 px-4 m-2 rounded-md hover:bg-blue-600"
+      >
+        Search Users
+      </Link>
     </section>
   );
 }
