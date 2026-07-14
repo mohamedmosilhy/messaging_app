@@ -2,6 +2,7 @@
 import { PublicProfile } from "../../users/types/search-user.types";
 import { useQuery } from "@tanstack/react-query";
 import { getConversationRequest } from "../actions/getConversationRequest";
+import { useConversationMessages } from "../hooks/useConversationMessages";
 
 const ConversationContent = ({
   conversationId,
@@ -12,6 +13,23 @@ const ConversationContent = ({
     queryKey: ["conversation", conversationId],
     queryFn: () => getConversationRequest(conversationId),
   });
+
+  const {
+    messages,
+    isLoading: isMessagesLoading,
+    isError: isMessagesError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useConversationMessages(conversationId);
+
+  if (isMessagesLoading) {
+    return <div>Loading messages...</div>;
+  }
+
+  if (isMessagesError) {
+    return <div>Error loading messages.</div>;
+  }
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -35,6 +53,21 @@ const ConversationContent = ({
           </li>
         ))}
       </ul>
+      <ul className="mt-4 ">
+        {messages.map((message) => (
+          <li key={message.id} className="border-b border-gray-300 py-2">
+            <strong className="text-lg font-bold">
+              {message.sender.displayName}:
+            </strong>{" "}
+            {message.content}
+          </li>
+        ))}
+      </ul>
+      {hasNextPage && (
+        <button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+          {isFetchingNextPage ? "Loading more..." : "Load More"}
+        </button>
+      )}
     </section>
   );
 };

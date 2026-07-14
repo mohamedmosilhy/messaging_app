@@ -4,9 +4,8 @@ import {
   GetConversationResponse,
 } from "../types/conversation.types";
 import { UnauthorizedError } from "@/app/lib/errors/UnauthorizedError";
-import { prisma } from "@/app/lib/prisma";
-import { publicProfileSelect } from "../../users/types/user-profile.types";
 import { NotFoundError } from "@/app/lib/errors/NotFoundError";
+import { requireConversationParticipant } from "../utils/requireConversationParticipant";
 
 export async function getConversation(
   req: GetConversationRequest,
@@ -17,32 +16,10 @@ export async function getConversation(
     throw new UnauthorizedError("Authentication required.");
   }
 
-  const conversation = await prisma.conversation.findUnique({
-    where: {
-      id: req.conversationId,
-    },
-    include: {
-      participants: {
-        select: {
-          user: {
-            select: publicProfileSelect,
-          },
-        },
-      },
-    },
-  });
-
-  if (!conversation) {
-    throw new NotFoundError();
-  }
-
-  const isParticipant = conversation.participants.some(
-    (p) => p.user.id === currUserId,
+  const conversation = await requireConversationParticipant(
+    req.conversationId,
+    currUserId,
   );
-
-  if (!isParticipant) {
-    throw new NotFoundError();
-  }
 
   const otherParticipants = conversation.participants
     .filter((p) => p.user.id !== currUserId)
