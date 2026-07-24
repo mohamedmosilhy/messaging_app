@@ -14,6 +14,14 @@ The project is intentionally built as an **MVP (Minimum Viable Product)**. Featu
 
 ---
 
+## Demo
+
+![Messaging App login](./docs/demo/demo.gif)
+
+> No public deployment is currently available. The current walkthrough is intentionally limited to the verified login screen; authenticated features require a configured PostgreSQL database and seeded users.
+
+---
+
 # Goals
 
 The primary goals of this project are:
@@ -29,7 +37,7 @@ The primary goals of this project are:
 
 ---
 
-# MVP Features
+# Implemented MVP Features
 
 ## Authentication
 
@@ -43,10 +51,7 @@ The primary goals of this project are:
 ## User Management
 
 - Search users
-- View user profiles
-- Edit profile
-- Block users
-- Unblock users
+- Retrieve the current authenticated user
 
 ---
 
@@ -67,6 +72,8 @@ The following features are intentionally postponed until after the MVP is comple
 
 - Group chats
 - Avatar uploads
+- Profile editing
+- Blocking and unblocking users
 - Message deletion
 - Message editing UI
 - Read receipts
@@ -247,23 +254,48 @@ Topics covered include:
 
 ---
 
+# Local Development
+
+## Requirements
+
+- Node.js 20 or newer
+- PostgreSQL
+
+## Setup
+
+```bash
+git clone https://github.com/mohamedmosilhy/messaging_app.git
+cd messaging_app
+npm install
+```
+
+Create `.env`:
+
+```env
+DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/messaging_app
+AUTH_SECRET=replace-with-a-long-random-secret
+HASHING_SALT=10
+```
+
+Apply the migrations, optionally load the sample conversations, and start Next.js:
+
+```bash
+npx prisma migrate deploy
+npx tsx prisma/seed.ts
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). Seeded accounts use the password `medo_123`; for example, `mohamed@example.com`.
+
+---
+
 # Current Status
 
-**Planning Phase:** ✅ Completed
+**Core MVP:** implemented
 
-Completed during planning:
+The repository now includes registration and credential authentication, protected pages, user search, direct-conversation creation, message retrieval and sending, cursor pagination, polling, Prisma migrations, and representative seed data.
 
-- Product requirements
-- Database design
-- API contracts
-- Folder structure
-- Technology selection
-- Authentication design
-- User feature design
-- Messaging feature design
-- Development roadmap
-
-The next phase is implementation.
+The database model anticipates group conversations and blocking, but their user-facing workflows are not implemented yet. The app currently has no verified public deployment, and the login screen is the only captured frame because the development server’s authenticated page compilation was not reliable during this documentation pass.
 
 ---
 
