@@ -31,3 +31,31 @@ export const messageResponseSelect = {
     select: publicProfileSelect,
   },
 } as const;
+
+export type SendMessageRequest = {
+  conversationId: string;
+  content: string;
+};
+
+export type MessageResponse = {
+  content: string;
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  conversationId: string;
+  sender: {
+    id: string;
+    username: string;
+    displayName: string;
+    bio: string | null;
+    avatarUrl: string | null;
+  };
+  senderId: string;
+};
+
+export type SendMessageResponse = {
+  success: true;
+  data: {
+    message: MessageResponse;
+  };
+};

@@ -1,4 +1,5 @@
 import { getMessages } from "@/app/features/messaging";
+import { sendMessage } from "@/app/features/messaging/services/sendMessage.service";
 import { AppError } from "@/app/lib/errors/AppError";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -37,6 +38,44 @@ export async function GET(
       cursor,
     });
 
+    return NextResponse.json(res);
+  } catch (error) {
+    if (error instanceof AppError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: error.statusCode },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal server error.",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(
+  request: NextRequest,
+  {
+    params,
+  }: {
+    params: Promise<{ conversationId: string }>;
+  },
+) {
+  try {
+    const { conversationId } = await params;
+
+    const body = await request.json();
+    const res = await sendMessage({
+      conversationId,
+      content: body.content,
+    });
     return NextResponse.json(res);
   } catch (error) {
     if (error instanceof AppError) {
