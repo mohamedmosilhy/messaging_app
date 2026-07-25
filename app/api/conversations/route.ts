@@ -1,4 +1,4 @@
-import { openConversation } from "@/app/features/messaging";
+import { getConversations, openConversation } from "@/app/features/messaging";
 import { AppError } from "@/app/lib/errors/AppError";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -7,6 +7,31 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const res = await openConversation(body);
+
+    return NextResponse.json(res);
+  } catch (error) {
+    if (error instanceof AppError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: error.statusCode },
+      );
+    }
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal server error.",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    const res = await getConversations();
 
     return NextResponse.json(res);
   } catch (error) {

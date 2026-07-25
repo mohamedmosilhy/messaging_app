@@ -30,3 +30,18 @@ export type GetConversationResponse = {
     participants: PublicProfile[];
   };
 };
+
+export type ConversationListItem = {
+  conversationId: string;
+  title: string;
+  avatarUrl: string | null;
+  lastMessage: string | null;
+  lastMessageAt: Date | null;
+};
+
+export type GetConversationsResponse = {
+  success: true;
+  data: {
+    conversations: ConversationListItem[];
+  };
+};

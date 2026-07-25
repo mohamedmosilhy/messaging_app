@@ -37,6 +37,12 @@ export default async function DashboardPage() {
       >
         Search Users
       </Link>
+      <Link
+        href="/dashboard/conversations"
+        className="inline-block bg-blue-500 text-white py-2 px-4 m-2 rounded-md hover:bg-blue-600"
+      >
+        View Conversations
+      </Link>
     </section>
   );
 }
