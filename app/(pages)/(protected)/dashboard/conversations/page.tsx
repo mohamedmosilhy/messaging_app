@@ -1,4 +1,4 @@
-import ConversationList from "@/app/components/ConversationList";
+import { ConversationList } from "@/app/features/messaging";
 
 export default async function ConversationListPage() {
   return (

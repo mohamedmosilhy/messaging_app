@@ -1,4 +1,4 @@
-import ConversationContent from "@/app/features/messaging/components/ConversationContent";
+import { ConversationContent } from "@/app/features/messaging";
 
 export default async function ConversationPage({
   params,

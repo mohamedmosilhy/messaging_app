@@ -20,6 +20,34 @@ The project is intentionally built as an **MVP (Minimum Viable Product)**. Featu
 
 > No public deployment is currently available. The current walkthrough is intentionally limited to the verified login screen; authenticated features require a configured PostgreSQL database and seeded users.
 
+## Seeded Test Data
+
+After configuring `DATABASE_URL` and applying the migrations, reset and seed the
+database with:
+
+```bash
+pnpm db:seed
+```
+
+> The seed command deletes existing application data before inserting the test
+> dataset. Do not run it against a database whose data you need to keep.
+
+Log in with:
+
+```text
+Email: mohamed@example.com
+Password: Test12345
+```
+
+Every seeded account uses `Test12345`; for example, you can also log in as
+`layla.hassan@example.com`, `ahmed.ali@example.com`, or
+`sara.ibrahim@example.com` to test behavior from the other participant's side.
+
+The dataset includes realistic profiles and conversations, a 46-message thread
+for message pagination, blocked-user scenarios, profiles without avatars or
+bios, and more than 20 users matching `alex` for search pagination. Search for
+`farah` to test starting a conversation with a user who has no existing chat.
+
 ---
 
 # Goals

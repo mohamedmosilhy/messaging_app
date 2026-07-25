@@ -3,6 +3,7 @@ import { getCurrentUser } from "@/app/features/users";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link"; // 1. Import Link
+import Image from "next/image";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -19,7 +20,16 @@ export default async function DashboardPage() {
         <div>welcome {currUser.data.displayName}</div>
         <div> username: {currUser.data.username}</div>
         <div>email: {currUser.data.email}</div>
-        <div>avatar: {currUser.data.avatarUrl}</div>
+        <Image
+          src={
+            currUser.data.avatarUrl
+              ? currUser.data.avatarUrl
+              : "https://i.pravatar.cc/300?img=1"
+          }
+          alt="Avatar"
+          width={100}
+          height={100}
+        />
         <div>bio: {currUser.data.bio}</div>
       </div>
       <SignoutButton />

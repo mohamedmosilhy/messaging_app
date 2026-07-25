@@ -5,8 +5,9 @@ import { getConversationRequest } from "../actions/getConversationRequest";
 import { useConversationMessages } from "../hooks/useConversationMessages";
 import { useState } from "react";
 import { useSendMessage } from "../hooks/useSendMessage";
+import Image from "next/image";
 
-const ConversationContent = ({
+export const ConversationContent = ({
   conversationId,
 }: {
   conversationId: string;
@@ -48,7 +49,15 @@ const ConversationContent = ({
       <h1>Conversation ID: {data.data.conversationId}</h1>
       <p>Type: {data.data.type}</p>
       <p>Title: {data.data.title}</p>
-      <p>Avatar URL: {data.data.avatarUrl}</p>
+      <div>
+        avatar:
+        <Image
+          src={data.data.avatarUrl || "https://i.pravatar.cc/300?img=1"}
+          alt="Avatar"
+          width={100}
+          height={100}
+        />
+      </div>
       <h2>Participants:</h2>
       <ul>
         {data.data.participants.map((participant: PublicProfile) => (
@@ -98,5 +107,3 @@ const ConversationContent = ({
     </section>
   );
 };
-
-export default ConversationContent;

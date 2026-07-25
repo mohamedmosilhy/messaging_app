@@ -36,7 +36,10 @@ export async function getConversations(): Promise<GetConversationsResponse> {
     },
     orderBy: {
       conversation: {
-        lastMessageAt: "desc",
+        lastMessageAt: {
+          sort: "desc",
+          nulls: "last",
+        },
       },
     },
   });
