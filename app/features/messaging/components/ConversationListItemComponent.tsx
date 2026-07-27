@@ -26,6 +26,11 @@ const ConversationListItemComponent = ({
           height={100}
         />
         <div className="text-gray-600">{conversation.lastMessage}</div>
+        {conversation.unreadCount > 0 && (
+          <div className="bg-blue-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+            {conversation.unreadCount}
+          </div>
+        )}
         <div className="text-sm text-gray-500">
           {String(conversation.lastMessageAt)}
         </div>

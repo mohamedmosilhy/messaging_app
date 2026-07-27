@@ -34,6 +34,7 @@ export type GetConversationResponse = {
 export type ConversationListItem = {
   conversationId: string;
   title: string;
+  unreadCount: number;
   avatarUrl: string | null;
   lastMessage: string | null;
   lastMessageAt: Date | null;

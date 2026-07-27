@@ -58,6 +58,20 @@ export async function sendMessage(
       },
     });
 
+    await tx.participation.updateMany({
+      where: {
+        conversationId: conversation.id,
+        userId: {
+          not: currUserId,
+        },
+      },
+      data: {
+        unreadCount: {
+          increment: 1,
+        },
+      },
+    });
+
     return createdMessage;
   });
 

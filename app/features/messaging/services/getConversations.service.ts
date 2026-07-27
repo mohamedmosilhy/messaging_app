@@ -44,35 +44,41 @@ export async function getConversations(): Promise<GetConversationsResponse> {
     },
   });
 
-  const conversationList = participations.map(({ conversation }) => {
-    const baseConversation = {
-      conversationId: conversation.id,
-      lastMessage: conversation.lastMessage?.content ?? null,
-      lastMessageAt: conversation.lastMessageAt,
-    };
+  const conversationList = participations.map(
+    ({ conversation, unreadCount }) => {
+      const baseConversation = {
+        conversationId: conversation.id,
+        lastMessage: conversation.lastMessage?.content ?? null,
+        lastMessageAt: conversation.lastMessageAt,
+        unreadCount,
+      };
 
-    if (conversation.type === "DIRECT") {
-      const otherUser = conversation.participants.find(
-        (participant) => participant.user.id !== currentUserId,
-      );
+      if (conversation.type === "DIRECT") {
+        const otherUser = conversation.participants.find(
+          (participant) => participant.user.id !== currentUserId,
+        );
 
-      if (!otherUser) {
-        throw new NotFoundError("Other user not found in direct conversation.");
+        if (!otherUser) {
+          throw new NotFoundError(
+            "Other user not found in direct conversation.",
+          );
+        }
+
+        return {
+          ...baseConversation,
+          title: otherUser.user.displayName,
+          avatarUrl: otherUser.user.avatarUrl,
+        };
       }
 
       return {
         ...baseConversation,
-        title: otherUser.user.displayName,
-        avatarUrl: otherUser.user.avatarUrl,
-      };
-    }
 
-    return {
-      ...baseConversation,
-      title: conversation.title!,
-      avatarUrl: null,
-    };
-  });
+        title: conversation.title!,
+        avatarUrl: null,
+      };
+    },
+  );
 
   return {
     success: true,

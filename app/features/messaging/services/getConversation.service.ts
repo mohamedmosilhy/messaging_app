@@ -6,6 +6,7 @@ import {
 import { UnauthorizedError } from "@/app/lib/errors/UnauthorizedError";
 import { NotFoundError } from "@/app/lib/errors/NotFoundError";
 import { requireConversationParticipant } from "../utils/requireConversationParticipant";
+import { prisma } from "@/app/lib/prisma";
 
 export async function getConversation(
   req: GetConversationRequest,
@@ -20,6 +21,18 @@ export async function getConversation(
     req.conversationId,
     currUserId,
   );
+
+  await prisma.participation.update({
+    where: {
+      userId_conversationId: {
+        userId: currUserId,
+        conversationId: conversation.id,
+      },
+    },
+    data: {
+      unreadCount: 0,
+    },
+  });
 
   const otherParticipants = conversation.participants
     .filter((p) => p.user.id !== currUserId)
