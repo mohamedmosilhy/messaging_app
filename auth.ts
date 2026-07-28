@@ -51,6 +51,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // On subsequent requests, only `token` is available.
       if (user) {
         token.id = user.id;
+        token.username = user.username;
+        token.displayName = user.displayName;
+        token.bio = user.bio;
+        token.avatarUrl = user.avatarUrl;
       }
       return token;
     },
@@ -58,6 +62,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
+        session.user.username = token.username as string;
+        session.user.displayName = token.displayName as string;
+        session.user.bio = token.bio as string | null;
+        session.user.avatarUrl = token.avatarUrl as string | null;
       }
       return session;
     },

@@ -1,10 +1,12 @@
+import { SendMessageResponse } from "../types/messages.types";
+
 export async function sendMessageRequest({
   conversationId,
   content,
 }: {
   conversationId: string;
   content: string;
-}) {
+}): Promise<SendMessageResponse> {
   const res = await fetch(`/api/conversations/${conversationId}/messages`, {
     method: "POST",
     headers: {
@@ -19,5 +21,5 @@ export async function sendMessageRequest({
     throw new Error("Failed to send message.");
   }
 
-  return res.json();
+  return res.json() as Promise<SendMessageResponse>;
 }

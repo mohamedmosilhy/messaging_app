@@ -1,4 +1,3 @@
-import { Message } from "@/generated/prisma/client";
 import { publicProfileSelect } from "../../users/types/user-profile.types";
 
 export type MessagesCursor = {
@@ -15,7 +14,7 @@ export type GetMessagesRequest = {
 export type GetMessagesResponse = {
   success: true;
   data: {
-    messages: Message[];
+    messages: MessageResponse[];
     nextCursor: MessagesCursor | null;
   };
 };

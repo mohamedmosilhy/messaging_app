@@ -8,5 +8,6 @@ export interface VerifyCredentialsResponse {
   email: string;
   username: string;
   displayName: string;
+  bio: string | null;
   avatarUrl: string | null;
 }

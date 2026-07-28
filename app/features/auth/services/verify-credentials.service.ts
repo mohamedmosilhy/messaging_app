@@ -30,6 +30,7 @@ export async function verifyCredentials(
     email: user.email,
     username: user.username,
     displayName: user.displayName,
+    bio: user.bio,
     avatarUrl: user.avatarUrl,
   };
 }
