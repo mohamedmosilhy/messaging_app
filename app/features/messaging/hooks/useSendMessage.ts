@@ -3,13 +3,14 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+
 import { sendMessageRequest } from "../actions/sendMessageRequest";
 import {
   GetMessagesResponse,
   MessageResponse,
   SendMessageResponse,
 } from "../types/messages.types";
-import { useSession } from "next-auth/react";
 
 type SendMessageContext = {
   previousMessages?: InfiniteData<GetMessagesResponse>;
@@ -19,7 +20,32 @@ type SendMessageContext = {
 export function useSendMessage(conversationId: string) {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
+
   const messagesQueryKey = ["messages", conversationId] as const;
+
+  function updateMessages(
+    oldData: InfiniteData<GetMessagesResponse> | undefined,
+    updater: (messages: MessageResponse[]) => MessageResponse[],
+  ) {
+    if (!oldData) {
+      return oldData;
+    }
+
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page, index) =>
+        index === 0
+          ? {
+              ...page,
+              data: {
+                ...page.data,
+                messages: updater(page.data.messages),
+              },
+            }
+          : page,
+      ),
+    };
+  }
 
   const mutation = useMutation<
     SendMessageResponse,
@@ -33,8 +59,7 @@ export function useSendMessage(conversationId: string) {
         content,
       }),
 
-    onMutate: async (content: string) => {
-      // stop any outgoing refetches (so they don't overwrite our optimistic update)
+    onMutate: async (content) => {
       await queryClient.cancelQueries({
         queryKey: messagesQueryKey,
       });
@@ -47,7 +72,8 @@ export function useSendMessage(conversationId: string) {
       if (!previousMessages || !session?.user) {
         return {};
       }
-      const temporaryMessageId = `temp-${Date.now()}-${Math.random()}`;
+
+      const temporaryMessageId = `temp-${crypto.randomUUID()}`;
 
       const optimisticMessage: MessageResponse & { isOptimistic: true } = {
         id: temporaryMessageId,
@@ -66,62 +92,32 @@ export function useSendMessage(conversationId: string) {
         isOptimistic: true,
       };
 
-      queryClient.setQueryData<InfiniteData<GetMessagesResponse>>(
+      queryClient.setQueryData(
         messagesQueryKey,
-        (oldData) => {
-          if (!oldData) {
-            return oldData;
-          }
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page, index) =>
-              index === 0
-                ? {
-                    ...page,
-                    data: {
-                      ...page.data,
-                      messages: [...page.data.messages, optimisticMessage],
-                    },
-                  }
-                : page,
-            ),
-          };
-        },
+        (oldData: InfiniteData<GetMessagesResponse> | undefined) =>
+          updateMessages(oldData, (messages) => [
+            ...messages,
+            optimisticMessage,
+          ]),
       );
 
-      return { previousMessages, temporaryMessageId };
+      return {
+        previousMessages,
+        temporaryMessageId,
+      };
     },
 
     onSuccess: (data, _content, context) => {
-      queryClient.setQueryData<InfiniteData<GetMessagesResponse>>(
+      queryClient.setQueryData(
         messagesQueryKey,
-        (oldData) => {
-          if (!oldData) {
-            return oldData;
-          }
-
-          return {
-            ...oldData,
-            pages: oldData.pages.map((page, index) =>
-              index === 0
-                ? {
-                    ...page,
-                    data: {
-                      ...page.data,
-                      messages: page.data.messages.map((msg) =>
-                        msg.id === context?.temporaryMessageId
-                          ? {
-                              ...data.data.message,
-                            }
-                          : msg,
-                      ),
-                    },
-                  }
-                : page,
+        (oldData: InfiniteData<GetMessagesResponse> | undefined) =>
+          updateMessages(oldData, (messages) =>
+            messages.map((message) =>
+              message.id === context?.temporaryMessageId
+                ? data.data.message
+                : message,
             ),
-          };
-        },
+          ),
       );
     },
 
