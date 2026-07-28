@@ -11,6 +11,10 @@ import {
   MessageResponse,
   SendMessageResponse,
 } from "../types/messages.types";
+import {
+  ConversationListItem,
+  GetConversationsResponse,
+} from "../types/conversation.types";
 
 type SendMessageContext = {
   previousMessages?: InfiniteData<GetMessagesResponse>;
@@ -118,6 +122,52 @@ export function useSendMessage(conversationId: string) {
                 : message,
             ),
           ),
+      );
+
+      queryClient.setQueryData<GetConversationsResponse>(
+        ["conversations"],
+        (oldData) => {
+          if (!oldData) {
+            return oldData;
+          }
+
+          const updatedConversations = oldData.data.conversations.map(
+            (conv) => {
+              if (conv.conversationId !== conversationId) {
+                return conv;
+              }
+
+              return {
+                ...conv,
+                lastMessage: data.data.message.content,
+                lastMessageAt: data.data.message.createdAt,
+              };
+            },
+          );
+
+          const updatedConversation = updatedConversations.find(
+            (conv) => conv.conversationId === conversationId,
+          );
+
+          if (!updatedConversation) {
+            return oldData;
+          }
+
+          const otherConversations = updatedConversations.filter(
+            (conv) =>
+              conv.conversationId !== updatedConversation.conversationId,
+          );
+
+          return {
+            ...oldData,
+
+            data: {
+              ...oldData.data,
+
+              conversations: [updatedConversation, ...otherConversations],
+            },
+          };
+        },
       );
     },
 
