@@ -24,7 +24,7 @@ export function AppHeader() {
   return (
     <header
       className={cn(
-        "h-14 shrink-0 items-center gap-3 border-b bg-card/90 px-4 backdrop-blur",
+        "h-14 shrink-0 items-center gap-3 border-b border-white/8 bg-background/65 px-4 backdrop-blur-xl",
         isConversationDetail ? "hidden md:flex" : "flex",
       )}
     >

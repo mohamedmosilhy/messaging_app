@@ -1,9 +1,27 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { handleSubmit } from "../actions/registerClient";
 
-export const RegisterForm = () => {
+import { AtSign, LoaderCircle, Mail } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+
+import { Button } from "@/app/components/ui/button";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/app/components/ui/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/app/components/ui/input-group";
+import { handleSubmit } from "../actions/registerClient";
+import { RegisterValidation } from "../schemas/register.schema";
+import { PasswordField } from "./PasswordField";
+
+export function RegisterForm() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     username: "",
@@ -11,102 +29,145 @@ export const RegisterForm = () => {
     password: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const [error, setError] = useState<Record<string, string>>({});
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+    if (isSubmitting) return;
+
+    const parsed = RegisterValidation.safeParse(formData);
+
+    if (!parsed.success) {
+      setErrors(
+        Object.fromEntries(
+          parsed.error.issues.map((issue) => [
+            String(issue.path[0] ?? "general"),
+            issue.message,
+          ]),
+        ),
+      );
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setErrors({});
+      const result = await handleSubmit(parsed.data);
+
+      if (result.success) {
+        router.push("/login?registered=1");
+        return;
+      }
+
+      setErrors(
+        result.errors ?? {
+          general: result.message || "Unable to create your account.",
+        },
+      );
+    } catch {
+      setErrors({
+        general: "Unable to create your account right now. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
 
   return (
-    <form
-      onSubmit={async (e) => {
-        try {
-          e.preventDefault();
-          if (isSubmitting) return;
-          setIsSubmitting(true);
-          setError({});
+    <form onSubmit={submit}>
+      <FieldGroup>
+        <Field data-invalid={Boolean(errors.username)}>
+          <FieldLabel htmlFor="username">Username</FieldLabel>
+          <InputGroup className="h-11 bg-background/55">
+            <InputGroupAddon>
+              <AtSign aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput
+              aria-invalid={Boolean(errors.username)}
+              autoComplete="username"
+              autoFocus
+              id="username"
+              name="username"
+              onChange={(event) =>
+                setFormData((current) => ({
+                  ...current,
+                  username: event.target.value,
+                }))
+              }
+              placeholder="your_username"
+              value={formData.username}
+            />
+          </InputGroup>
+          <FieldDescription>
+            3–20 letters, numbers, or underscores.
+          </FieldDescription>
+          <FieldError>{errors.username}</FieldError>
+        </Field>
 
-          const registerMessage = await handleSubmit(formData);
+        <Field data-invalid={Boolean(errors.email)}>
+          <FieldLabel htmlFor="email">Email address</FieldLabel>
+          <InputGroup className="h-11 bg-background/55">
+            <InputGroupAddon>
+              <Mail aria-hidden="true" />
+            </InputGroupAddon>
+            <InputGroupInput
+              aria-invalid={Boolean(errors.email)}
+              autoComplete="email"
+              id="email"
+              name="email"
+              onChange={(event) =>
+                setFormData((current) => ({
+                  ...current,
+                  email: event.target.value,
+                }))
+              }
+              placeholder="you@example.com"
+              type="email"
+              value={formData.email}
+            />
+          </InputGroup>
+          <FieldError>{errors.email}</FieldError>
+        </Field>
 
-          if (registerMessage.success) {
-            setFormData({
-              username: "",
-              email: "",
-              password: "",
-            });
-            router.push("/login");
-          } else if (registerMessage.errors) {
-            setError(registerMessage.errors);
-          } else {
-            setError({
-              general:
-                registerMessage.message ||
-                "An error occurred. Please try again.",
-            });
-          }
-        } catch {
-          setError({ general: "An error occurred. Please try again." });
-        } finally {
-          setIsSubmitting(false);
-        }
-      }}
-      className="flex flex-col gap-4 "
-    >
-      <div>
-        <label htmlFor="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={formData.username}
-          onChange={handleChange}
-          className="border ml-2 border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        {error.username && (
-          <p className="text-red-500 text-sm mt-1">{error.username}</p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          className="border ml-2 border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        {error.email && (
-          <p className="text-red-500 text-sm mt-1">{error.email}</p>
-        )}
-      </div>
-      <div>
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          className="border ml-2 border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        {error.password && (
-          <p className="text-red-500 text-sm mt-1">{error.password}</p>
-        )}
-      </div>
-      {error.general && <p className="text-red-500 text-sm">{error.general}</p>}
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 disabled:opacity-50"
-      >
-        Register
-      </button>
+        <Field data-invalid={Boolean(errors.password)}>
+          <FieldLabel htmlFor="password">Password</FieldLabel>
+          <PasswordField
+            aria-invalid={Boolean(errors.password)}
+            autoComplete="new-password"
+            id="password"
+            name="password"
+            onChange={(event) =>
+              setFormData((current) => ({
+                ...current,
+                password: event.target.value,
+              }))
+            }
+            placeholder="Create a secure password"
+            value={formData.password}
+          />
+          <FieldDescription>
+            At least 8 characters with a letter and number.
+          </FieldDescription>
+          <FieldError>{errors.password}</FieldError>
+        </Field>
+
+        {errors.general ? (
+          <div
+            className="rounded-xl border border-destructive/25 bg-destructive/8 px-3 py-2.5 text-sm text-destructive"
+            role="alert"
+          >
+            {errors.general}
+          </div>
+        ) : null}
+
+        <Button className="h-11 w-full rounded-xl" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <LoaderCircle aria-hidden="true" className="animate-spin" />
+          ) : null}
+          {isSubmitting ? "Creating account" : "Create account"}
+        </Button>
+      </FieldGroup>
     </form>
   );
-};
+}

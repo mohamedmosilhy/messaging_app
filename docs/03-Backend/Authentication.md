@@ -56,6 +56,11 @@ On login, the JWT stores:
 The session callback copies those values to `session.user`. Type augmentation
 is defined in the auth feature.
 
+After a successful profile edit, the client calls the Auth.js session update
+method with the returned display name, bio, and avatar URL. The JWT callback
+handles the `update` trigger, changes those token fields, and the refreshed
+server layout immediately receives the new identity.
+
 ## Authorization helper
 
 `requireCurrentUserId` calls `auth()` and throws `UnauthorizedError` when no
@@ -63,25 +68,17 @@ session exists. Services reuse it instead of duplicating session logic.
 
 ## Protected pages
 
-Some pages explicitly call `auth()` and redirect to `/login`. The API and
-service layers protect sensitive data independently.
-
-Important: the `(protected)` route-group name has no runtime security effect.
-The polished UI should add a shared protected layout, while retaining
-service/API checks.
+The shared protected route layout calls `auth()` once and redirects missing
+sessions to `/login`. The API and service layers continue protecting sensitive
+data independently.
 
 ## Current issues and recommendations
 
-### Stale profile data
-
-Because profile fields are stored in the JWT, editing the database does not
-immediately update `session.user`. Optimistic messages can temporarily use old
-profile data. Refresh/update the session after a profile save.
-
 ### Login error UX
 
-The current form removes an error after one second. Errors should persist until
-the user changes input or resubmits.
+Login errors persist until the user changes input or resubmits. Expected
+credential failures use generic copy so the form does not reveal which field
+was incorrect.
 
 ### Rate limiting
 

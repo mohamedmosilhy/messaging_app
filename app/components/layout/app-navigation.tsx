@@ -60,6 +60,7 @@ export function AppNavigation() {
             <SidebarMenuItem key={item.href}>
               <SidebarMenuButton
                 asChild
+                className="h-10 rounded-xl data-[active=true]:bg-sidebar-accent data-[active=true]:text-primary data-[active=true]:shadow-[inset_0_0_0_1px_oklch(1_0_0/0.04)]"
                 isActive={item.isActive(pathname)}
                 tooltip={item.label}
               >

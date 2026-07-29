@@ -28,9 +28,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full font-sans antialiased", geist.variable)}
+      className={cn(
+        "dark h-full font-sans antialiased [color-scheme:dark]",
+        geist.variable,
+      )}
     >
-      <body className="min-h-svh bg-background text-foreground">
+      <body className="min-h-svh bg-background text-foreground [background-image:radial-gradient(circle_at_top_left,oklch(0.77_0.16_165/0.08),transparent_28rem),radial-gradient(circle_at_bottom_right,oklch(0.62_0.16_285/0.07),transparent_32rem)]">
         <QueryProvider>
           <TooltipProvider>{children}</TooltipProvider>
         </QueryProvider>

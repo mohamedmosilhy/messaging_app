@@ -46,7 +46,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       // `user` is only available immediately after a successful login.
       // On subsequent requests, only `token` is available.
       if (user) {
@@ -55,6 +55,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.displayName = user.displayName;
         token.bio = user.bio;
         token.avatarUrl = user.avatarUrl;
+      }
+
+      if (trigger === "update" && session) {
+        if (typeof session.displayName === "string") {
+          token.displayName = session.displayName;
+        }
+        if (typeof session.bio === "string" || session.bio === null) {
+          token.bio = session.bio;
+        }
+        if (
+          typeof session.avatarUrl === "string" ||
+          session.avatarUrl === null
+        ) {
+          token.avatarUrl = session.avatarUrl;
+        }
       }
       return token;
     },

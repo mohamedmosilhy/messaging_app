@@ -36,14 +36,14 @@ messaging_app/
 - `app/layout.tsx`: root providers, document shell, and global design setup.
 - `app/(pages)/(protected)/layout.tsx`: authentication and product shell.
 - `auth.ts`: Auth.js configuration and callbacks.
-- `app/page.tsx`: current public home/test entry.
+- `app/page.tsx`: premium public Relay landing page.
 - `app/api`: HTTP boundary.
 - `app/features/*/index.ts`: feature exports.
 - `app/lib/prisma.ts`: Prisma client.
 
 ## Authentication feature
 
-- `components`: login, registration, logout.
+- `components`: shared auth shell, login, registration, password field, logout.
 - `actions`: registration client request.
 - `schemas`: login/register Zod schemas.
 - `services`: registration and credential verification.
@@ -54,7 +54,7 @@ messaging_app/
 - profile and search services;
 - profile edit validation and request;
 - current/public/edit/search response types;
-- edit profile test form.
+- profile form, paginated search results, and open-conversation actions.
 
 ## Messaging feature
 

@@ -14,11 +14,11 @@ export function MessagingWorkspace({
   mobilePane,
 }: MessagingWorkspaceProps) {
   return (
-    <div className="grid min-h-0 flex-1 bg-background md:grid-cols-[minmax(18rem,22rem)_minmax(0,1fr)]">
+    <div className="grid min-h-0 min-w-0 flex-1 overflow-hidden bg-background/35 md:grid-cols-[minmax(18rem,22rem)_minmax(0,1fr)]">
       <aside
         aria-label="Conversations"
         className={cn(
-          "min-h-0 border-r bg-card",
+          "min-h-0 min-w-0 border-r border-white/8 bg-card/65 backdrop-blur-xl",
           mobilePane === "content" && "hidden md:block",
         )}
       >
@@ -27,7 +27,7 @@ export function MessagingWorkspace({
       <section
         aria-label="Conversation"
         className={cn(
-          "min-h-0 bg-background",
+          "min-h-0 min-w-0 bg-background/55",
           mobilePane === "sidebar" && "hidden md:block",
         )}
       >

@@ -14,10 +14,10 @@ export function ConversationHeader({ conversation }: ConversationHeaderProps) {
   const participant = conversation.participants[0];
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-card/95 px-3 backdrop-blur md:px-4">
+    <header className="flex h-16 shrink-0 items-center gap-2 border-b border-white/8 bg-card/65 px-3 backdrop-blur-xl md:px-4">
       <MobileConversationHeader />
       <UserAvatar
-        className="size-10"
+        className="size-10 ring-1 ring-white/10"
         name={conversation.title}
         src={conversation.avatarUrl}
       />

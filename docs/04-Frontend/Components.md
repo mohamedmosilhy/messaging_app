@@ -10,7 +10,7 @@ I organized presentation code into three layers.
 
 - alert, avatar, badge, button, and card;
 - dropdown menu, input, separator, sheet, and skeleton;
-- sidebar and tooltip.
+- sidebar, textarea, tooltip, field, label, and input group.
 
 These are reusable primitives, not feature components. I can extend their
 variants locally while keeping consistent accessibility behavior.
@@ -40,20 +40,25 @@ combines them and supplies the authenticated user.
 
 ### Authentication
 
+- `AuthShell`;
 - `LoginForm`;
 - `RegisterForm`;
+- `PasswordField`;
 - `SignoutButton`.
 
-They prove the flows but need a shared form system, better error persistence,
-autocomplete attributes, and polished pending states.
+The forms use shared shadcn fields, proper autocomplete, persistent field and
+general errors, password visibility, pending states, client schema checks, and
+a consistent responsive auth shell.
 
 ### Users
 
 - `EditProfileForm`.
+- `UserSearchResult`;
+- `StartConversationButton`.
 
-It currently manages values and submission locally. It clears the form and
-navigates after success; the final experience should keep the updated values,
-refresh the session, and show success feedback.
+The profile form previews the avatar, tracks dirty state, retains returned
+values after success, refreshes the Auth.js session, and supports reset. Search
+results and public profiles share safe open-conversation behavior.
 
 ### Messaging
 
@@ -138,15 +143,20 @@ the same sender when they are on the same day and within five minutes.
 
 Do not show attachments or emoji controls until they perform real actions.
 
-## Auth and settings plan
+## Phase 3 page composition
 
-- `AuthCard`;
-- shared validated field components;
-- password visibility control;
-- `SettingsLayout`;
-- `ProfileForm`;
-- `AvatarEditor`;
-- dirty-state and unsaved-change handling.
+```text
+auth/components/
+  AuthShell
+  LoginForm
+  RegisterForm
+  PasswordField
+
+users/components/
+  UserSearchResult
+  StartConversationButton
+  EditProfileForm
+```
 
 ## Component rules
 

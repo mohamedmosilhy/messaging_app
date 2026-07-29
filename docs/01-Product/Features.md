@@ -78,6 +78,11 @@ what I intentionally plan to build later.
 - Auto-growing multiline composer with keyboard behavior and length limit.
 - Original Relay website icon.
 - Global and protected route boundaries.
+- Premium dark-only Relay theme across public and protected surfaces.
+- Complete landing, login, registration, discovery, public profile, and
+  profile-settings presentation.
+- Frontend cursor pagination for user search.
+- Immediate Auth.js session refresh after profile edits.
 
 ### Development data
 
@@ -105,11 +110,6 @@ inbox, and reset on conversation-detail retrieval. The React Query inbox cache
 is not immediately changed to zero when opening a conversation. A simple
 counter will also need more design for multi-device reads.
 
-### Search pagination
-
-The backend response contains `nextCursor`, but the current search hook uses a
-normal query and the test page renders only the first result set.
-
 ### Group preparation
 
 The schema includes `ConversationType.GROUP` and an optional title. Current
@@ -131,7 +131,6 @@ services and UI should be treated as direct-message behavior only.
 - Group-chat behavior.
 - Notifications.
 - Automated browser tests.
-- Final authentication, discovery, profile, and settings presentation.
 
 ## Important wording
 

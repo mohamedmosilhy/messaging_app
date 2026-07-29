@@ -46,7 +46,7 @@ export function MessageComposer({
 
   return (
     <form
-      className="shrink-0 border-t bg-card/95 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur sm:px-4"
+      className="shrink-0 border-t border-white/8 bg-card/65 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-xl sm:px-4"
       onSubmit={submitMessage}
     >
       {errorMessage ? (
@@ -58,7 +58,7 @@ export function MessageComposer({
           <span>{errorMessage} Your message is still here—try again.</span>
         </div>
       ) : null}
-      <div className="flex items-end gap-2 rounded-2xl border bg-background p-1.5 shadow-xs focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/20">
+      <div className="flex items-end gap-2 rounded-2xl border border-white/10 bg-background/70 p-1.5 shadow-[0_0.75rem_2.5rem_oklch(0_0_0/0.18)] focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/20">
         <label className="sr-only" htmlFor="message-composer">
           Message
         </label>

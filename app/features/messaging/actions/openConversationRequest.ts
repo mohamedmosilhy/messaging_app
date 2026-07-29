@@ -1,3 +1,8 @@
+import type {
+  OpenConversationError,
+  OpenConversationResponse,
+} from "../types/conversation.types";
+
 export async function openConversationRequest(targetUserId: string) {
   const res = await fetch("/api/conversations", {
     method: "POST",
@@ -9,5 +14,7 @@ export async function openConversationRequest(targetUserId: string) {
     }),
   });
 
-  return res.json();
+  return res.json() as Promise<
+    OpenConversationResponse | OpenConversationError
+  >;
 }

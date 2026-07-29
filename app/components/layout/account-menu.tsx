@@ -30,7 +30,7 @@ export function AccountMenu({ user }: { user: ShellUser }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
-              className="data-[state=open]:bg-sidebar-accent"
+              className="h-12 rounded-xl data-[state=open]:bg-sidebar-accent"
               size="lg"
             >
               <UserAvatar

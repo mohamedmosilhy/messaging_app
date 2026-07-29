@@ -80,20 +80,29 @@ behavior were verified.
 
 ## Phase 3: remaining pages
 
+**Status:** Completed on July 29, 2026. See the
+[Phase 3 report](../06-Engineering/Phase-3-Report.md).
+
 ### Work
 
-- Redesign login and registration.
-- Move discovery into a new-chat panel.
-- Connect search cursor pagination.
-- Redesign profiles and settings.
-- Refresh session profile data after edits.
-- Standardize avatar behavior.
+- Redesigned login, registration, and the public landing page.
+- Moved discovery into a complete new-chat workspace.
+- Connected search cursor pagination.
+- Redesigned public profiles and profile settings.
+- Refreshed session profile data after edits.
+- Standardized avatar preview and fallback behavior.
+- Rebuilt the design system as a premium dark Relay theme.
 
 ### Exit criteria
 
 - No temporary presentation page remains.
 - Forms preserve useful values and display server errors accurately.
 - Every image has a safe fallback.
+
+The landing, authentication, inbox, search, profile, and settings experiences
+were checked in Chromium at desktop and 360 px. Search loaded all 22 seeded
+matching profiles without duplication, and profile updates refreshed the
+active session immediately.
 
 ## Phase 4: behavior and edge-case hardening
 

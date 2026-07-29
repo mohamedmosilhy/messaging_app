@@ -1,3 +1,5 @@
+import type { SearchUsersResponse } from "../types/search-user.types";
+
 export async function searchUsersRequest({
   query,
   limit,
@@ -6,7 +8,7 @@ export async function searchUsersRequest({
   query: string;
   limit: number;
   cursor?: string;
-}) {
+}): Promise<SearchUsersResponse> {
   const res = await fetch(
     `/api/users/search?query=${encodeURIComponent(query)}&limit=${limit}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
   );
@@ -14,5 +16,5 @@ export async function searchUsersRequest({
   if (!res.ok) {
     throw new Error("Failed to search users.");
   }
-  return res.json();
+  return res.json() as Promise<SearchUsersResponse>;
 }

@@ -23,29 +23,24 @@ Reviewed against the repository on July 29, 2026.
 
 ## Presentation status
 
-Phases 1 and 2 are complete. The application now has a semantic Tailwind design
-system, shadcn/ui primitives, authenticated shell, responsive inbox, grouped
-message bubbles, conversation states, anchored pagination, optimistic sending,
-and an auto-growing composer.
+Phases 1 through 3 are complete. The application now has a premium dark
+Tailwind design system, shadcn/ui primitives, a public landing page, complete
+authentication presentation, authenticated shell, responsive inbox,
+conversation UI, paginated discovery, public profiles, and profile settings.
 
-The application also has an original Relay favicon. Authentication, discovery,
-profile, and settings receive their final redesign in Phase 3.
+The application also has an original Relay favicon.
 
 ## Partial areas
 
 - block model/filtering without block commands or send-time enforcement;
 - unread counters without real-time/multi-device read markers;
-- search backend cursor without frontend pagination;
 - group enum without group behavior;
-- organizational protected route group without shared enforcement;
 - optimistic single-send flow without concurrency-safe targeted rollback or
   persistent failed bubbles;
-- final auth, discovery, profile, and settings presentation.
+- profile email/username editing is intentionally unavailable.
 
 ## Known correctness/tooling items
 
-- Profile edits do not refresh JWT session fields.
-- Arbitrary avatar URL storage conflicts with restricted Next Image hosts.
 - Conversation detail GET performs an unread-state write.
 - Route validation is inconsistent.
 - No message idempotency exists.
@@ -67,14 +62,19 @@ profile, and settings receive their final redesign in Phase 3.
 - optimistic, success, send-failure, multiline, length-limit, and draft
   preservation behavior were checked in Chromium.
 - the Relay favicon returned successfully through Next.js metadata routing.
+- all 22 seeded matching search profiles loaded across three cursor pages
+  without duplicates.
+- profile form success retained values and refreshed the Auth.js session and
+  navigation identity.
+- landing, authentication, discovery, public profile, settings, inbox, and
+  360 px mobile views were checked in the premium dark theme.
 - The registration email-conflict field mapping was fixed and tested.
 - Node and pnpm expectations, environment template, and Prisma generation are
   now reproducible.
 
 ## Next recommended action
 
-Phase 2 is complete. Review its
-[implementation report](../06-Engineering/Phase-2-Report.md), then begin Phase
-3 with authentication, discovery, profile, and settings presentation. Do not
-begin WebSocket work until the Phase 4 idempotency and concurrent optimistic
-behavior are complete.
+Phase 3 is complete. Review its
+[implementation report](../06-Engineering/Phase-3-Report.md), then begin Phase
+4 behavior and edge-case hardening. Do not begin WebSocket work until Phase 4
+idempotency and concurrent optimistic behavior are complete.

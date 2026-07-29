@@ -10,7 +10,7 @@ nests it inside `SessionProvider`.
 - `["conversations"]`;
 - `["conversation", conversationId]`;
 - `["messages", conversationId]`;
-- `["users", debouncedQuery]`.
+- `["users", "search", debouncedQuery]`.
 
 These are understandable, but query-key factory helpers will prevent small key
 differences as filters and pagination grow.
@@ -43,9 +43,10 @@ The UI must preserve viewport position when a new older page is prepended.
 
 `useSearchQuery` waits 300 ms and is disabled for an empty trimmed query.
 
-The backend already returns `nextCursor`, so the polished search should migrate
-to `useInfiniteQuery` or an explicit load-more query and include all relevant
-parameters in the query key.
+The hook uses `useInfiniteQuery`, passes each `nextCursor` back to the API, and
+flattens pages for the discovery UI. A changed debounced query creates a new
+cache entry and restarts pagination. The interface distinguishes debouncing,
+initial loading, next-page loading, empty results, and request failure.
 
 ## Mutations
 

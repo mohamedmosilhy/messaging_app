@@ -15,6 +15,15 @@ export const EditProfileValidation = z
       .max(50, "Display name cannot exceed 50 characters")
       .optional(),
 
-    avatarUrl: z.string().optional(),
+    avatarUrl: z
+      .union([
+        z.literal(""),
+        z
+          .url({ error: "Avatar must be a valid HTTP or HTTPS URL" })
+          .refine((value) => /^https?:\/\//i.test(value), {
+            error: "Avatar must use an HTTP or HTTPS URL",
+          }),
+      ])
+      .optional(),
   })
   .strict();

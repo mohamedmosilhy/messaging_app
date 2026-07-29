@@ -35,8 +35,9 @@ export default function ConversationListItemComponent({
       <Link
         aria-current={isActive ? "page" : undefined}
         className={cn(
-          "flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
-          isActive && "bg-accent text-accent-foreground",
+          "mx-2 my-1 flex items-center gap-3 rounded-2xl px-3 py-3 transition-colors hover:bg-white/[0.045] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+          isActive &&
+            "bg-accent/80 text-accent-foreground shadow-[inset_0_0_0_1px_oklch(1_0_0/0.035)]",
         )}
         href={href}
       >

@@ -23,9 +23,9 @@ export default async function ProtectedLayout({
   };
 
   return (
-    <SidebarProvider className="[--sidebar-width:17rem]">
+    <SidebarProvider className="bg-transparent [--sidebar-width:17rem]">
       <AppSidebar user={user} />
-      <SidebarInset className="h-svh min-h-0 overflow-hidden">
+      <SidebarInset className="h-svh min-h-0 overflow-hidden border border-white/8 bg-background/70 shadow-[0_1.5rem_6rem_oklch(0_0_0/0.28)] backdrop-blur-xl">
         <AppHeader />
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
           {children}

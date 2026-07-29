@@ -5,9 +5,9 @@ Last reviewed against the repository: July 29, 2026
 I built this messaging application from scratch as a full-stack learning
 project. I focused first on data modeling, authentication, services, API
 routes, React Query, pagination, unread state, and optimistic sending. I then
-built the responsive application shell and full conversation presentation. My
-next presentation milestone is the remaining forms and discovery pages,
-followed by behavior hardening and real-time delivery.
+built the complete premium dark presentation across the public, authentication,
+inbox, conversation, discovery, profile, and settings experiences. My next
+milestone is behavior hardening before real-time delivery.
 
 These documents explain what I have made, why I made the main decisions, what
 is incomplete, and how I plan to continue. Review findings are explicitly
@@ -85,6 +85,8 @@ labeled as recommendations so they are not confused with implemented features.
   system, application shell, responsive validation, and Phase 2 handoff.
 - [Phase 2 Report](./06-Engineering/Phase-2-Report.md) — completed conversation
   presentation, composer, scroll behavior, favicon, and Phase 3 handoff.
+- [Phase 3 Report](./06-Engineering/Phase-3-Report.md) — completed premium dark
+  system, remaining pages, search pagination, and session refresh behavior.
 
 ### 7. Reference
 
@@ -115,14 +117,14 @@ docs/
 
 ## Current project summary
 
-The core architecture, HTTP messaging foundation, responsive shell, inbox, and
-conversation presentation are real and established.
+The core architecture, HTTP messaging foundation, and complete Phase 1–3
+presentation are real and established.
 The strongest completed areas are service separation, participant
 authorization, direct-conversation uniqueness, stable message pagination,
 transactional send metadata, seeded edge cases, and the first optimistic cache
 workflow.
 
-The main unfinished areas are the remaining page presentation, broader
-database/automated-browser coverage, concurrency-safe retry/idempotency,
-complete block behavior, multi-client read state, and real-time delivery. The
-roadmap intentionally handles those in that order.
+The main unfinished areas are broader database/automated-browser coverage,
+concurrency-safe retry/idempotency, complete block behavior, multi-client read
+state, and real-time delivery. The roadmap intentionally handles those in that
+order.

@@ -14,13 +14,15 @@ const ProfilePage = async () => {
         description="Manage the public details people see in conversations."
         title="Profile settings"
       />
-      <Card className="max-w-2xl">
-        <CardContent>
+      <Card className="overflow-hidden border-white/10 bg-card/65 shadow-[0_1.5rem_5rem_oklch(0_0_0/0.22)] backdrop-blur-xl">
+        <CardContent className="p-5 sm:p-7">
           <EditProfileForm
             user={{
               displayName: user.data.displayName,
-              bio: user.data.bio,
-              avatarUrl: user.data.avatarUrl,
+              bio: user.data.bio ?? "",
+              avatarUrl: user.data.avatarUrl ?? "",
+              email: user.data.email,
+              username: user.data.username,
             }}
           />
         </CardContent>

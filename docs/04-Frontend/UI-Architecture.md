@@ -2,14 +2,13 @@
 
 ## Current state
 
-I completed the application shell and the full HTTP conversation presentation.
-The protected product now has responsive navigation, an inbox workspace,
-conversation header, grouped message history, optimistic message states,
-pagination anchoring, and an accessible composer.
+I completed the public and protected presentation layer. Relay now has a
+premium dark design system across the landing page, authentication, navigation,
+inbox, conversations, discovery, profiles, and settings.
 
-Authentication forms, search, profiles, and settings still receive their final
-presentation pass in Phase 3. The completed UI remains above my existing
-service and persistence layers.
+The UI remains above my existing service and persistence layers. Search
+pagination and profile session refresh extend the existing client-state
+boundary without moving business rules into components.
 
 ## Implemented application shell
 
@@ -96,6 +95,15 @@ The tokens are exposed to Tailwind utilities such as `bg-background`,
 imports, the token definitions required by the design system, and base-layer
 applications. Component appearance is implemented with Tailwind classes.
 
+The root uses one intentional dark theme:
+
+- blue-black background and layered surfaces;
+- emerald primary actions;
+- cyan and violet supporting accents;
+- white-alpha borders;
+- high-contrast text, focus, and destructive states;
+- translucent panels and restrained depth effects.
+
 WhatsApp inspires the interaction density and hierarchy, but I kept original
 Relay branding, colors, assets, and values.
 
@@ -111,6 +119,10 @@ Relay branding, colors, assets, and values.
 - `MessageTimeline` owns scroll and pagination anchoring behavior.
 - `MessageBubble`, `DateSeparator`, `ConversationHeader`, and
   `MessageComposer` stay presentational and reusable.
+- `AuthShell` composes public authentication presentation.
+- `useSearchQuery` owns typed infinite search state.
+- `EditProfileForm` owns its editable snapshot while Auth.js owns the updated
+  authenticated identity.
 
 Avoid:
 

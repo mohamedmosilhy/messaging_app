@@ -46,8 +46,14 @@ Owned by Next.js routing:
 
 Forms use `useState` for values, submitting flags, and field errors.
 `MessageComposer` owns its current draft and `MessageTimeline` owns only the
-jump-to-latest visibility state. Search keeps the raw query locally and derives
-a debounced value.
+jump-to-latest visibility state. Search keeps the raw query locally, derives a
+debounced value, and leaves result pages in React Query. Profile settings keep
+an editable snapshot and the last server-confirmed snapshot for dirty/reset
+behavior.
+
+After profile success, Auth.js `session.update` replaces the JWT-owned public
+profile fields. The protected server layout then receives the refreshed
+identity through `router.refresh`.
 
 ## Recommended draft model
 
