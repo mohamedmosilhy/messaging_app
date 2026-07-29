@@ -74,8 +74,9 @@ invalidation, and mutation reconciliation.
 **Reason:** messaging feels unresponsive if every bubble waits for a network
 round trip.
 
-**Current trade-off:** rollback restores the whole previous message cache. This
-is simple for one pending mutation but unsafe when concurrent sends are added.
+**Current implementation:** every send owns a client ID. Failure marks only its
+matching bubble, retry reuses the ID, and the database enforces sender-scoped
+idempotency.
 
 ## Participant authorization returns not-found
 
@@ -107,3 +108,35 @@ independent counters across clients.
 Items described as recommendations are review outcomes, not completed project
 features. They should become explicit decisions only when implemented and
 tested.
+
+## Shared database-backed rate limits
+
+**Decision:** store hashed fixed-window buckets in PostgreSQL.
+
+**Reason:** in-memory counters do not converge across Vercel serverless
+instances. The existing database provides one shared enforcement boundary
+without another infrastructure dependency.
+
+**Trade-off:** protected operations add a database write. At larger scale, the
+same interface can move to a dedicated distributed rate-limit store.
+
+## Explicit production migrations
+
+**Decision:** run `prisma migrate deploy` separately from preview builds.
+
+**Reason:** concurrent previews should not silently mutate a shared production
+schema.
+
+**Trade-off:** releases have one explicit operational step, but migrations stay
+reviewable and recoverable.
+
+## Baseline observability without a monitoring vendor
+
+**Decision:** emit structured request-correlated logs, expose database health,
+and use Vercel runtime metrics.
+
+**Reason:** this creates an immediately functional baseline without pretending
+an unconfigured third-party service is active.
+
+**Trade-off:** dedicated alerting, trace retention, and security analytics are
+still recommended as traffic and operational requirements grow.

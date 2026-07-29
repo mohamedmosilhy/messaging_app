@@ -2,16 +2,25 @@
 
 ## Current status
 
-Vitest is configured for Node-based service tests. The first suite contains six
-tests for registration and message sending. Authentication, hashing, participant
-lookup, and Prisma boundaries are mocked so the normal test command never
-modifies a developer database.
+Vitest covers registration, message sending, idempotency, blocks, and the
+database-backed rate limiter. Authentication, hashing, participant lookup, and
+Prisma boundaries are mocked so the normal unit command never modifies a
+developer database.
+
+Playwright covers the public/authenticated flow, session-aware landing page,
+inbox, long message history, profile settings action visibility, and
+accessibility on desktop and mobile. axe-core checks covered screens for
+critical and serious violations.
 
 Current scripts:
 
 ```bash
 pnpm test
 pnpm test:watch
+pnpm test:e2e
+pnpm test:e2e:seeded
+pnpm test:e2e:ui
+pnpm screenshots
 ```
 
 The realistic seed data remains useful for manual exploration, but it does not
@@ -59,16 +68,21 @@ Use a dedicated PostgreSQL test database. Highest-priority cases:
 - composer keyboard behavior;
 - accessible labels and status announcements.
 
-### End-to-end tests
+### Implemented end-to-end tests
 
-1. Register, login, edit profile, and logout.
-2. Search for a user and open a new thread.
-3. Open an existing long conversation and load older pages.
-4. Send on a slow connection and observe state.
-5. Fail and retry without duplicates.
-6. Verify unread behavior using two sessions.
-7. Verify desktop and mobile navigation.
-8. Verify keyboard-only critical flows.
+1. Render the landing page and authenticate with the seeded account.
+2. Confirm signed-in landing actions replace authentication actions.
+3. Load the inbox on desktop and mobile.
+4. Open the long Layla thread and exhaust cursor pages.
+5. Confirm profile Save remains in the viewport.
+6. Run axe-core against public, inbox, and profile surfaces.
+
+Recommended next expansions:
+
+- intercepted slow/failing message requests and idempotent retry;
+- registration and profile mutation;
+- two-session unread behavior;
+- keyboard-only assertions beyond axe automation.
 
 ## Test data
 
@@ -91,6 +105,8 @@ pnpm build
 ```
 
 Run integration and end-to-end suites with a dedicated disposable database.
+Playwright artifacts are ignored unless a test fails; documentation screenshots
+are captured explicitly into `docs/assets/screenshots`.
 
 ## Phase 0 verification
 
@@ -103,6 +119,6 @@ After that change:
 - peer-dependency validation passed;
 - the Next.js production build passed.
 
-The current tests are service tests with mocked infrastructure boundaries. The
-next testing expansion should add a dedicated PostgreSQL integration database
-for transaction, constraint, and concurrency behavior.
+The service tests still mock infrastructure boundaries. A dedicated PostgreSQL
+integration suite remains recommended for transaction, constraint, and
+concurrency behavior.

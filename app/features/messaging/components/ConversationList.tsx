@@ -11,7 +11,11 @@ import ConversationListItemComponent from "./ConversationListItemComponent";
 
 function ConversationListSkeleton() {
   return (
-    <div aria-label="Loading conversations" className="space-y-1 p-3">
+    <div
+      aria-label="Loading conversations"
+      className="space-y-1 p-3"
+      role="status"
+    >
       {Array.from({ length: 6 }, (_, index) => (
         <div className="flex items-center gap-3 p-2" key={index}>
           <Skeleton className="size-11 shrink-0 rounded-full" />

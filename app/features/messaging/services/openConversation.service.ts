@@ -8,12 +8,19 @@ import { prisma } from "@/app/lib/prisma";
 import { NotFoundError } from "@/app/lib/errors/NotFoundError";
 import { ForbiddenError } from "@/app/lib/errors/ForbiddenError";
 import { Prisma } from "@/generated/prisma/client";
+import { enforceRateLimit, rateLimits } from "@/app/lib/rate-limit";
 
 export async function openConversation(
   req: OpenConversationRequest,
 ): Promise<OpenConversationResponse> {
   // validations
   const currUserId = await requireCurrentUserId();
+
+  await enforceRateLimit({
+    scope: "open-conversation",
+    identifier: currUserId,
+    ...rateLimits.openConversation,
+  });
 
   if (currUserId === req.targetUserId) {
     throw new ValidationError({

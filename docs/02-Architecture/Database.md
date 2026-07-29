@@ -10,6 +10,7 @@ contains:
 - `Participation`;
 - `Message`;
 - `Block`;
+- `RateLimitBucket`;
 - `ConversationType`.
 
 Prisma Client is generated into `generated/prisma`, and the application uses
@@ -25,7 +26,8 @@ the PostgreSQL driver adapter.
 - `Conversation.lastMessageId`;
 - participation composite key;
 - block composite key;
-- `Message(senderId, clientId)`.
+- `Message(senderId, clientId)`;
+- `RateLimitBucket.key`.
 
 The `participantKey` constraint is especially important because service-level
 checks alone cannot prevent two simultaneous requests from creating duplicates.
@@ -34,7 +36,8 @@ checks alone cannot prevent two simultaneous requests from creating duplicates.
 
 - `Conversation.lastMessageAt`;
 - `Participation.conversationId`;
-- `Message(conversationId, createdAt, id)`.
+- `Message(conversationId, createdAt, id)`;
+- `RateLimitBucket.expiresAt`.
 
 The participation primary key begins with `userId`, which supports retrieving a
 user's participations.
@@ -46,8 +49,10 @@ and ID. Its implemented index matches that access path:
 @@index([conversationId, createdAt, id])
 ```
 
-It should still be measured with production-scale data and a PostgreSQL query
-plan.
+The seeded three-page history query was measured with `EXPLAIN ANALYZE`.
+PostgreSQL selected an index-only backward scan, returned 21 rows with zero
+heap fetches, and completed in approximately 0.05 ms locally. Production-scale
+query insights should still be monitored.
 
 ## Transaction boundaries
 
@@ -97,10 +102,13 @@ their unique server IDs, creates the sender/client unique key, and replaces the
 single-column history index with the stable cursor index. Future read markers
 must also be introduced through migrations, not manual production schema edits.
 
+The Phase 6 migration adds shared fixed-window rate-limit buckets. Identifiers
+are hashed before storage, new windows clean expired rows, and the expiry index
+supports bounded cleanup.
+
 ## Recommendations
 
 - decide foreign-key deletion behavior before implementing deletion;
 - consider `lastReadMessageId` on participation;
 - validate database constraints against group-chat plans;
-- use a single reusable Prisma client during development hot reload;
-- maintain backup, migration, and rollback procedures before deployment.
+- continue measuring high-volume queries with production-like data.

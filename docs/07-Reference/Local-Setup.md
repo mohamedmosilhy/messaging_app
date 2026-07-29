@@ -44,6 +44,13 @@ Password: Test12345
 
 All seeded users use `Test12345`.
 
+Secondary account:
+
+```text
+Email: layla.hassan@example.com
+Password: Test12345
+```
+
 Useful scenarios:
 
 - `mohamed` has realistic conversations;
@@ -51,6 +58,9 @@ Useful scenarios:
 - a pair of messages shares one timestamp;
 - searching `alex` returns more than one result page;
 - Farah has no existing conversation with the primary user;
+- Dina has an empty conversation;
+- Rami has a 1,000-character message;
+- Nour, Karim, and Adam have unread badges of 1, 2, and 3;
 - some profiles have no avatar/bio;
 - seeded block and unread states are available.
 
@@ -64,9 +74,17 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm test:watch
+pnpm test:e2e
+pnpm test:e2e:seeded
+pnpm test:e2e:ui
+pnpm screenshots
 pnpm db:generate
+pnpm db:deploy
 pnpm db:seed
 ```
 
 The post-install script generates Prisma Client automatically. TypeScript is
 pinned to `6.0.3`, which satisfies the installed lint tooling.
+
+Playwright runs Chromium at desktop and Pixel 7 sizes. The seeded E2E command
+resets the configured database first and must target disposable data.

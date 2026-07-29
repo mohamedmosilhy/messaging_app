@@ -10,6 +10,7 @@ import { UnauthorizedError } from "@/app/lib/errors/UnauthorizedError";
 import { ValidationError } from "@/app/lib/errors/ValidationError";
 import { requireConversationParticipant } from "../utils/requireConversationParticipant";
 import { prisma } from "@/app/lib/prisma";
+import { enforceRateLimit, rateLimits } from "@/app/lib/rate-limit";
 
 export async function sendMessage(
   req: SendMessageRequest,
@@ -19,6 +20,12 @@ export async function sendMessage(
   if (!currUserId) {
     throw new UnauthorizedError("Authentication required");
   }
+
+  await enforceRateLimit({
+    scope: "send-message",
+    identifier: currUserId,
+    ...rateLimits.sendMessage,
+  });
 
   if (!req.clientId || req.clientId.length > 64) {
     throw new ValidationError({

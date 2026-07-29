@@ -27,6 +27,17 @@ domain errors use:
 The message-send client preserves the server's user-safe error message.
 Machine-readable error codes remain a future improvement.
 
+Application API errors include a `requestId`, and the same identifier is
+returned through the `x-request-id` response header. A `429` response includes
+`Retry-After`.
+
+## Health
+
+### `GET /api/health`
+
+Runs a minimal PostgreSQL connectivity check and returns an uncached
+`{ "status": "ok", "timestamp": "..." }` response.
+
 ## Authentication
 
 ### `POST /api/auth/register`
@@ -193,12 +204,12 @@ existing message instead of inserting a duplicate.
 - `401` unauthenticated;
 - `403` forbidden;
 - `404` missing/inaccessible;
-- `409` conflict.
+- `409` conflict;
+- `429` rate limited.
 
 Unexpected failures return a generic `500`.
 
 ## Recommended API contract work
 
 - add a stable machine-readable error `code`;
-- add request correlation IDs and structured server logging;
-- add rate limits before public deployment;
+- consider request IDs on successful JSON bodies if clients require them.

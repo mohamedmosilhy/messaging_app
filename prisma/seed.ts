@@ -6,6 +6,7 @@ const TEST_USER_EMAIL = "mohamed@example.com";
 const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
+const MAX_LENGTH_MESSAGE = `Maximum-length message: ${"x".repeat(976)}`;
 
 type SeedUser = {
   username: string;
@@ -276,6 +277,8 @@ const conversations: Array<{
   firstUser: string;
   secondUser: string;
   messages: SeedMessage[];
+  createdAt?: Date;
+  unreadCounts?: Record<string, number>;
 }> = [
   {
     firstUser: "mohamed",
@@ -350,6 +353,7 @@ const conversations: Array<{
   {
     firstUser: "mohamed",
     secondUser: "nour_samy",
+    unreadCounts: { mohamed: 1 },
     messages: [
       {
         from: "nour_samy",
@@ -361,6 +365,7 @@ const conversations: Array<{
   {
     firstUser: "mohamed",
     secondUser: "karim_mansour",
+    unreadCounts: { mohamed: 2 },
     messages: dialogue(ago(55 * MINUTE), 9, [
       ["karim_mansour", "The staging database backup completed successfully."],
       ["mohamed", "Great. Did the restore check pass too?"],
@@ -385,6 +390,7 @@ const conversations: Array<{
   {
     firstUser: "mohamed",
     secondUser: "adam_waleed",
+    unreadCounts: { mohamed: 3 },
     messages: dialogue(ago(18 * MINUTE), 2, [
       ["adam_waleed", "I found one odd case: send a message with only spaces."],
       ["mohamed", "That should be rejected after trimming."],
@@ -401,6 +407,23 @@ const conversations: Array<{
       ],
       ["mohamed", "Excellent. That covers the main messaging path."],
     ]),
+  },
+  {
+    firstUser: "mohamed",
+    secondUser: "rami_khaled",
+    messages: [
+      {
+        from: "rami_khaled",
+        content: MAX_LENGTH_MESSAGE,
+        at: ago(6 * DAY),
+      },
+    ],
+  },
+  {
+    firstUser: "mohamed",
+    secondUser: "dina_ashraf",
+    createdAt: ago(5 * DAY),
+    messages: [],
   },
   {
     firstUser: "mohamed",
@@ -430,6 +453,7 @@ async function resetDatabase() {
     prisma.conversation.updateMany({
       data: { lastMessageId: null, lastMessageAt: null },
     }),
+    prisma.rateLimitBucket.deleteMany(),
     prisma.block.deleteMany(),
     prisma.message.deleteMany(),
     prisma.participation.deleteMany(),
@@ -451,12 +475,8 @@ async function createDirectConversation(
     );
   }
 
-  if (seed.messages.length === 0) {
-    throw new Error("Seeded conversations must contain at least one message.");
-  }
-
   const participantKey = [first.id, second.id].sort().join(":");
-  const firstMessageAt = seed.messages[0].at;
+  const firstMessageAt = seed.messages[0]?.at ?? seed.createdAt ?? ago(DAY);
 
   const conversation = await prisma.conversation.create({
     data: {
@@ -481,6 +501,28 @@ async function createDirectConversation(
     ],
   });
 
+  if (seed.unreadCounts) {
+    await Promise.all(
+      Object.entries(seed.unreadCounts).map(([username, unreadCount]) => {
+        const user = users.get(username);
+
+        if (!user) {
+          throw new Error(`Missing unread-count user: ${username}`);
+        }
+
+        return prisma.participation.update({
+          where: {
+            userId_conversationId: {
+              userId: user.id,
+              conversationId: conversation.id,
+            },
+          },
+          data: { unreadCount },
+        });
+      }),
+    );
+  }
+
   let lastMessage: { id: string; createdAt: Date } | null = null;
 
   for (const [messageIndex, message] of seed.messages.entries()) {
@@ -504,14 +546,16 @@ async function createDirectConversation(
     });
   }
 
-  await prisma.conversation.update({
-    where: { id: conversation.id },
-    data: {
-      lastMessageId: lastMessage!.id,
-      lastMessageAt: lastMessage!.createdAt,
-      updatedAt: lastMessage!.createdAt,
-    },
-  });
+  if (lastMessage) {
+    await prisma.conversation.update({
+      where: { id: conversation.id },
+      data: {
+        lastMessageId: lastMessage.id,
+        lastMessageAt: lastMessage.createdAt,
+        updatedAt: lastMessage.createdAt,
+      },
+    });
+  }
 }
 
 async function main() {
@@ -574,6 +618,10 @@ Primary test account
   Email:    ${TEST_USER_EMAIL}
   Password: ${SEED_PASSWORD}
 
+Secondary test account
+  Email:    layla.hassan@example.com
+  Password: ${SEED_PASSWORD}
+
 Created
   ${usersData.length} users
   ${conversations.length} direct conversations
@@ -584,6 +632,9 @@ Useful checks
   Search "alex" to test result pagination.
   Open Layla's chat to test three message pages.
   Search "farah" to start a brand-new conversation.
+  Open Dina's empty thread to test the first-message state.
+  Open Rami's thread to test a 1,000-character message.
+  Nour, Karim, and Adam exercise unread badges of 1, 2, and 3.
   Ahmed is blocked by Mohamed; Sara has blocked Mohamed.
 `);
 }

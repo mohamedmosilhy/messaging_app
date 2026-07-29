@@ -1,7 +1,7 @@
 import { getMessages } from "@/app/features/messaging";
 import { sendMessage } from "@/app/features/messaging/services/sendMessage.service";
-import { AppError } from "@/app/lib/errors/AppError";
 import { ValidationError } from "@/app/lib/errors/ValidationError";
+import { routeErrorResponse } from "@/app/lib/route-response";
 import {
   ConversationParamsValidation,
   MessagesQueryValidation,
@@ -55,23 +55,7 @@ export async function GET(
 
     return NextResponse.json(res);
   } catch (error) {
-    if (error instanceof AppError) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: error.message,
-        },
-        { status: error.statusCode },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Internal server error.",
-      },
-      { status: 500 },
-    );
+    return routeErrorResponse(error, request, "message.history_failed");
   }
 }
 
@@ -104,22 +88,6 @@ export async function POST(
     });
     return NextResponse.json(res);
   } catch (error) {
-    if (error instanceof AppError) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: error.message,
-        },
-        { status: error.statusCode },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Internal server error.",
-      },
-      { status: 500 },
-    );
+    return routeErrorResponse(error, request, "message.send_failed");
   }
 }

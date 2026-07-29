@@ -34,7 +34,11 @@ export default async function Home() {
   const dashboardHref = "/dashboard/conversations";
 
   return (
-    <main className="relative min-h-svh overflow-hidden">
+    <main
+      className="relative min-h-svh overflow-hidden"
+      id="main-content"
+      tabIndex={-1}
+    >
       <div
         aria-hidden="true"
         className="absolute inset-0 [background-image:linear-gradient(to_right,oklch(1_0_0/0.025)_1px,transparent_1px),linear-gradient(to_bottom,oklch(1_0_0/0.025)_1px,transparent_1px)] [background-size:4rem_4rem] [mask-image:linear-gradient(to_bottom,black,transparent_85%)]"

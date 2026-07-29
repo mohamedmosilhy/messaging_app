@@ -24,7 +24,11 @@ export function AuthShell({
   title,
 }: AuthShellProps) {
   return (
-    <main className="relative grid min-h-svh overflow-hidden lg:grid-cols-[minmax(0,1.05fr)_minmax(28rem,0.95fr)]">
+    <main
+      className="relative grid min-h-svh overflow-hidden lg:grid-cols-[minmax(0,1.05fr)_minmax(28rem,0.95fr)]"
+      id="main-content"
+      tabIndex={-1}
+    >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 [background-image:linear-gradient(to_right,oklch(1_0_0/0.025)_1px,transparent_1px),linear-gradient(to_bottom,oklch(1_0_0/0.025)_1px,transparent_1px)] [background-size:4rem_4rem] [mask-image:linear-gradient(to_bottom,black,transparent_80%)]"

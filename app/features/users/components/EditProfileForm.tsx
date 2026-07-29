@@ -128,7 +128,7 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
               @{user.username}
             </p>
           </div>
-          <div className="rounded-2xl border border-white/8 bg-white/[0.025] p-4">
+          <div className="rounded-2xl border border-white/8 bg-white/2.5 p-4">
             <p className="text-xs font-medium text-muted-foreground">
               Account email
             </p>

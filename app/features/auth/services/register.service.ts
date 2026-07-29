@@ -9,13 +9,21 @@ import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { Prisma } from "@/generated/prisma/client";
 import { ConflictError } from "@/app/lib/errors/ConflictError";
+import { enforceRateLimit, rateLimits } from "@/app/lib/rate-limit";
 
 export async function register(
   data: RegisterRequest,
+  context: { rateLimitIdentifier?: string } = {},
 ): Promise<RegisterSuccessResponse> {
   // normalize
   const email = data.email.trim().toLowerCase();
   const username = data.username.trim().toLowerCase();
+
+  await enforceRateLimit({
+    scope: "registration",
+    identifier: `${context.rateLimitIdentifier ?? "unknown-client"}:${email}`,
+    ...rateLimits.registration,
+  });
 
   // duplicate check
   const [emailRes, usernameRes] = await Promise.all([
@@ -61,7 +69,7 @@ export async function register(
 
         if (target.includes("email")) {
           throw new ConflictError({
-            username: "Email already exists.",
+            email: "Email already exists.",
           });
         }
         if (target.includes("username")) {
@@ -71,9 +79,7 @@ export async function register(
         }
       }
     }
-    throw new Error(
-      `Failed to create user: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
+    throw error;
   }
   return {
     success: true,

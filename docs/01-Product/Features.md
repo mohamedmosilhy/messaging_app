@@ -91,6 +91,12 @@ what I intentionally plan to build later.
   signed-in identity and dashboard access.
 - Frontend cursor pagination for user search.
 - Immediate Auth.js session refresh after profile edits.
+- Request-correlated API errors and a database health endpoint.
+- Shared rate limits for authentication, registration, discovery,
+  conversation opening, message sending, and history reads.
+- Content Security Policy and defensive browser headers.
+- Automated desktop/mobile browser and accessibility checks.
+- Real seeded screenshots and a Vercel deployment.
 
 ### Development data
 
@@ -102,6 +108,7 @@ what I intentionally plan to build later.
 - A user without an existing conversation.
 - Blocked relationships.
 - Unread-count scenarios.
+- Empty-thread, maximum-message-length, and numbered unread-badge scenarios.
 
 ## Partially implemented features
 

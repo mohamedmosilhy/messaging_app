@@ -27,6 +27,11 @@ Reviewed against the repository on July 29, 2026.
 - Immediate unread-cache reconciliation.
 - Strict transport validation and malformed-JSON handling.
 - Send-time block enforcement.
+- Database-backed rate limits for sensitive and high-volume operations.
+- Correlated structured API errors and a database health endpoint.
+- CSP, HSTS in production, and defensive browser headers.
+- Playwright desktop/mobile and axe-core accessibility coverage.
+- Vercel production deployment.
 
 ## Presentation status
 
@@ -49,14 +54,17 @@ The application also has an original Relay favicon.
 ## Known correctness/tooling items
 
 - Conversation detail GET performs an unread-state write.
-- PostgreSQL integration and browser tests are not added yet.
+- Full database integration coverage remains smaller than the service and
+  browser suites.
 
 ## Verification performed
 
 - TypeScript was pinned to compatible version `6.0.3`.
 - `pnpm lint`: passed with zero warnings.
 - `pnpm typecheck`: passed.
-- `pnpm test`: eight tests passed.
+- `pnpm test`: ten tests passed.
+- Playwright covers the critical flow on desktop and mobile.
+- axe-core reports no critical or serious violations on covered screens.
 - `pnpm peers check`: passed.
 - `pnpm build`: passed and generated all application routes.
 - responsive browser checks passed at 360 px and 1440 px without horizontal
@@ -79,6 +87,7 @@ The application also has an original Relay favicon.
 
 ## Next recommended action
 
-Phase 4 is complete. Review its
-[implementation report](../06-Engineering/Phase-4-Report.md), then begin the
-Phase 5 WebSocket work with a stable read-marker design.
+Phase 6 is complete. Review its
+[implementation report](../06-Engineering/Phase-6-Report.md). Phase 5 remains
+available for the project author to implement WebSocket delivery and stable
+multi-client read markers as a learning exercise.

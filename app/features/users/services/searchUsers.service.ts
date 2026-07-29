@@ -6,6 +6,7 @@ import {
 import { publicProfileSelect } from "../types/user-profile.types";
 import { prisma } from "@/app/lib/prisma";
 import { ValidationError } from "@/app/lib/errors/ValidationError";
+import { enforceRateLimit, rateLimits } from "@/app/lib/rate-limit";
 
 export async function searchUsers(
   req: SearchUsersRequest,
@@ -20,6 +21,12 @@ export async function searchUsers(
       query: "Search query is required.",
     });
   }
+
+  await enforceRateLimit({
+    scope: "user-search",
+    identifier: currUserId,
+    ...rateLimits.search,
+  });
 
   const users = await prisma.user.findMany({
     select: publicProfileSelect,

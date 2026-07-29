@@ -14,10 +14,8 @@ changes.
 - checks both unique values in parallel;
 - hashes the password;
 - creates the user;
-- translates Prisma unique races into a conflict.
-
-Review finding: the existing-email conflict is currently placed under the
-`username` error key and should use `email`.
+- translates Prisma unique races into the correct email/username conflict;
+- enforces registration limits with a hashed client/email identity.
 
 ### `verifyCredentials`
 
@@ -26,6 +24,8 @@ Review finding: the existing-email conflict is currently placed under the
 - compares the password hash;
 - returns the identity/profile fields needed by Auth.js;
 - uses the same invalid-credentials result for a missing user or bad password.
+- runs a dummy bcrypt comparison when the user is absent;
+- enforces a hashed client/email authentication limit.
 
 ## User services
 
@@ -49,6 +49,7 @@ product decision.
 - excludes either block direction;
 - matches username/display-name prefixes;
 - returns one extra result to calculate `nextCursor`.
+- enforces a per-user search limit.
 
 ### `editProfile`
 
@@ -70,6 +71,7 @@ product decision.
 - returns an existing conversation when found;
 - otherwise transactionally creates the conversation and participations;
 - recovers from a unique-key race.
+- enforces a per-user conversation-open limit.
 
 ### `getConversations`
 
@@ -108,6 +110,7 @@ conversation model.
 - requests one extra message;
 - generates the next cursor;
 - returns chronological rows.
+- enforces a per-user history-read limit.
 
 ### `sendMessage`
 
@@ -120,6 +123,7 @@ conversation model.
 - updates the conversation latest-message metadata;
 - increments unread counts for other participants;
 - recovers from a concurrent unique-key race by reading the committed message.
+- enforces a per-user send limit.
 
 ## Service design rules
 

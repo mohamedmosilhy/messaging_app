@@ -7,6 +7,7 @@ import {
 import { UnauthorizedError } from "@/app/lib/errors/UnauthorizedError";
 import { requireConversationParticipant } from "../utils/requireConversationParticipant";
 import { prisma } from "@/app/lib/prisma";
+import { enforceRateLimit, rateLimits } from "@/app/lib/rate-limit";
 
 export async function getMessages(
   req: GetMessagesRequest,
@@ -16,6 +17,12 @@ export async function getMessages(
   if (!currUserId) {
     throw new UnauthorizedError("Authentication required.");
   }
+
+  await enforceRateLimit({
+    scope: "message-history",
+    identifier: currUserId,
+    ...rateLimits.messageHistory,
+  });
 
   // Check if the conversation exists and if the current user is a participant
   const conversation = await requireConversationParticipant(

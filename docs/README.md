@@ -9,7 +9,10 @@ built the complete premium dark presentation across the public, authentication,
 inbox, conversation, discovery, profile, and settings experiences. I then
 hardened the HTTP message workflow with idempotency, concurrent optimistic
 sends, retryable failures, drafts, route validation, and send-time block
-checks. My next milestone is real-time delivery.
+checks. I then completed production readiness with security controls,
+observability, deterministic test data, browser/accessibility coverage, and a
+Vercel deployment. I intentionally reserved real-time delivery for my own
+WebSocket practice.
 
 These documents explain what I have made, why I made the main decisions, what
 is incomplete, and how I plan to continue. Review findings are explicitly
@@ -92,6 +95,8 @@ labeled as recommendations so they are not confused with implemented features.
 - [Phase 4 Report](./06-Engineering/Phase-4-Report.md) — completed idempotent
   send path, concurrent optimistic behavior, drafts, validation, and database
   hardening.
+- [Phase 6 Report](./06-Engineering/Phase-6-Report.md) — completed production
+  security, testing, performance, cleanup, seed, and deployment work.
 
 ### 7. Reference
 
@@ -122,13 +127,13 @@ docs/
 
 ## Current project summary
 
-The core architecture, hardened HTTP messaging workflow, and complete Phase
-1–3 presentation are real and established.
+The core architecture, hardened HTTP messaging workflow, complete presentation,
+and production-readiness controls are real and established.
 The strongest completed areas are service separation, participant
 authorization, direct-conversation uniqueness, stable message pagination,
 transactional send metadata, sender-scoped idempotency, stable cursor indexes,
 seeded edge cases, and concurrency-safe optimistic cache behavior.
 
-The main unfinished areas are broader database/automated-browser coverage,
-block/unblock product controls, multi-client read markers, and real-time
-delivery. The roadmap intentionally handles those in that order.
+The main unfinished product areas are block/unblock controls, multi-client read
+markers, and real-time delivery. Phase 5 is intentionally owned by the project
+author as a WebSocket learning exercise.

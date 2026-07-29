@@ -1,34 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { AppError } from "@/app/lib/errors/AppError";
 import { editProfile, getCurrentUser } from "@/app/features/users";
 import { EditProfileValidation } from "@/app/features/users/schemas/editProfile.schema";
 import { formatZodErrors } from "@/app/utils/formatZodErrors";
 import { parseJsonBody } from "@/app/utils/parseJsonBody";
+import { routeErrorResponse } from "@/app/lib/route-response";
+import { ValidationError } from "@/app/lib/errors/ValidationError";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const res = await getCurrentUser();
 
     return NextResponse.json(res);
   } catch (error) {
-    if (error instanceof AppError) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: error.message,
-        },
-        { status: error.statusCode },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Internal server error.",
-      },
-      { status: 500 },
-    );
+    return routeErrorResponse(error, request, "user.current_failed");
   }
 }
 
@@ -39,36 +24,13 @@ export async function PATCH(req: NextRequest) {
     const parsed = EditProfileValidation.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid input data.",
-          errors: formatZodErrors(parsed.error),
-        },
-        { status: 400 },
-      );
+      throw new ValidationError(formatZodErrors(parsed.error));
     }
 
     const res = await editProfile(parsed.data);
 
     return NextResponse.json(res);
   } catch (error) {
-    if (error instanceof AppError) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: error.message,
-        },
-        { status: error.statusCode },
-      );
-    }
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Internal server error.",
-      },
-      { status: 500 },
-    );
+    return routeErrorResponse(error, req, "user.profile_update_failed");
   }
 }

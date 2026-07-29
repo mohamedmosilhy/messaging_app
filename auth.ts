@@ -2,6 +2,8 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { LoginValidation, verifyCredentials } from "./app/features/auth";
 import { UnauthorizedError } from "./app/lib/errors/UnauthorizedError";
+import { TooManyRequestsError } from "./app/lib/errors/TooManyRequestsError";
+import { getClientIdentifier } from "./app/lib/client-identifier";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -10,7 +12,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: {},
         password: {},
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         if (
           typeof credentials?.email !== "string" ||
           typeof credentials?.password !== "string"
@@ -27,10 +29,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           if (!zodObject.success) {
             return null;
           }
-          const user = await verifyCredentials(zodObject.data);
+          const user = await verifyCredentials(zodObject.data, {
+            rateLimitIdentifier: getClientIdentifier(request),
+          });
           return user;
         } catch (error) {
-          if (error instanceof UnauthorizedError) {
+          if (
+            error instanceof UnauthorizedError ||
+            error instanceof TooManyRequestsError
+          ) {
             return null;
           }
           throw error;

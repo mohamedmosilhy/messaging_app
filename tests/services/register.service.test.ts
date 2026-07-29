@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   findUnique: vi.fn(),
   create: vi.fn(),
   hash: vi.fn(),
+  enforceRateLimit: vi.fn(),
 }));
 
 vi.mock("@/app/lib/prisma", () => ({
@@ -21,11 +22,19 @@ vi.mock("bcryptjs", () => ({
   },
 }));
 
+vi.mock("@/app/lib/rate-limit", () => ({
+  enforceRateLimit: mocks.enforceRateLimit,
+  rateLimits: {
+    registration: { limit: 5, windowMs: 3_600_000 },
+  },
+}));
+
 import { register } from "@/app/features/auth/services/register.service";
 import { ConflictError } from "@/app/lib/errors/ConflictError";
 
 describe("register service", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.stubEnv("HASHING_SALT", "10");
     mocks.findUnique.mockResolvedValue(null);
     mocks.create.mockResolvedValue({ id: "user-1" });
@@ -40,6 +49,12 @@ describe("register service", () => {
     });
 
     expect(mocks.findUnique).toHaveBeenCalledTimes(2);
+    expect(mocks.enforceRateLimit).toHaveBeenCalledWith({
+      scope: "registration",
+      identifier: "unknown-client:mohamed@example.com",
+      limit: 5,
+      windowMs: 3_600_000,
+    });
     expect(mocks.findUnique).toHaveBeenCalledWith({
       where: { email: "mohamed@example.com" },
     });

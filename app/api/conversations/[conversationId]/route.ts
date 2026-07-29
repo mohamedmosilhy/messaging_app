@@ -1,6 +1,6 @@
 import { getConversation } from "@/app/features/messaging";
-import { AppError } from "@/app/lib/errors/AppError";
 import { ValidationError } from "@/app/lib/errors/ValidationError";
+import { routeErrorResponse } from "@/app/lib/route-response";
 import { ConversationParamsValidation } from "@/app/features/messaging/schemas/messaging.schema";
 import { formatZodErrors } from "@/app/utils/formatZodErrors";
 import { NextRequest, NextResponse } from "next/server";
@@ -22,21 +22,6 @@ export async function GET(
 
     return NextResponse.json(res);
   } catch (error) {
-    if (error instanceof AppError) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: error.message,
-        },
-        { status: error.statusCode },
-      );
-    }
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Internal server error.",
-      },
-      { status: 500 },
-    );
+    return routeErrorResponse(error, request, "conversation.detail_failed");
   }
 }

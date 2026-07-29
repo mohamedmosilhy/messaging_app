@@ -27,6 +27,8 @@ messaging_app/
 │   └── seed.ts
 ├── auth.ts
 ├── next.config.ts
+├── playwright.config.ts
+├── proxy.ts
 ├── package.json
 └── tsconfig.json
 ```
@@ -43,7 +45,7 @@ messaging_app/
 
 ## Authentication feature
 
-- `components`: shared auth shell, login, registration, password field, logout.
+- `components`: shared auth shell, login, registration, and password field.
 - `actions`: registration client request.
 - `schemas`: login/register Zod schemas.
 - `services`: registration and credential verification.
@@ -73,6 +75,9 @@ messaging_app/
 - `app/components/shared`: reusable page states, page structure, and avatars.
 - `app/components/layout`: application navigation, header, and account shell.
 - `app/lib/errors`: typed application errors.
+- `app/lib/rate-limit.ts`: shared PostgreSQL-backed fixed-window limits.
+- `app/lib/route-response.ts`: uniform correlated API error responses.
+- `app/lib/logger.ts`: structured, redacted server logs.
 - `app/lib/utils.ts`: UI class-name composition.
 - `app/hooks`: debounce, search query, and responsive viewport hooks.
 - `app/providers`: Auth.js and React Query providers.
@@ -88,3 +93,15 @@ not create competing root-level `components`, `hooks`, or `lib` directories.
 - Migrations are the database history.
 - Seed creates manual-development scenarios.
 - Generated Prisma output is ignored and recreated.
+
+## Browser tests and screenshots
+
+- `playwright.config.ts`: local/remote browser orchestration and device
+  projects.
+- `tests/e2e`: desktop/mobile flows, axe-core checks, and screenshot capture.
+- `docs/assets/screenshots`: real images generated from the complete seed.
+
+## Request boundary
+
+`proxy.ts` creates or propagates `x-request-id` before requests reach pages and
+route handlers.

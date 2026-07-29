@@ -10,23 +10,25 @@
 
 Current subclasses:
 
-| Error               | Status | Use                                      |
-| ------------------- | -----: | ---------------------------------------- |
-| `ValidationError`   |    400 | Invalid business input                   |
-| `UnauthorizedError` |    401 | Missing authentication                   |
-| `ForbiddenError`    |    403 | Authenticated but disallowed action      |
-| `NotFoundError`     |    404 | Missing or intentionally hidden resource |
-| `ConflictError`     |    409 | Unique or state conflict                 |
+| Error                  | Status | Use                                      |
+| ---------------------- | -----: | ---------------------------------------- |
+| `ValidationError`      |    400 | Invalid business input                   |
+| `UnauthorizedError`    |    401 | Missing authentication                   |
+| `ForbiddenError`       |    403 | Authenticated but disallowed action      |
+| `NotFoundError`        |    404 | Missing or intentionally hidden resource |
+| `ConflictError`        |    409 | Unique or state conflict                 |
+| `TooManyRequestsError` |    429 | Shared abuse limit exceeded              |
 
 ## Route handling
 
-Each route catches `AppError` and serializes its safe information. Unexpected
-exceptions become:
+Routes delegate failures to one `routeErrorResponse` boundary. Expected errors
+retain their safe message/fields. Unexpected exceptions become:
 
 ```json
 {
   "success": false,
-  "message": "Internal server error."
+  "message": "Internal server error.",
+  "requestId": "..."
 }
 ```
 
@@ -39,6 +41,10 @@ routes can return field-specific feedback.
 
 The current system uses `Record<string, string>`, which is simple for forms.
 Nested or repeated fields would need a richer representation later.
+
+The proxy also returns the same request ID in `x-request-id`. Rate-limit
+responses set `Retry-After`. Unexpected failures emit a structured, redacted
+log event; production responses never expose raw exception messages.
 
 ## Client behavior
 
@@ -75,10 +81,10 @@ Benefits:
 - Failed optimistic sends should keep actionable UI state.
 - Non-participant access should remain indistinguishable from a missing thread.
 
-## Logging recommendations
+## Logging policy
 
-- Log unexpected server errors with structured context and request ID.
+- Unexpected server errors are logged with structured context and request ID.
 - Never log passwords, auth tokens, or full sensitive bodies.
-- Avoid routine `console.log` in route handlers.
+- Route handlers contain no ad hoc error logging.
 - Separate validation noise from operational failures.
 - Add production error monitoring only after defining data-redaction rules.

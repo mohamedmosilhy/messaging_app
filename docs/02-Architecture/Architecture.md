@@ -2,8 +2,8 @@
 
 ## Why I structured it this way
 
-I wanted the application to have boundaries that remain useful after the test
-UI is replaced. Pages should not contain database queries, route handlers
+I wanted the application to have boundaries that remain useful as the product
+grows. Pages should not contain database queries, route handlers
 should not own business rules, and components should not manually synchronize
 server state.
 
@@ -48,8 +48,8 @@ Responsibility:
 - accessibility;
 - visual states.
 
-The current presentation is a manual test surface. It is intentionally the main
-replacement target.
+The current presentation is the complete premium dark Relay interface and is
+covered on desktop and mobile.
 
 ### Client server-state
 
@@ -91,6 +91,7 @@ request functions rather than Next.js Server Actions.
 Location:
 
 - `app/api`
+- `proxy.ts`
 
 Responsibility:
 
@@ -98,6 +99,7 @@ Responsibility:
 - validate transport input;
 - call one feature service;
 - map domain errors to HTTP responses.
+- correlate requests and attach defensive response headers.
 
 ### Application/domain services
 
@@ -119,6 +121,7 @@ Responsibility:
 Locations:
 
 - `app/lib/prisma.ts`
+- `app/lib/rate-limit.ts`
 - `prisma/schema.prisma`
 - `prisma/migrations`
 
@@ -129,6 +132,7 @@ Responsibility:
 - indexes;
 - transactions;
 - durable application state.
+- shared abuse limits across serverless instances.
 
 ## Feature boundaries
 

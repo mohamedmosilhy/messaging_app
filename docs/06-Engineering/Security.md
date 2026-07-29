@@ -11,6 +11,12 @@
 - Registration input is strict and normalized.
 - Database uniqueness protects identity and conversation races.
 - User text is currently rendered as React text.
+- Missing-user login performs a dummy bcrypt comparison to reduce account
+  enumeration through timing.
+- Sensitive operations use hashed, database-backed rate-limit identifiers.
+- API failures carry request IDs without exposing production internals.
+- Production responses include CSP, HSTS, framing, MIME, referrer, and browser
+  permissions policies.
 
 ## Authorization rules
 
@@ -19,7 +25,7 @@
 - Every new real-time subscription must repeat participant authorization.
 - Every future edit/delete/read command must verify the target belongs to the
   authorized conversation.
-- Blocking must be checked at send time.
+- Blocking is checked at send time.
 
 ## Input security
 
@@ -31,23 +37,29 @@
 
 ## Abuse controls
 
-Before public deployment, rate limit:
+Implemented database-backed limits:
 
 - login;
 - registration;
 - user search;
 - conversation opening;
 - message sending;
+- message-history reads.
+
+Phase 5 must also limit:
+
 - socket connection/subscription;
 - typing events.
 
-Add monitoring for brute-force attempts, spam, and abnormal connection volume.
+Vercel function logs provide correlated unexpected-error events. A dedicated
+security analytics product is still recommended for sustained brute-force,
+spam, and abnormal-volume alerting.
 
 ## Browser and transport security
 
 - HTTPS only in production.
 - Secure Auth.js secrets and cookie configuration.
-- Add security headers and Content Security Policy.
+- Security headers and Content Security Policy are configured centrally.
 - Restrict image and connection sources.
 - Review CSRF behavior for state-changing HTTP endpoints.
 - Avoid secrets in client bundles.
@@ -56,7 +68,7 @@ Add monitoring for brute-force attempts, spam, and abnormal connection volume.
 
 - Never log passwords, tokens, or full sensitive bodies.
 - Redact personal information in monitoring.
-- Add request IDs.
+- Request IDs are attached at the proxy and returned with API errors.
 - Define account deletion and data retention before implementing them.
 - Back up the database and test restore.
 
@@ -72,10 +84,10 @@ Add monitoring for brute-force attempts, spam, and abnormal connection volume.
 
 ## Recommended review before launch
 
-- dependency and secret scanning;
+- automated dependency and secret scanning;
 - authorization integration tests;
 - rate-limit tests;
-- CSP and header verification;
+- continued CSP and header verification when adding third-party resources;
 - session-expiration review;
 - SQL/query performance abuse review;
 - privacy and retention documentation.

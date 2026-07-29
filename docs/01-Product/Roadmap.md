@@ -131,6 +131,8 @@ still belongs to Phase 5 because it requires real-time read and delivery events.
 
 ## Phase 5: real-time delivery
 
+**Status:** Reserved for the project author as a WebSocket learning exercise.
+
 ### Work
 
 - Authenticate socket connections.
@@ -150,15 +152,22 @@ still belongs to Phase 5 because it requires real-time read and delivery events.
 
 ## Phase 6: production readiness
 
-- Complete accessibility and browser testing.
-- Profile large threads and inboxes.
-- Add rate limiting, headers, CSP, structured logs, and monitoring.
-- Define deployment, migration, rollback, and backup processes.
-- Expand automated end-to-end coverage.
+**Status:** Completed on July 29, 2026. See the
+[Phase 6 report](../06-Engineering/Phase-6-Report.md).
+
+- Added Playwright desktop/mobile flows and axe-core accessibility checks.
+- Captured real seeded application screenshots.
+- Profiled the message-history query and verified its composite index.
+- Added database-backed rate limiting, security headers, CSP, request IDs,
+  structured logs, and a health endpoint.
+- Defined Vercel deployment, migration, rollback, backup, and smoke checks.
+- Expanded the deterministic seed for every implemented feature boundary.
+- Audited unused files/dependencies and removed confirmed dead code.
+- Deployed the application and documented the live demo.
 
 ## Ownership
 
-I have already built the data, service, API, client-state, and first optimistic
-foundations. The planned UI pass should replace the presentation layer and make
-the focused behavioral improvements described above. Real-time delivery is the
-next feature I plan to build after that interface and HTTP behavior are stable.
+I built the data, services, API, client state, complete presentation,
+behavioral hardening, and production-readiness work. Real-time delivery remains
+deliberately unimplemented so I can build the WebSocket layer myself as focused
+practice.

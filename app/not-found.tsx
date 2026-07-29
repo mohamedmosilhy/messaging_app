@@ -6,7 +6,11 @@ import { Button } from "@/app/components/ui/button";
 
 export default function NotFound() {
   return (
-    <main className="flex min-h-svh items-center justify-center bg-background p-6">
+    <main
+      className="flex min-h-svh items-center justify-center bg-background p-6"
+      id="main-content"
+      tabIndex={-1}
+    >
       <EmptyState
         action={
           <Button asChild>

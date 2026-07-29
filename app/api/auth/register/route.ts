@@ -1,64 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { register, RegisterValidation } from "@/app/features/auth/index";
-import { AppError } from "@/app/lib/errors/AppError";
+import { ForbiddenError } from "@/app/lib/errors/ForbiddenError";
+import { ValidationError } from "@/app/lib/errors/ValidationError";
+import { routeErrorResponse } from "@/app/lib/route-response";
 import { formatZodErrors } from "@/app/utils/formatZodErrors";
 import { parseJsonBody } from "@/app/utils/parseJsonBody";
 import { auth } from "@/auth";
+import { getClientIdentifier } from "@/app/lib/client-identifier";
 
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
 
     if (session) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "You are already authenticated.",
-        },
-        {
-          status: 403,
-        },
-      );
+      throw new ForbiddenError("You are already authenticated.");
     }
     const body = await parseJsonBody(req);
 
     const zodObject = RegisterValidation.safeParse(body);
 
     if (!zodObject.success) {
-      const formattedErrors = formatZodErrors(zodObject.error);
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Validation failed.",
-          errors: formattedErrors,
-        },
-        { status: 400 },
-      );
-    } else {
-      const res = await register(zodObject.data);
-      return NextResponse.json(res, { status: 201 });
+      throw new ValidationError(formatZodErrors(zodObject.error));
     }
+
+    const res = await register(zodObject.data, {
+      rateLimitIdentifier: getClientIdentifier(req),
+    });
+    return NextResponse.json(res, { status: 201 });
   } catch (error) {
-    if (error instanceof AppError) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: error.message,
-          errors: error.errors,
-        },
-        {
-          status: error.statusCode,
-        },
-      );
-    }
-    console.error(error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Internal server error.",
-      },
-      { status: 500 },
-    );
+    return routeErrorResponse(error, req, "auth.registration_failed");
   }
 }

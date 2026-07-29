@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   findMessage: vi.fn(),
   findBlock: vi.fn(),
   transaction: vi.fn(),
+  enforceRateLimit: vi.fn(),
 }));
 
 vi.mock("@/app/utils/requireCurrentUserId", () => ({
@@ -28,6 +29,13 @@ vi.mock("@/app/lib/prisma", () => ({
     block: {
       findFirst: mocks.findBlock,
     },
+  },
+}));
+
+vi.mock("@/app/lib/rate-limit", () => ({
+  enforceRateLimit: mocks.enforceRateLimit,
+  rateLimits: {
+    sendMessage: { limit: 60, windowMs: 60_000 },
   },
 }));
 
