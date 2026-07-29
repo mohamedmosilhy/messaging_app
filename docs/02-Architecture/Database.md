@@ -1,0 +1,107 @@
+# Database Design
+
+## Schema
+
+The PostgreSQL schema is defined in `prisma/schema.prisma` and currently
+contains:
+
+- `User`;
+- `Conversation`;
+- `Participation`;
+- `Message`;
+- `Block`;
+- `ConversationType`.
+
+Prisma Client is generated into `generated/prisma`, and the application uses
+the PostgreSQL driver adapter.
+
+## Constraints
+
+### Unique constraints
+
+- `User.email`;
+- `User.username`;
+- `Conversation.participantKey`;
+- `Conversation.lastMessageId`;
+- participation composite key;
+- block composite key.
+
+The `participantKey` constraint is especially important because service-level
+checks alone cannot prevent two simultaneous requests from creating duplicates.
+
+### Current indexes
+
+- `Conversation.lastMessageAt`;
+- `Participation.conversationId`;
+- `Message.conversationId`;
+
+The participation primary key begins with `userId`, which supports retrieving a
+user's participations.
+
+### Recommended index
+
+The history query filters by conversation and orders/cursors by creation time
+and ID. Add and measure:
+
+```prisma
+@@index([conversationId, createdAt, id])
+```
+
+This should be validated with realistic data and a PostgreSQL query plan.
+
+## Transaction boundaries
+
+### Open conversation
+
+Creating a direct thread and its two participations happens in one transaction.
+If the unique key loses a race, the service retrieves the winner.
+
+### Send message
+
+One transaction:
+
+1. creates the message;
+2. updates `lastMessageAt` and `lastMessageId`;
+3. increments unread counts for other participants.
+
+This avoids a stored message with a stale inbox preview or missing unread
+increment.
+
+## Cursor behavior
+
+Message queries order by:
+
+```text
+createdAt DESC
+id DESC
+```
+
+The next page requests values lower than the cursor timestamp, or the same
+timestamp with a lower ID. The service requests `limit + 1`, removes the extra
+record, creates the next cursor from the last retained message, and reverses
+the returned page into chronological display order.
+
+## Seed strategy
+
+`prisma/seed.ts` creates realistic development scenarios rather than only
+minimal rows. It includes long conversations, equal timestamps, missing
+profile values, blocks, unread counts, and enough search matches for pagination.
+
+The seed deletes existing application data. It is development/test tooling and
+must not run against valuable data.
+
+## Migration notes
+
+Migrations currently establish the main models and later add
+`Participation.unreadCount`. Future behavioral changes such as idempotency or
+read markers must be introduced through migrations, not manual production
+schema edits.
+
+## Recommendations
+
+- add client message IDs with an appropriate unique scope;
+- decide foreign-key deletion behavior before implementing deletion;
+- consider `lastReadMessageId` on participation;
+- validate database constraints against group-chat plans;
+- use a single reusable Prisma client during development hot reload;
+- maintain backup, migration, and rollback procedures before deployment.

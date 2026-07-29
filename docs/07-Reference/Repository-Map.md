@@ -1,0 +1,74 @@
+# Repository Map
+
+```text
+messaging_app/
+├── app/
+│   ├── (pages)/
+│   │   ├── (public)/
+│   │   └── (protected)/
+│   ├── api/
+│   ├── features/
+│   │   ├── auth/
+│   │   ├── messaging/
+│   │   └── users/
+│   ├── hooks/
+│   ├── lib/
+│   ├── providers/
+│   └── utils/
+├── docs/
+├── prisma/
+│   ├── migrations/
+│   ├── schema.prisma
+│   └── seed.ts
+├── auth.ts
+├── next.config.ts
+├── package.json
+└── tsconfig.json
+```
+
+## Entry points
+
+- `app/layout.tsx`: root providers and document shell.
+- `auth.ts`: Auth.js configuration and callbacks.
+- `app/page.tsx`: current public home/test entry.
+- `app/api`: HTTP boundary.
+- `app/features/*/index.ts`: feature exports.
+- `app/lib/prisma.ts`: Prisma client.
+
+## Authentication feature
+
+- `components`: login, registration, logout.
+- `actions`: registration client request.
+- `schemas`: login/register Zod schemas.
+- `services`: registration and credential verification.
+- `types`: Auth.js augmentation and contracts.
+
+## Users feature
+
+- profile and search services;
+- profile edit validation and request;
+- current/public/edit/search response types;
+- edit profile test form.
+
+## Messaging feature
+
+- conversation/message services;
+- request functions for list, detail, open, history, send;
+- React Query hooks;
+- participant authorization helper;
+- current inbox/conversation test components;
+- messaging response/cursor types.
+
+## Shared code
+
+- `app/lib/errors`: typed application errors.
+- `app/hooks`: debounce and search query.
+- `app/providers`: Auth.js and React Query providers.
+- `app/utils`: session user helper, URLs, Zod formatting.
+
+## Persistence
+
+- Prisma schema is the data-model source.
+- Migrations are the database history.
+- Seed creates manual-development scenarios.
+- Generated Prisma output is ignored and recreated.
