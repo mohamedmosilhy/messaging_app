@@ -1,9 +1,13 @@
-import { ConversationList } from "@/app/features/messaging";
+import { ConversationEmptyState } from "@/app/features/messaging/components/ConversationEmptyState";
+import { ConversationSidebar } from "@/app/features/messaging/components/ConversationSidebar";
+import { MessagingWorkspace } from "@/app/features/messaging/components/MessagingWorkspace";
 
-export default async function ConversationListPage() {
+export default function ConversationListPage() {
   return (
-    <section className="flex h-screen">
-      <ConversationList />
-    </section>
+    <MessagingWorkspace
+      content={<ConversationEmptyState />}
+      mobilePane="sidebar"
+      sidebar={<ConversationSidebar />}
+    />
   );
 }

@@ -1,21 +1,21 @@
-import { UserRoundX } from "lucide-react";
+import { MessageCircleOff } from "lucide-react";
 import Link from "next/link";
 
 import { EmptyState } from "@/app/components/shared/empty-state";
 import { Button } from "@/app/components/ui/button";
 
-export default function NotFound() {
+export default function ProtectedNotFound() {
   return (
     <div className="flex flex-1 items-center justify-center p-6">
       <EmptyState
         action={
           <Button asChild>
-            <Link href="/search">Back to search</Link>
+            <Link href="/dashboard/conversations">Return to inbox</Link>
           </Button>
         }
-        description="The user may not exist or may no longer be available."
-        icon={UserRoundX}
-        title="User not found"
+        description="The page may have moved, or you may not have access to it."
+        icon={MessageCircleOff}
+        title="Page not found"
       />
     </div>
   );

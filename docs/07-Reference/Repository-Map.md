@@ -7,6 +7,10 @@ messaging_app/
 │   │   ├── (public)/
 │   │   └── (protected)/
 │   ├── api/
+│   ├── components/
+│   │   ├── layout/
+│   │   ├── shared/
+│   │   └── ui/
 │   ├── features/
 │   │   ├── auth/
 │   │   ├── messaging/
@@ -28,7 +32,8 @@ messaging_app/
 
 ## Entry points
 
-- `app/layout.tsx`: root providers and document shell.
+- `app/layout.tsx`: root providers, document shell, and global design setup.
+- `app/(pages)/(protected)/layout.tsx`: authentication and product shell.
 - `auth.ts`: Auth.js configuration and callbacks.
 - `app/page.tsx`: current public home/test entry.
 - `app/api`: HTTP boundary.
@@ -61,10 +66,17 @@ messaging_app/
 
 ## Shared code
 
+- `app/components/ui`: shadcn/ui primitives styled through Tailwind.
+- `app/components/shared`: reusable page states, page structure, and avatars.
+- `app/components/layout`: application navigation, header, and account shell.
 - `app/lib/errors`: typed application errors.
-- `app/hooks`: debounce and search query.
+- `app/lib/utils.ts`: UI class-name composition.
+- `app/hooks`: debounce, search query, and responsive viewport hooks.
 - `app/providers`: Auth.js and React Query providers.
 - `app/utils`: session user helper, URLs, Zod formatting.
+
+`components.json` points shadcn/ui aliases into `app`, so the repository does
+not create competing root-level `components`, `hooks`, or `lib` directories.
 
 ## Persistence
 

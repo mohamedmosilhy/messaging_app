@@ -32,20 +32,27 @@ isolated test database.
 
 ## Phase 1: design system and application shell
 
+**Status:** Completed on July 29, 2026. See the
+[Phase 1 report](../06-Engineering/Phase-1-Report.md).
+
 ### Work
 
-- Create semantic colors, spacing, type, borders, shadows, and focus tokens.
-- Build reusable UI primitives.
-- Add a shared protected layout.
-- Make the inbox the main authenticated workspace.
-- Create desktop split-pane and mobile navigation behavior.
-- Add global loading, error, and not-found boundaries.
+- Created semantic colors, spacing, type, borders, radius, and focus tokens.
+- Added reusable shadcn/ui primitives styled with Tailwind CSS.
+- Added a shared authenticated product layout.
+- Made the inbox the main authenticated workspace.
+- Added a desktop split pane and mobile navigation behavior.
+- Added global and protected loading, error, and not-found boundaries.
 
 ### Exit criteria
 
 - All current features have a clear location.
 - The shell works from 360 px mobile to large desktop.
 - Focus states and keyboard order work.
+
+The shell and inbox were checked in a real browser at 360 px and 1440 px.
+Phase 1 does not redesign the message bubbles or composer; those remain the
+first work in Phase 2.
 
 ## Phase 2: inbox and conversation UI
 

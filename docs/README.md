@@ -81,6 +81,8 @@ labeled as recommendations so they are not confused with implemented features.
   release, observability, and rollback.
 - [Phase 0 Report](./06-Engineering/Phase-0-Report.md) — completed baseline
   changes, tests, verification results, and review checklist.
+- [Phase 1 Report](./06-Engineering/Phase-1-Report.md) — completed design
+  system, application shell, responsive validation, and Phase 2 handoff.
 
 ### 7. Reference
 
@@ -111,13 +113,14 @@ docs/
 
 ## Current project summary
 
-The core architecture and HTTP messaging foundation are real and established.
+The core architecture, HTTP messaging foundation, and Phase 1 responsive
+application shell are real and established.
 The strongest completed areas are service separation, participant
 authorization, direct-conversation uniqueness, stable message pagination,
 transactional send metadata, seeded edge cases, and the first optimistic cache
 workflow.
 
-The main unfinished areas are the production presentation layer, broader
-database/browser test coverage, concurrency-safe retry/idempotency, complete
-block behavior, multi-client read state, and real-time delivery. The roadmap
-intentionally handles those in that order.
+The main unfinished areas are the conversation-content and remaining page
+presentation, broader database/browser test coverage, concurrency-safe
+retry/idempotency, complete block behavior, multi-client read state, and
+real-time delivery. The roadmap intentionally handles those in that order.

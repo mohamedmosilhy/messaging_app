@@ -1,27 +1,31 @@
 "use server";
 
+import { PageContainer } from "@/app/components/shared/page-container";
+import { PageHeader } from "@/app/components/shared/page-header";
+import { Card, CardContent } from "@/app/components/ui/card";
 import { EditProfileForm, getCurrentUser } from "@/app/features/users";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 
 const ProfilePage = async () => {
-  const session = await auth();
-
-  if (!session) {
-    redirect("/login");
-  }
   const user = await getCurrentUser();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      <EditProfileForm
-        user={{
-          displayName: user.data.displayName,
-          bio: user.data.bio,
-          avatarUrl: user.data.avatarUrl,
-        }}
+    <PageContainer>
+      <PageHeader
+        description="Manage the public details people see in conversations."
+        title="Profile settings"
       />
-    </div>
+      <Card className="max-w-2xl">
+        <CardContent>
+          <EditProfileForm
+            user={{
+              displayName: user.data.displayName,
+              bio: user.data.bio,
+              avatarUrl: user.data.avatarUrl,
+            }}
+          />
+        </CardContent>
+      </Card>
+    </PageContainer>
   );
 };
 

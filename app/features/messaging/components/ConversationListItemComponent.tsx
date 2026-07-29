@@ -1,42 +1,81 @@
-import React from "react";
-import { ConversationListItem } from "../types/conversation.types";
-import Link from "next/link";
-import Image from "next/image";
+"use client";
 
-const ConversationListItemComponent = ({
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { UserAvatar } from "@/app/components/shared/user-avatar";
+import { Badge } from "@/app/components/ui/badge";
+import { cn } from "@/app/lib/utils";
+import { ConversationListItem } from "../types/conversation.types";
+
+function formatConversationTime(value: Date | string | null) {
+  if (!value) return "";
+
+  const date = value instanceof Date ? value : new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "";
+
+  return new Intl.DateTimeFormat(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
+}
+
+export default function ConversationListItemComponent({
   conversation,
 }: {
   conversation: ConversationListItem;
-}) => {
-  return (
-    <Link
-      className="m-2"
-      href={`/dashboard/conversations/${conversation.conversationId}`}
-    >
-      <li
-        key={conversation.conversationId}
-        className="p-4 bg-white rounded-lg shadow-md"
-      >
-        <div className="font-semibold">{conversation.title}</div>
-        <Image
-          src={conversation.avatarUrl || "https://i.pravatar.cc/300?img=1"}
-          className="rounded-full"
-          alt="Avatar"
-          width={100}
-          height={100}
-        />
-        <div className="text-gray-600">{conversation.lastMessage}</div>
-        {conversation.unreadCount > 0 && (
-          <div className="bg-blue-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
-            {conversation.unreadCount}
-          </div>
-        )}
-        <div className="text-sm text-gray-500">
-          {String(conversation.lastMessageAt)}
-        </div>
-      </li>
-    </Link>
-  );
-};
+}) {
+  const pathname = usePathname();
+  const href = `/dashboard/conversations/${conversation.conversationId}`;
+  const isActive = pathname === href;
 
-export default ConversationListItemComponent;
+  return (
+    <li>
+      <Link
+        aria-current={isActive ? "page" : undefined}
+        className={cn(
+          "flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+          isActive && "bg-accent text-accent-foreground",
+        )}
+        href={href}
+      >
+        <UserAvatar
+          className="size-11"
+          name={conversation.title}
+          src={conversation.avatarUrl}
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-baseline gap-2">
+            <p
+              className={cn(
+                "min-w-0 flex-1 truncate text-sm",
+                conversation.unreadCount > 0 ? "font-semibold" : "font-medium",
+              )}
+            >
+              {conversation.title}
+            </p>
+            <time className="shrink-0 text-xs text-muted-foreground">
+              {formatConversationTime(conversation.lastMessageAt)}
+            </time>
+          </div>
+          <div className="mt-0.5 flex items-center gap-2">
+            <p className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
+              {conversation.lastMessage || "No messages yet"}
+            </p>
+            {conversation.unreadCount > 0 ? (
+              <Badge
+                className="min-w-5 justify-center px-1.5"
+                variant="default"
+              >
+                {conversation.unreadCount > 99
+                  ? "99+"
+                  : conversation.unreadCount}
+              </Badge>
+            ) : null}
+          </div>
+        </div>
+      </Link>
+    </li>
+  );
+}

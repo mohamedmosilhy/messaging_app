@@ -2,12 +2,18 @@
 
 import { useState } from "react";
 
+import { PageContainer } from "@/app/components/shared/page-container";
+import { PageHeader } from "@/app/components/shared/page-header";
+import { UserAvatar } from "@/app/components/shared/user-avatar";
+import { Button } from "@/app/components/ui/button";
+import { Card, CardContent } from "@/app/components/ui/card";
+import { Input } from "@/app/components/ui/input";
 import { PublicProfile } from "@/app/features/users/types/search-user.types";
-import Link from "next/link";
-import { useSearchQuery } from "@/app/hooks/useSearchQuery";
 import { openConversationRequest } from "@/app/features/messaging/actions/openConversationRequest";
-import { useRouter } from "next/dist/client/components/navigation";
+import { useSearchQuery } from "@/app/hooks/useSearchQuery";
 import { getConversationUrl } from "@/app/utils/getConversationUrl";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -15,57 +21,84 @@ export default function SearchPage() {
   const router = useRouter();
 
   return (
-    <section>
-      <div className="flex items-center justify-center gap-1 py-2 m-2 w-fit">
-        <label
-          htmlFor="search"
-          className="text-sm font-medium text-gray-700 w-fit"
-        >
-          Search
-        </label>
-        <input
-          id="search"
-          placeholder="Search users..."
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-        />
-      </div>
+    <PageContainer>
+      <PageHeader
+        description="Find someone by their display name or username."
+        title="Start a new conversation"
+      />
+      <Card>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="search">
+              Search people
+            </label>
+            <Input
+              autoComplete="off"
+              id="search"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search by name or username"
+              type="search"
+              value={query}
+            />
+          </div>
 
-      {isFetching && <p>Loading...</p>}
-      {error && <p className="text-red-500">Error: {error.message}</p>}
+          {isFetching ? (
+            <p className="text-sm text-muted-foreground" role="status">
+              Searching…
+            </p>
+          ) : null}
+          {error ? (
+            <p className="text-sm text-destructive" role="alert">
+              {error.message}
+            </p>
+          ) : null}
+          {data && data.data.users.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No users found.</p>
+          ) : null}
 
-      {data && data.data.users.length === 0 && (
-        <p className="text-gray-500">No users found.</p>
-      )}
-
-      {data && data.data.users.length > 0 && (
-        <ul className="divide-y divide-gray-200">
-          {data.data.users.map((user: PublicProfile) => (
-            <li key={user.id} className="py-2 flex gap-5 items-center">
-              <span>{user.displayName || user.username}</span>
-              <Link
-                href={`/users/${user.username}`}
-                className="flex items-center gap-2 text-blue-500 hover:underline"
-              >
-                Show Profile
-              </Link>
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={async () => {
-                  const res = await openConversationRequest(user.id);
-                  if (res.success) {
-                    router.push(getConversationUrl(res.data.conversationId));
-                  }
-                }}
-              >
-                Start Conversation
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
+          {data && data.data.users.length > 0 ? (
+            <ul className="divide-y">
+              {data.data.users.map((user: PublicProfile) => (
+                <li
+                  className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center"
+                  key={user.id}
+                >
+                  <UserAvatar
+                    name={user.displayName || user.username}
+                    src={user.avatarUrl}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">
+                      {user.displayName || user.username}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      @{user.username}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button asChild size="sm" variant="ghost">
+                      <Link href={`/users/${user.username}`}>View profile</Link>
+                    </Button>
+                    <Button
+                      onClick={async () => {
+                        const res = await openConversationRequest(user.id);
+                        if (res.success) {
+                          router.push(
+                            getConversationUrl(res.data.conversationId),
+                          );
+                        }
+                      }}
+                      size="sm"
+                    >
+                      Message
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </CardContent>
+      </Card>
+    </PageContainer>
   );
 }

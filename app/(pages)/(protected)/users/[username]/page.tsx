@@ -1,6 +1,10 @@
+import { PageContainer } from "@/app/components/shared/page-container";
+import { PageHeader } from "@/app/components/shared/page-header";
+import { UserAvatar } from "@/app/components/shared/user-avatar";
+import { Card, CardContent } from "@/app/components/ui/card";
 import { getUserProfile } from "@/app/features/users";
-import { notFound } from "next/navigation";
 import { NotFoundError } from "@/app/lib/errors/NotFoundError";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -18,14 +22,32 @@ async function UserProfilePage({ params }: Props) {
     throw error;
   }
   return (
-    <section className="flex flex-col items-center justify-center min-h-screen py-2">
-      <div className="flex flex-col gap-2 border rounded-md w-2xl m-4 p-4">
-        <div>Display Name: {user.data.displayName}</div>
-        <div>Username: {user.data.username}</div>
-        <div>Avatar: {user.data.avatarUrl}</div>
-        <div>Bio: {user.data.bio}</div>
-      </div>
-    </section>
+    <PageContainer>
+      <PageHeader
+        description="Public contact information"
+        title={user.data.displayName}
+      />
+      <Card className="max-w-2xl">
+        <CardContent className="flex flex-col gap-5 sm:flex-row sm:items-start">
+          <UserAvatar
+            className="size-20"
+            name={user.data.displayName}
+            src={user.data.avatarUrl}
+          />
+          <div className="min-w-0 space-y-2">
+            <div>
+              <p className="font-semibold">{user.data.displayName}</p>
+              <p className="text-sm text-muted-foreground">
+                @{user.data.username}
+              </p>
+            </div>
+            <p className="text-sm leading-6 text-muted-foreground">
+              {user.data.bio || "This user has not added a bio yet."}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </PageContainer>
   );
 }
 

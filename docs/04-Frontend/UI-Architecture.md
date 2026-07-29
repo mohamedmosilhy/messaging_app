@@ -2,14 +2,16 @@
 
 ## Current state
 
-The current pages and components are functional test surfaces. They expose
-profile, search, inbox, conversation, and sending behavior, but they are not the
-intended final product interface.
+I completed the first presentation milestone. The protected product now has a
+shared responsive shell, application navigation, account menu, inbox workspace,
+semantic design tokens, and consistent route boundaries.
 
-The UI redesign should stay above the service and persistence layers wherever
-possible.
+The message history, composer, authentication forms, search, and settings are
+still functional surfaces rather than the final interface. I will polish those
+in Phases 2 and 3. The work remains above my existing service and persistence
+layers.
 
-## Proposed application shell
+## Implemented application shell
 
 ### Desktop
 
@@ -26,78 +28,83 @@ possible.
 +-------------------------+------------------------------------------+
 ```
 
-- Sidebar target: approximately 360–420 px.
-- Only inbox and message history scroll.
+- The product navigation can collapse to icons.
+- The conversation list uses a 288–352 px responsive column.
 - The shell uses dynamic viewport height.
-- No selected conversation shows an intentional welcome/empty state.
+- No selected conversation shows an intentional welcome state.
+- The account and profile actions stay available in the shell footer.
 
 ### Mobile
 
 - Inbox is the first full screen.
 - Selecting a thread opens the thread full screen.
 - Header includes a clear back action.
-- Back restores inbox scroll position.
-- Composer respects safe-area and keyboard behavior.
 - Desktop and mobile layouts must not create duplicate focusable controls.
+
+Scroll restoration and keyboard-aware composer behavior belong to Phase 2.
 
 ## Route composition
 
-Recommended direction:
+- `app/(pages)/(protected)/layout.tsx` authenticates once and composes the shell.
+- `/dashboard` redirects to `/dashboard/conversations`.
+- `/dashboard/conversations` renders the inbox and empty conversation pane.
+- `/dashboard/conversations/[conversationId]` renders the selected thread in
+  the content pane and a mobile back action.
+- Settings, discovery, and profile pages render inside the same shell.
+- Global and protected route groups have loading, error, and not-found
+  boundaries.
 
-- shared authenticated layout for the protected product;
-- `/dashboard/conversations` as the main workspace;
-- selected conversation composed into the split pane on desktop;
-- settings and account actions accessible from the shell;
-- route-level loading, error, and not-found boundaries.
+## Component layers
 
-## Shared primitives
+```text
+app/
+├── components/
+│   ├── ui/       # shadcn/ui primitives
+│   ├── shared/   # reusable application presentation
+│   └── layout/   # protected-shell composition
+├── features/
+│   └── */components/ # feature-specific presentation
+├── hooks/        # application-wide UI hooks
+└── lib/          # shared UI utilities and server infrastructure
+```
 
-- `Avatar`;
-- `IconButton`;
-- `Button`;
-- `TextField` and `TextArea`;
-- field message/help text;
-- `Badge`;
-- `Skeleton`;
-- `Spinner`;
-- `EmptyState`;
-- `InlineError`;
-- `Dialog` or responsive drawer;
-- `Toast`;
-- `VisuallyHidden`.
-
-Use a single open-source icon family and semantic CSS variables.
+I keep generated shadcn/ui source inside `app/components/ui`, not in a second
+root-level component tree. `components.json` contains the same aliases, so
+future shadcn additions will keep this structure.
 
 ## Semantic tokens
 
 ```text
 --background
---surface
---surface-muted
---surface-selected
---border
---text
---text-muted
+--foreground
+--card
+--popover
+--muted
 --accent
---accent-strong
---message-incoming
---message-outgoing
+--primary
+--border
 --danger
---focus-ring
+--ring
+--sidebar
+--sidebar-accent
 ```
 
-WhatsApp can inspire interaction density and hierarchy, but the application
-should use original branding, assets, and exact visual values.
+The tokens are exposed to Tailwind utilities such as `bg-background`,
+`text-muted-foreground`, and `ring-ring`. `globals.css` only contains Tailwind
+imports, the token definitions required by the design system, and base-layer
+applications. Component appearance is implemented with Tailwind classes.
+
+WhatsApp inspires the interaction density and hierarchy, but I kept original
+Relay branding, colors, assets, and values.
 
 ## Component boundaries
 
-Prefer:
-
-- server layout for authentication and static shell composition;
-- one client messaging workspace around React Query interactions;
-- small presentational row, bubble, header, and state components;
-- hooks for scroll anchoring, drafts, and viewport behavior;
-- shared formatters for dates and names.
+- The protected server layout owns authentication and static composition.
+- Layout components compose shadcn/ui primitives without data fetching.
+- Shared components provide page, avatar, empty, error, and loading patterns.
+- Feature components own messaging-specific presentation.
+- React Query hooks continue to own remote messaging state.
+- The mobile viewport hook uses `useSyncExternalStore` and `matchMedia`.
 
 Avoid:
 
