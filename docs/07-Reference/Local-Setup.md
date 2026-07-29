@@ -2,11 +2,12 @@
 
 ## Prerequisites
 
-- Node.js compatible with the selected Next.js version;
-- pnpm;
+- Node.js 24.11.1 is the repository recommendation in `.nvmrc`;
+- the supported engine range is Node.js 20.9.x, 22.x, or 24.x and newer;
+- pnpm 11.17.0;
 - PostgreSQL.
 
-The exact supported Node/pnpm versions should be pinned in the repository.
+`package.json` records the engine range and package-manager version.
 
 ## Environment
 
@@ -60,14 +61,12 @@ pnpm dev
 pnpm build
 pnpm start
 pnpm lint
+pnpm typecheck
+pnpm test
+pnpm test:watch
+pnpm db:generate
 pnpm db:seed
-pnpm exec tsc --noEmit
 ```
 
-There is no test script yet.
-
-## Tooling warning
-
-The current TypeScript `7.0.2` dependency is outside installed ESLint peer
-ranges and prevents clean lint/build verification. Pin a compatible version
-and reinstall before normal development.
+The post-install script generates Prisma Client automatically. TypeScript is
+pinned to `6.0.3`, which satisfies the installed lint tooling.

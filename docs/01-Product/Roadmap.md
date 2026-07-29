@@ -6,13 +6,16 @@ retry, unread, and cache behavior.
 
 ## Phase 0: trustworthy baseline
 
+**Status:** Completed on July 29, 2026. See the
+[Phase 0 report](../06-Engineering/Phase-0-Report.md).
+
 ### Work
 
 - Pin a TypeScript version compatible with Next.js and `typescript-eslint`.
 - Document the supported Node and pnpm versions.
 - Add `.env.example` without secrets.
 - Add test infrastructure.
-- Add the first service integration tests.
+- Add the first critical service tests.
 
 ### Exit criteria
 
@@ -21,6 +24,11 @@ retry, unread, and cache behavior.
 - tests pass.
 - `pnpm build` passes.
 - installation is reproducible.
+
+The first suite tests the real registration and message-send services while
+mocking authentication, hashing, and persistence boundaries. A dedicated
+PostgreSQL integration suite remains a later testing expansion and must use an
+isolated test database.
 
 ## Phase 1: design system and application shell
 

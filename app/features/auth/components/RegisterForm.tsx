@@ -49,7 +49,7 @@ export const RegisterForm = () => {
                 "An error occurred. Please try again.",
             });
           }
-        } catch (error) {
+        } catch {
           setError({ general: "An error occurred. Please try again." });
         } finally {
           setIsSubmitting(false);

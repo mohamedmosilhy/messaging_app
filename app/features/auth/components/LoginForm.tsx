@@ -45,7 +45,7 @@ export const LoginForm = () => {
           }
           setFormData({ email: "", password: "" });
           router.push("/dashboard");
-        } catch (error) {
+        } catch {
           setError({ general: "An error occurred. Please try again." });
         } finally {
           setIsSubmitting(false);

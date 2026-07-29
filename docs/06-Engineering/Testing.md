@@ -2,9 +2,20 @@
 
 ## Current status
 
-The repository currently has no automated test suite or test scripts. The seed
-data is thoughtfully designed for manual testing, but it does not replace
-repeatable assertions.
+Vitest is configured for Node-based service tests. The first suite contains six
+tests for registration and message sending. Authentication, hashing, participant
+lookup, and Prisma boundaries are mocked so the normal test command never
+modifies a developer database.
+
+Current scripts:
+
+```bash
+pnpm test
+pnpm test:watch
+```
+
+The realistic seed data remains useful for manual exploration, but it does not
+replace repeatable assertions.
 
 ## Testing layers
 
@@ -81,16 +92,17 @@ pnpm build
 
 Run integration and end-to-end suites with a dedicated disposable database.
 
-## Current tooling blocker
+## Phase 0 verification
 
-On July 29, 2026:
+On July 29, 2026, TypeScript was pinned from incompatible `7.0.2` to `6.0.3`.
+After that change:
 
-- TypeScript `7.0.2` was installed;
-- typecheck passed;
-- ESLint crashed because installed TypeScript ESLint packages reject that
-  version;
-- peer checks reported the incompatibility;
-- Next.js compiled, then failed in its type stage.
+- ESLint passed with zero warnings;
+- TypeScript passed;
+- all six tests passed;
+- peer-dependency validation passed;
+- the Next.js production build passed.
 
-Pin a mutually supported TypeScript version before treating lint/build failures
-as application failures.
+The current tests are service tests with mocked infrastructure boundaries. The
+next testing expansion should add a dedicated PostgreSQL integration database
+for transaction, constraint, and concurrency behavior.

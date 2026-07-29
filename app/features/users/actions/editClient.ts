@@ -26,7 +26,7 @@ export const submitEditProfile = async (
     }
 
     return res.json();
-  } catch (error) {
+  } catch {
     return {
       success: false,
       message: "An error occurred. Please try again.",

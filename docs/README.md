@@ -79,6 +79,8 @@ labeled as recommendations so they are not confused with implemented features.
   recommendations.
 - [Deployment](./06-Engineering/Deployment.md) — build gate, migrations,
   release, observability, and rollback.
+- [Phase 0 Report](./06-Engineering/Phase-0-Report.md) — completed baseline
+  changes, tests, verification results, and review checklist.
 
 ### 7. Reference
 
@@ -115,7 +117,7 @@ authorization, direct-conversation uniqueness, stable message pagination,
 transactional send metadata, seeded edge cases, and the first optimistic cache
 workflow.
 
-The main unfinished areas are the production presentation layer, automated
-tests, concurrency-safe retry/idempotency, complete block behavior, multi-client
-read state, and real-time delivery. The roadmap intentionally handles those in
-that order.
+The main unfinished areas are the production presentation layer, broader
+database/browser test coverage, concurrency-safe retry/idempotency, complete
+block behavior, multi-client read state, and real-time delivery. The roadmap
+intentionally handles those in that order.

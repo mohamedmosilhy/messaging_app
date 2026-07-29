@@ -16,7 +16,7 @@ export const handleSubmit = async (
       body: JSON.stringify(formData),
     });
     return res.json();
-  } catch (error) {
+  } catch {
     return {
       success: false,
       message: "An error occurred. Please try again.",

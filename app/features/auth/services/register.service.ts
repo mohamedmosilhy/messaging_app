@@ -27,7 +27,7 @@ export async function register(
 
   if (emailRes !== null) {
     throw new ConflictError({
-      username: "Email already exists.",
+      email: "Email already exists.",
     });
   }
 

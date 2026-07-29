@@ -11,10 +11,7 @@ import {
   MessageResponse,
   SendMessageResponse,
 } from "../types/messages.types";
-import {
-  ConversationListItem,
-  GetConversationsResponse,
-} from "../types/conversation.types";
+import { GetConversationsResponse } from "../types/conversation.types";
 
 type SendMessageContext = {
   previousMessages?: InfiniteData<GetMessagesResponse>;
