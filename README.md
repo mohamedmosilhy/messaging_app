@@ -171,13 +171,6 @@ Production releases require:
 
 See the full [deployment and rollback guide](./docs/06-Engineering/Deployment.md).
 
-## Project status
-
-Phases 0–4 and Phase 6 are complete. Phase 5—real-time WebSocket delivery—is
-intentionally left for the project author to implement as a learning exercise.
-The existing client IDs, idempotent send service, and cache reconciliation form
-the foundation for that work.
-
 ## Documentation
 
 The documentation is organized by topic:
