@@ -36,7 +36,7 @@ variants locally while keeping consistent accessibility behavior.
 Each component has one small responsibility. The protected route layout
 combines them and supplies the authenticated user.
 
-## Existing feature components
+## Feature components
 
 ### Authentication
 
@@ -64,29 +64,35 @@ refresh the session, and show success feedback.
 - `ConversationSidebar`;
 - `ConversationEmptyState`;
 - `MobileConversationHeader`.
+- `ConversationHeader`;
+- `ConversationSkeleton`;
+- `MessageTimeline`;
+- `MessageBubble`;
+- `DateSeparator`;
+- `MessageComposer`.
 
-The new workspace and sidebar establish responsive composition. The list rows
-now use valid `ul > li > a` semantics, shared avatars, unread badges, selected
-state, message previews, and timestamps. `ConversationContent` still handles
-too many presentation concerns and renders test information; splitting and
-redesigning it is Phase 2.
+The workspace and sidebar establish responsive composition. Conversation rows
+use valid list semantics, shared avatars, unread badges, selected state,
+previews, and timestamps.
 
-## Phase 2 messaging components
+`ConversationContent` now only coordinates the conversation query, messages
+query, session identity, and send mutation. The other components own one
+presentation concern each.
+
+## Implemented messaging composition
 
 ```text
 messaging/components/
-  ConversationPane
-  InboxHeader
-  ConversationSearch
-  ConversationRow
+  MessagingWorkspace
+  ConversationSidebar
+  ConversationList
+  ConversationListItemComponent
+  ConversationContent
   ConversationHeader
-  MessageHistory
-  MessageGroup
+  ConversationSkeleton
+  MessageTimeline
   MessageBubble
-  MessageStatus
   DateSeparator
-  LoadOlderTrigger
-  JumpToLatestButton
   MessageComposer
   ConversationEmptyState
 ```
@@ -102,8 +108,7 @@ Displays:
 - unread badge;
 - selected/unread/sending state.
 
-Use valid `ul > li` semantics. The current link-wrapped list item should be
-restructured so list semantics remain valid.
+The implemented markup uses valid `ul > li > a` semantics.
 
 ## Message history
 
@@ -117,15 +122,19 @@ Responsibilities:
 - decide whether to auto-scroll;
 - show initial, pagination, failure, and no-message states.
 
+`MessageTimeline` implements these responsibilities. It groups messages from
+the same sender when they are on the same day and within five minutes.
+
 ## Composer
 
 - auto-growing textarea;
 - Enter sends and Shift+Enter creates a line break;
 - local validation and remaining length;
-- per-thread draft;
-- optimistic clear;
+- the current draft remains available after a failed send;
+- clear after server success;
 - accessible send button;
-- disabled/explained unavailable state.
+- disabled/explained invalid and pending state;
+- 1,000-character counter and limit.
 
 Do not show attachments or emoji controls until they perform real actions.
 

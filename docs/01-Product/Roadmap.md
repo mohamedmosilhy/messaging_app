@@ -56,20 +56,27 @@ first work in Phase 2.
 
 ## Phase 2: inbox and conversation UI
 
+**Status:** Completed on July 29, 2026. See the
+[Phase 2 report](../06-Engineering/Phase-2-Report.md).
+
 ### Work
 
-- Redesign conversation rows and inbox states.
-- Add conversation header and participant details affordance.
-- Build incoming/outgoing message bubbles.
-- Add timestamps, day separators, grouping, skeletons, and retry states.
-- Replace the input with an auto-growing composer.
-- Add scroll anchoring and jump-to-latest behavior.
+- Redesigned conversation rows and inbox states.
+- Added a conversation header and participant profile affordance.
+- Built incoming and outgoing message bubbles.
+- Added timestamps, day separators, grouping, skeletons, and retry feedback.
+- Replaced the test input with an auto-growing composer.
+- Added scroll anchoring and jump-to-latest behavior.
 
 ### Exit criteria
 
 - The full messaging workflow feels complete over HTTP.
 - No raw IDs, enum values, or test-only labels remain.
 - Loading, empty, error, and success states are designed.
+
+The conversation workflow was checked in Chromium at 360 px and desktop
+sizes. Optimistic, failed, pagination, long-content, and keyboard-composer
+behavior were verified.
 
 ## Phase 3: remaining pages
 

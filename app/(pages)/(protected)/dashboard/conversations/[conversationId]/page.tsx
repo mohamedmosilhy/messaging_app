@@ -1,7 +1,6 @@
 import { ConversationContent } from "@/app/features/messaging";
 import { ConversationSidebar } from "@/app/features/messaging/components/ConversationSidebar";
 import { MessagingWorkspace } from "@/app/features/messaging/components/MessagingWorkspace";
-import { MobileConversationHeader } from "@/app/features/messaging/components/MobileConversationHeader";
 
 export default async function ConversationPage({
   params,
@@ -12,14 +11,7 @@ export default async function ConversationPage({
 
   return (
     <MessagingWorkspace
-      content={
-        <div className="flex h-full min-h-0 flex-col">
-          <MobileConversationHeader />
-          <div className="min-h-0 flex-1 overflow-y-auto p-4">
-            <ConversationContent conversationId={conversationId} />
-          </div>
-        </div>
-      }
+      content={<ConversationContent conversationId={conversationId} />}
       mobilePane="content"
       sidebar={<ConversationSidebar />}
     />

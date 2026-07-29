@@ -1,3 +1,5 @@
+import type { GetMessagesResponse } from "../types/messages.types";
+
 export async function getMessagesRequest({
   conversationId,
   cursor,
@@ -27,5 +29,5 @@ export async function getMessagesRequest({
     throw new Error("Failed to load messages.");
   }
 
-  return res.json();
+  return res.json() as Promise<GetMessagesResponse>;
 }

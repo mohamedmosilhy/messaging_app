@@ -44,14 +44,15 @@ Owned by Next.js routing:
 
 ## Current local state
 
-Forms use `useState` for values, submitting flags, and field errors. The
-conversation component keeps the current message input locally. Search keeps
-the raw query locally and derives a debounced value.
+Forms use `useState` for values, submitting flags, and field errors.
+`MessageComposer` owns its current draft and `MessageTimeline` owns only the
+jump-to-latest visibility state. Search keeps the raw query locally and derives
+a debounced value.
 
 ## Recommended draft model
 
-The composer draft should clear immediately on optimistic send, but drafts must
-also survive moving between conversations.
+The Phase 2 composer clears after success and retains the current draft after
+failure. Phase 4 should also make drafts survive moving between conversations.
 
 A small client store or reducer keyed by conversation ID is appropriate:
 

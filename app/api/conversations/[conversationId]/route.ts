@@ -7,7 +7,6 @@ export async function GET(
   { params }: { params: Promise<{ conversationId: string }> },
 ) {
   try {
-    console.log(await params);
     const { conversationId } = await params;
 
     const res = await getConversation({

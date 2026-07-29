@@ -23,12 +23,13 @@ Reviewed against the repository on July 29, 2026.
 
 ## Presentation status
 
-Phase 1 is complete. The application now has a semantic Tailwind design system,
-shadcn/ui primitives, shared authenticated shell, responsive inbox workspace,
-mobile navigation, reusable page states, and route boundaries.
+Phases 1 and 2 are complete. The application now has a semantic Tailwind design
+system, shadcn/ui primitives, authenticated shell, responsive inbox, grouped
+message bubbles, conversation states, anchored pagination, optimistic sending,
+and an auto-growing composer.
 
-The message history and composer remain test UI for Phase 2. Authentication,
-discovery, profile, and settings receive their final redesign in Phase 3.
+The application also has an original Relay favicon. Authentication, discovery,
+profile, and settings receive their final redesign in Phase 3.
 
 ## Partial areas
 
@@ -37,15 +38,15 @@ discovery, profile, and settings receive their final redesign in Phase 3.
 - search backend cursor without frontend pagination;
 - group enum without group behavior;
 - organizational protected route group without shared enforcement;
-- optimistic single-send flow without concurrency-safe rollback or retry UI.
-- final message bubble, composer, auth, discovery, and settings presentation.
+- optimistic single-send flow without concurrency-safe targeted rollback or
+  persistent failed bubbles;
+- final auth, discovery, profile, and settings presentation.
 
 ## Known correctness/tooling items
 
 - Profile edits do not refresh JWT session fields.
 - Arbitrary avatar URL storage conflicts with restricted Next Image hosts.
 - Conversation detail GET performs an unread-state write.
-- Conversation detail route contains a debug log.
 - Route validation is inconsistent.
 - No message idempotency exists.
 - PostgreSQL integration and browser tests are not added yet.
@@ -62,14 +63,18 @@ discovery, profile, and settings receive their final redesign in Phase 3.
   overflow.
 - the mobile navigation drawer and desktop conversation split pane were checked
   in Chromium.
+- message pagination preserved its visual anchor exactly.
+- optimistic, success, send-failure, multiline, length-limit, and draft
+  preservation behavior were checked in Chromium.
+- the Relay favicon returned successfully through Next.js metadata routing.
 - The registration email-conflict field mapping was fixed and tested.
 - Node and pnpm expectations, environment template, and Prisma generation are
   now reproducible.
 
 ## Next recommended action
 
-Phase 1 is complete. Review its
-[implementation report](../06-Engineering/Phase-1-Report.md), then begin Phase
-2 with the message history, bubbles, composer, scrolling behavior, and designed
-failure states. Do not begin WebSocket work until idempotency and concurrent
-optimistic behavior are designed.
+Phase 2 is complete. Review its
+[implementation report](../06-Engineering/Phase-2-Report.md), then begin Phase
+3 with authentication, discovery, profile, and settings presentation. Do not
+begin WebSocket work until the Phase 4 idempotency and concurrent optimistic
+behavior are complete.

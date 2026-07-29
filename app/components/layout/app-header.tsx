@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 
 import { Separator } from "@/app/components/ui/separator";
 import { SidebarTrigger } from "@/app/components/ui/sidebar";
+import { cn } from "@/app/lib/utils";
 
 function getPageTitle(pathname: string) {
   if (pathname === "/dashboard/conversations") return "Inbox";
@@ -16,9 +17,17 @@ function getPageTitle(pathname: string) {
 
 export function AppHeader() {
   const pathname = usePathname();
+  const isConversationDetail =
+    pathname.startsWith("/dashboard/conversations/") &&
+    pathname !== "/dashboard/conversations";
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-card/90 px-4 backdrop-blur">
+    <header
+      className={cn(
+        "h-14 shrink-0 items-center gap-3 border-b bg-card/90 px-4 backdrop-blur",
+        isConversationDetail ? "hidden md:flex" : "flex",
+      )}
+    >
       <SidebarTrigger aria-label="Toggle navigation" />
       <Separator className="h-4!" orientation="vertical" />
       <p className="truncate text-sm font-medium">{getPageTitle(pathname)}</p>

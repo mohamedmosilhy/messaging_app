@@ -28,6 +28,8 @@ The previous full message cache snapshot is restored.
 ## What works well
 
 - The sender sees immediate feedback.
+- The optimistic bubble shows a sending clock.
+- A successful message changes to a sent check.
 - Server IDs and timestamps replace temporary values.
 - The inbox does not wait for a second fetch after success.
 - A final invalidation reconciles the inbox.
@@ -43,17 +45,15 @@ Moving the preview in `onMutate` would make the inbox itself fully optimistic.
 
 ### Local validation
 
-The temporary content currently uses the raw draft while the service stores
-trimmed content. Validate and trim before the optimistic insertion so the
-bubble never temporarily shows a value the server rejects or changes.
+The composer trims before submission, prevents blank messages, and prevents
+content longer than 1,000 characters. The service still performs the
+authoritative validation.
 
 ### Draft behavior
 
-The current input clears on success. A better messaging experience:
-
-- clears immediately;
-- stores the submitted draft in mutation context;
-- restores it only when appropriate after failure.
+The composer clears after success. On failure, rollback removes the optimistic
+bubble while the draft remains in the composer with an actionable error and
+retry instruction.
 
 ### Concurrent sends
 
@@ -62,8 +62,9 @@ succeeded later. Rollback should remove or mark only the failed temporary ID.
 
 ### Failed bubble
 
-Silent disappearance leaves the user uncertain. Keep the bubble with a failed
-status and retry/remove actions.
+Phase 2 makes failure visible and preserves the draft. A persistent failed
+bubble with retry/remove actions requires targeted rollback and idempotency, so
+it remains part of Phase 4.
 
 ### Missing temporary item
 

@@ -2,14 +2,14 @@
 
 ## Current state
 
-I completed the first presentation milestone. The protected product now has a
-shared responsive shell, application navigation, account menu, inbox workspace,
-semantic design tokens, and consistent route boundaries.
+I completed the application shell and the full HTTP conversation presentation.
+The protected product now has responsive navigation, an inbox workspace,
+conversation header, grouped message history, optimistic message states,
+pagination anchoring, and an accessible composer.
 
-The message history, composer, authentication forms, search, and settings are
-still functional surfaces rather than the final interface. I will polish those
-in Phases 2 and 3. The work remains above my existing service and persistence
-layers.
+Authentication forms, search, profiles, and settings still receive their final
+presentation pass in Phase 3. The completed UI remains above my existing
+service and persistence layers.
 
 ## Implemented application shell
 
@@ -41,7 +41,9 @@ layers.
 - Header includes a clear back action.
 - Desktop and mobile layouts must not create duplicate focusable controls.
 
-Scroll restoration and keyboard-aware composer behavior belong to Phase 2.
+The open-thread shell removes the duplicated mobile application header. The
+composer respects the mobile safe-area inset, grows with its content, and
+supports Enter to send or Shift+Enter for a new line.
 
 ## Route composition
 
@@ -105,6 +107,10 @@ Relay branding, colors, assets, and values.
 - Feature components own messaging-specific presentation.
 - React Query hooks continue to own remote messaging state.
 - The mobile viewport hook uses `useSyncExternalStore` and `matchMedia`.
+- `ConversationContent` coordinates queries and mutation state.
+- `MessageTimeline` owns scroll and pagination anchoring behavior.
+- `MessageBubble`, `DateSeparator`, `ConversationHeader`, and
+  `MessageComposer` stay presentational and reusable.
 
 Avoid:
 

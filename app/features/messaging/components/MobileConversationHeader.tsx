@@ -5,13 +5,18 @@ import { Button } from "@/app/components/ui/button";
 
 export function MobileConversationHeader() {
   return (
-    <header className="flex h-12 shrink-0 items-center border-b px-3 md:hidden">
-      <Button asChild size="sm" variant="ghost">
+    <div className="md:hidden">
+      <Button
+        aria-label="Back to inbox"
+        asChild
+        className="px-1"
+        size="icon"
+        variant="ghost"
+      >
         <Link href="/dashboard/conversations">
           <ArrowLeft aria-hidden="true" />
-          Inbox
         </Link>
       </Button>
-    </header>
+    </div>
   );
 }

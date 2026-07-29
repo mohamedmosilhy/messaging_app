@@ -18,7 +18,8 @@ messaging_app/
 │   ├── hooks/
 │   ├── lib/
 │   ├── providers/
-│   └── utils/
+│   ├── utils/
+│   └── icon.svg
 ├── docs/
 ├── prisma/
 │   ├── migrations/
@@ -61,7 +62,9 @@ messaging_app/
 - request functions for list, detail, open, history, send;
 - React Query hooks;
 - participant authorization helper;
-- current inbox/conversation test components;
+- responsive inbox, conversation header, message timeline, bubbles, composer,
+  and designed state components;
+- message/date presentation formatters;
 - messaging response/cursor types.
 
 ## Shared code
@@ -74,6 +77,7 @@ messaging_app/
 - `app/hooks`: debounce, search query, and responsive viewport hooks.
 - `app/providers`: Auth.js and React Query providers.
 - `app/utils`: session user helper, URLs, Zod formatting.
+- `app/icon.svg`: original Relay browser and metadata icon.
 
 `components.json` points shadcn/ui aliases into `app`, so the repository does
 not create competing root-level `components`, `hooks`, or `lib` directories.

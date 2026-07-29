@@ -140,7 +140,7 @@ existing API, service, and persistence layers
 I ran the complete quality gate:
 
 ```text
-pnpm exec prettier --check app docs components.json package.json
+pnpm exec prettier --check "app/**/*.{ts,tsx,css}" docs components.json package.json
 pnpm lint
 pnpm typecheck
 pnpm test

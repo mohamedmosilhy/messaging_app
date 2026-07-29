@@ -50,6 +50,7 @@ export type MessageResponse = {
     avatarUrl: string | null;
   };
   senderId: string;
+  isOptimistic?: boolean;
 };
 
 export type SendMessageResponse = {

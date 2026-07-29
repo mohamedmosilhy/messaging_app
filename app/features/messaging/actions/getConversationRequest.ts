@@ -1,3 +1,5 @@
+import type { GetConversationResponse } from "../types/conversation.types";
+
 export async function getConversationRequest(conversationId: string) {
   const res = await fetch(`/api/conversations/${conversationId}`);
 
@@ -5,5 +7,5 @@ export async function getConversationRequest(conversationId: string) {
     throw new Error("Failed to load conversation.");
   }
 
-  return res.json();
+  return res.json() as Promise<GetConversationResponse>;
 }

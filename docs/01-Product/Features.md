@@ -61,6 +61,24 @@ what I intentionally plan to build later.
 - Direct inbox preview and order update after successful send.
 - Authoritative inbox invalidation after mutation settlement.
 
+### Presentation
+
+- Semantic Tailwind design system and shadcn/ui primitives.
+- Shared authenticated application shell.
+- Collapsible desktop navigation and mobile drawer.
+- Responsive inbox and conversation split pane.
+- Valid conversation-list semantics and designed inbox states.
+- Conversation participant header and profile link.
+- Incoming/outgoing grouped message bubbles.
+- Localized timestamps and date separators.
+- Initial, empty, loading, pagination, and error states.
+- Scroll-to-latest and older-page anchor preservation.
+- Optimistic sending and sent indicators.
+- Failed-send feedback that preserves the draft.
+- Auto-growing multiline composer with keyboard behavior and length limit.
+- Original Relay website icon.
+- Global and protected route boundaries.
+
 ### Development data
 
 - Multiple realistic users.
@@ -97,12 +115,6 @@ normal query and the test page renders only the first result set.
 The schema includes `ConversationType.GROUP` and an optional title. Current
 services and UI should be treated as direct-message behavior only.
 
-### Protected routing
-
-APIs and services authenticate sensitive operations. Some pages redirect
-manually. The `(protected)` folder is organizational and does not itself
-enforce authentication.
-
 ## Not implemented yet
 
 - WebSocket or Server-Sent Events.
@@ -111,15 +123,15 @@ enforce authentication.
 - Presence and typing.
 - Conversation-list pagination.
 - Message idempotency.
-- Failed-message retry UI.
+- Persistent failed-message bubble with idempotent retry/remove actions.
 - Per-conversation drafts.
 - Block/unblock product controls.
 - Message editing, deletion, or reactions.
 - Attachments or uploads.
 - Group-chat behavior.
 - Notifications.
-- Automated tests.
-- Production UI and design system.
+- Automated browser tests.
+- Final authentication, discovery, profile, and settings presentation.
 
 ## Important wording
 

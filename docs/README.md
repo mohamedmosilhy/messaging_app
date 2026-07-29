@@ -3,11 +3,11 @@
 Last reviewed against the repository: July 29, 2026
 
 I built this messaging application from scratch as a full-stack learning
-project. I focused first on the layers below the final UI: data modeling,
-authentication, services, API routes, React Query, pagination, unread state,
-and optimistic sending. The current pages and components are test interfaces.
-My next milestone is a complete responsive presentation inspired by familiar
-messaging products, followed by real-time delivery.
+project. I focused first on data modeling, authentication, services, API
+routes, React Query, pagination, unread state, and optimistic sending. I then
+built the responsive application shell and full conversation presentation. My
+next presentation milestone is the remaining forms and discovery pages,
+followed by behavior hardening and real-time delivery.
 
 These documents explain what I have made, why I made the main decisions, what
 is incomplete, and how I plan to continue. Review findings are explicitly
@@ -83,6 +83,8 @@ labeled as recommendations so they are not confused with implemented features.
   changes, tests, verification results, and review checklist.
 - [Phase 1 Report](./06-Engineering/Phase-1-Report.md) — completed design
   system, application shell, responsive validation, and Phase 2 handoff.
+- [Phase 2 Report](./06-Engineering/Phase-2-Report.md) — completed conversation
+  presentation, composer, scroll behavior, favicon, and Phase 3 handoff.
 
 ### 7. Reference
 
@@ -113,14 +115,14 @@ docs/
 
 ## Current project summary
 
-The core architecture, HTTP messaging foundation, and Phase 1 responsive
-application shell are real and established.
+The core architecture, HTTP messaging foundation, responsive shell, inbox, and
+conversation presentation are real and established.
 The strongest completed areas are service separation, participant
 authorization, direct-conversation uniqueness, stable message pagination,
 transactional send metadata, seeded edge cases, and the first optimistic cache
 workflow.
 
-The main unfinished areas are the conversation-content and remaining page
-presentation, broader database/browser test coverage, concurrency-safe
-retry/idempotency, complete block behavior, multi-client read state, and
-real-time delivery. The roadmap intentionally handles those in that order.
+The main unfinished areas are the remaining page presentation, broader
+database/automated-browser coverage, concurrency-safe retry/idempotency,
+complete block behavior, multi-client read state, and real-time delivery. The
+roadmap intentionally handles those in that order.

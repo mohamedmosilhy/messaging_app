@@ -1,5 +1,6 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { InfiniteData, useInfiniteQuery } from "@tanstack/react-query";
 import { getMessagesRequest } from "../actions/getMessagesRequest";
+import { GetMessagesResponse, MessagesCursor } from "../types/messages.types";
 
 export function useConversationMessages(conversationId: string) {
   const {
@@ -9,7 +10,15 @@ export function useConversationMessages(conversationId: string) {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery({
+    isFetchNextPageError,
+    refetch,
+  } = useInfiniteQuery<
+    GetMessagesResponse,
+    Error,
+    InfiniteData<GetMessagesResponse>,
+    readonly ["messages", string],
+    MessagesCursor | undefined
+  >({
     queryKey: ["messages", conversationId],
     queryFn: ({ pageParam }) =>
       getMessagesRequest({
@@ -18,7 +27,7 @@ export function useConversationMessages(conversationId: string) {
         cursor: pageParam,
       }),
     initialPageParam: undefined,
-    getNextPageParam: (lastPage) => lastPage.data.nextCursor,
+    getNextPageParam: (lastPage) => lastPage.data.nextCursor ?? undefined,
   });
 
   const messages =
@@ -34,5 +43,7 @@ export function useConversationMessages(conversationId: string) {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isFetchNextPageError,
+    refetch,
   };
 }
