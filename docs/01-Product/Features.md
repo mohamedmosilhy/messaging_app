@@ -48,6 +48,9 @@ what I intentionally plan to build later.
 - Denormalized latest-message reference and timestamp.
 - Recipient unread-count increment.
 - Current-participant unread reset on conversation detail access.
+- Client-generated message identity stored by the server.
+- Sender-scoped idempotent retry and duplicate-race recovery.
+- Send-time enforcement of both block directions.
 
 ### Client server-state
 
@@ -57,7 +60,10 @@ what I intentionally plan to build later.
 - Mutation for sending.
 - Optimistic temporary message insertion.
 - Temporary-to-server message replacement.
-- Rollback on send failure.
+- Message-specific failure handling safe for concurrent mutations.
+- Persistent failed-message retry and remove actions.
+- Per-conversation drafts in browser storage.
+- Immediate unread-cache reconciliation when a thread opens.
 - Direct inbox preview and order update after successful send.
 - Authoritative inbox invalidation after mutation settlement.
 
@@ -81,6 +87,8 @@ what I intentionally plan to build later.
 - Premium dark-only Relay theme across public and protected surfaces.
 - Complete landing, login, registration, discovery, public profile, and
   profile-settings presentation.
+- Session-aware landing actions that replace authentication links with the
+  signed-in identity and dashboard access.
 - Frontend cursor pagination for user search.
 - Immediate Auth.js session refresh after profile edits.
 
@@ -99,16 +107,16 @@ what I intentionally plan to build later.
 
 ### Blocking
 
-The `Block` model exists. Search and new-conversation opening respect both
-directions of a block. There is no block/unblock command or UI, and sending to
-an already existing thread does not currently recheck the block.
+The `Block` model exists. Search, new-conversation opening, and sending in an
+existing thread respect both directions of a block. There is no block/unblock
+command or UI yet.
 
 ### Unread state
 
 Unread counts are persisted, incremented transactionally, returned in the
-inbox, and reset on conversation-detail retrieval. The React Query inbox cache
-is not immediately changed to zero when opening a conversation. A simple
-counter will also need more design for multi-device reads.
+inbox, reset on conversation-detail retrieval, and immediately reconciled to
+zero in the React Query inbox cache. A simple counter still needs a stable
+read-marker design for multi-device reads.
 
 ### Group preparation
 
@@ -122,9 +130,6 @@ services and UI should be treated as direct-message behavior only.
 - Message delivery/read receipts.
 - Presence and typing.
 - Conversation-list pagination.
-- Message idempotency.
-- Persistent failed-message bubble with idempotent retry/remove actions.
-- Per-conversation drafts.
 - Block/unblock product controls.
 - Message editing, deletion, or reactions.
 - Attachments or uploads.

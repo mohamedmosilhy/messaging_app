@@ -99,22 +99,24 @@ useConversationMessages
 Composer
   -> useSendMessage.onMutate
   -> cancel message refetch
-  -> snapshot cache
-  -> append temporary message
+  -> append temporary message with client ID
   -> POST message
   -> sendMessage service
   -> trim and validate
   -> require participation
+  -> return existing sender/client ID when already committed
+  -> reject either block direction
   -> transaction:
        create message
        update conversation latest metadata
        increment other unread counts
-  -> replace temporary message
+  -> replace matching client ID
   -> update inbox preview/order
   -> invalidate inbox
 ```
 
-On error, the current hook restores the previous full message cache.
+On error, only the matching client ID becomes a persistent failed bubble with
+retry/remove actions.
 
 ## Future real-time flow
 

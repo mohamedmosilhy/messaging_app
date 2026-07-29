@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   requireCurrentUserId: vi.fn(),
   requireConversationParticipant: vi.fn(),
+  findMessage: vi.fn(),
+  findBlock: vi.fn(),
   transaction: vi.fn(),
 }));
 
@@ -20,23 +22,35 @@ vi.mock(
 vi.mock("@/app/lib/prisma", () => ({
   prisma: {
     $transaction: mocks.transaction,
+    message: {
+      findUnique: mocks.findMessage,
+    },
+    block: {
+      findFirst: mocks.findBlock,
+    },
   },
 }));
 
 import { sendMessage } from "@/app/features/messaging/services/sendMessage.service";
+import { ForbiddenError } from "@/app/lib/errors/ForbiddenError";
 import { ValidationError } from "@/app/lib/errors/ValidationError";
 
 describe("sendMessage service", () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     mocks.requireCurrentUserId.mockResolvedValue("user-1");
     mocks.requireConversationParticipant.mockResolvedValue({
       id: "conversation-1",
+      participants: [{ user: { id: "user-1" } }, { user: { id: "user-2" } }],
     });
+    mocks.findMessage.mockResolvedValue(null);
+    mocks.findBlock.mockResolvedValue(null);
   });
 
   it("trims content and updates message, conversation, and unread state in one transaction", async () => {
     const message = {
       id: "message-1",
+      clientId: "client-message-1",
       senderId: "user-1",
       conversationId: "conversation-1",
       content: "Hello there",
@@ -68,6 +82,7 @@ describe("sendMessage service", () => {
 
     const result = await sendMessage({
       conversationId: "conversation-1",
+      clientId: "client-message-1",
       content: "  Hello there  ",
     });
 
@@ -80,6 +95,7 @@ describe("sendMessage service", () => {
         data: {
           senderId: "user-1",
           conversationId: "conversation-1",
+          clientId: "client-message-1",
           content: "Hello there",
         },
       }),
@@ -106,6 +122,7 @@ describe("sendMessage service", () => {
   it("rejects content that becomes empty after trimming", async () => {
     const error = await sendMessage({
       conversationId: "conversation-1",
+      clientId: "client-message-1",
       content: "   ",
     }).catch((caught: unknown) => caught);
 
@@ -120,6 +137,7 @@ describe("sendMessage service", () => {
   it("rejects content longer than 1,000 characters", async () => {
     const error = await sendMessage({
       conversationId: "conversation-1",
+      clientId: "client-message-1",
       content: "a".repeat(1001),
     }).catch((caught: unknown) => caught);
 
@@ -128,6 +146,49 @@ describe("sendMessage service", () => {
       content: "Content must be less than 1000 characters",
     });
     expect(mocks.requireConversationParticipant).not.toHaveBeenCalled();
+    expect(mocks.transaction).not.toHaveBeenCalled();
+  });
+
+  it("returns an existing message when a client ID is retried", async () => {
+    const existingMessage = {
+      id: "message-1",
+      clientId: "client-message-1",
+      senderId: "user-1",
+      conversationId: "conversation-1",
+      content: "Hello there",
+      createdAt: new Date("2026-07-29T08:00:00.000Z"),
+      updatedAt: new Date("2026-07-29T08:00:00.000Z"),
+      sender: {
+        id: "user-1",
+        username: "mohamed",
+        displayName: "Mohamed",
+        bio: null,
+        avatarUrl: null,
+      },
+    };
+    mocks.findMessage.mockResolvedValue(existingMessage);
+
+    const result = await sendMessage({
+      conversationId: "conversation-1",
+      clientId: "client-message-1",
+      content: "Hello there",
+    });
+
+    expect(result.data.message).toEqual(existingMessage);
+    expect(mocks.findBlock).not.toHaveBeenCalled();
+    expect(mocks.transaction).not.toHaveBeenCalled();
+  });
+
+  it("rejects sends when either participant has blocked the other", async () => {
+    mocks.findBlock.mockResolvedValue({ blockerId: "user-2" });
+
+    const error = await sendMessage({
+      conversationId: "conversation-1",
+      clientId: "client-message-1",
+      content: "Hello there",
+    }).catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(ForbiddenError);
     expect(mocks.transaction).not.toHaveBeenCalled();
   });
 });

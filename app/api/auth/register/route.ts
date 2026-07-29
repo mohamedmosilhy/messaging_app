@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { register, RegisterValidation } from "@/app/features/auth/index";
 import { AppError } from "@/app/lib/errors/AppError";
 import { formatZodErrors } from "@/app/utils/formatZodErrors";
+import { parseJsonBody } from "@/app/utils/parseJsonBody";
 import { auth } from "@/auth";
 
 export async function POST(req: NextRequest) {
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
         },
       );
     }
-    const body = await req.json();
+    const body = await parseJsonBody(req);
 
     const zodObject = RegisterValidation.safeParse(body);
 

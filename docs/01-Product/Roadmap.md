@@ -106,22 +106,28 @@ active session immediately.
 
 ## Phase 4: behavior and edge-case hardening
 
+**Status:** Completed on July 29, 2026. See the
+[Phase 4 report](../06-Engineering/Phase-4-Report.md).
+
 ### Work
 
-- Add a client message ID and server idempotency constraint.
-- Support multiple pending sends safely.
-- Add failed-message retry/remove behavior.
-- Preserve per-conversation drafts.
-- Reconcile unread cache state.
-- Enforce blocks while sending.
-- Validate all route inputs consistently.
-- Add the message-history composite index.
+- Added a client message ID and sender-scoped database uniqueness.
+- Made concurrent pending sends update only their own cached message.
+- Added persistent failed-message retry and remove actions.
+- Preserved drafts per conversation in browser storage.
+- Reconciled the active conversation's unread cache immediately.
+- Enforced either block direction at send time.
+- Added strict route schemas and malformed-JSON handling.
+- Added the message-history composite index.
 
 ### Exit criteria
 
 - Slow, failed, repeated, and concurrent sends behave predictably.
 - Automatic retry cannot duplicate a message.
 - HTTP and future socket results can be deduplicated.
+
+All exit criteria are satisfied for the HTTP workflow. Multi-client convergence
+still belongs to Phase 5 because it requires real-time read and delivery events.
 
 ## Phase 5: real-time delivery
 

@@ -20,6 +20,13 @@ Reviewed against the repository on July 29, 2026.
 - React Query caches and infinite history.
 - First optimistic message workflow.
 - Direct inbox cache update after successful send.
+- Sender-scoped message idempotency.
+- Concurrent pending sends with targeted failure state.
+- Failed-message retry/remove actions.
+- Per-conversation draft persistence.
+- Immediate unread-cache reconciliation.
+- Strict transport validation and malformed-JSON handling.
+- Send-time block enforcement.
 
 ## Presentation status
 
@@ -27,23 +34,21 @@ Phases 1 through 3 are complete. The application now has a premium dark
 Tailwind design system, shadcn/ui primitives, a public landing page, complete
 authentication presentation, authenticated shell, responsive inbox,
 conversation UI, paginated discovery, public profiles, and profile settings.
+The landing page recognizes an active server session and exposes direct
+dashboard access without showing sign-in or registration actions.
 
 The application also has an original Relay favicon.
 
 ## Partial areas
 
-- block model/filtering without block commands or send-time enforcement;
+- block model/filtering/send enforcement without block commands;
 - unread counters without real-time/multi-device read markers;
 - group enum without group behavior;
-- optimistic single-send flow without concurrency-safe targeted rollback or
-  persistent failed bubbles;
 - profile email/username editing is intentionally unavailable.
 
 ## Known correctness/tooling items
 
 - Conversation detail GET performs an unread-state write.
-- Route validation is inconsistent.
-- No message idempotency exists.
 - PostgreSQL integration and browser tests are not added yet.
 
 ## Verification performed
@@ -51,7 +56,7 @@ The application also has an original Relay favicon.
 - TypeScript was pinned to compatible version `6.0.3`.
 - `pnpm lint`: passed with zero warnings.
 - `pnpm typecheck`: passed.
-- `pnpm test`: six tests passed.
+- `pnpm test`: eight tests passed.
 - `pnpm peers check`: passed.
 - `pnpm build`: passed and generated all application routes.
 - responsive browser checks passed at 360 px and 1440 px without horizontal
@@ -74,7 +79,6 @@ The application also has an original Relay favicon.
 
 ## Next recommended action
 
-Phase 3 is complete. Review its
-[implementation report](../06-Engineering/Phase-3-Report.md), then begin Phase
-4 behavior and edge-case hardening. Do not begin WebSocket work until Phase 4
-idempotency and concurrent optimistic behavior are complete.
+Phase 4 is complete. Review its
+[implementation report](../06-Engineering/Phase-4-Report.md), then begin the
+Phase 5 WebSocket work with a stable read-marker design.

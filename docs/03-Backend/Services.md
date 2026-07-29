@@ -114,12 +114,12 @@ conversation model.
 - requires identity;
 - trims and validates text;
 - requires participation;
+- returns an existing message for the same sender/client ID;
+- rejects either block direction before writing;
 - creates the message in a transaction;
 - updates the conversation latest-message metadata;
-- increments unread counts for other participants.
-
-Review recommendation: query the block relationship during send so an existing
-thread cannot bypass a later block.
+- increments unread counts for other participants;
+- recovers from a concurrent unique-key race by reading the committed message.
 
 ## Service design rules
 

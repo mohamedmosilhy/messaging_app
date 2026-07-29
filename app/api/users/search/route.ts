@@ -1,17 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { AppError } from "@/app/lib/errors/AppError";
+import { ValidationError } from "@/app/lib/errors/ValidationError";
 import { searchUsers } from "@/app/features/users";
+import { SearchUsersQueryValidation } from "@/app/features/users/schemas/searchUsers.schema";
+import { formatZodErrors } from "@/app/utils/formatZodErrors";
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const query = searchParams.get("query") || "";
-    const cursor = searchParams.get("cursor") || undefined;
-    const parsedLimit = Number(searchParams.get("limit"));
-    const limit = Number.isFinite(parsedLimit) ? parsedLimit : 10;
+    const parsed = SearchUsersQueryValidation.safeParse({
+      query: searchParams.get("query") ?? undefined,
+      cursor: searchParams.get("cursor") ?? undefined,
+      limit: searchParams.get("limit") ?? undefined,
+    });
 
-    const res = await searchUsers({ query, cursor, limit });
+    if (!parsed.success) {
+      throw new ValidationError(formatZodErrors(parsed.error));
+    }
+
+    const res = await searchUsers(parsed.data);
 
     return NextResponse.json(res);
   } catch (error) {

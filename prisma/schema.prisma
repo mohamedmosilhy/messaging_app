@@ -68,6 +68,7 @@ model Message {
   id             String   @id @default(cuid())
   senderId       String
   conversationId String
+  clientId       String
   content        String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -76,7 +77,8 @@ model Message {
   conversation         Conversation  @relation("ConversationMessages", fields: [conversationId], references: [id])
   latestInConversation Conversation? @relation("LastMessage")
 
-  @@index([conversationId])
+  @@unique([senderId, clientId])
+  @@index([conversationId, createdAt, id])
 }
 
 model Block {

@@ -4,6 +4,7 @@ import { AppError } from "@/app/lib/errors/AppError";
 import { editProfile, getCurrentUser } from "@/app/features/users";
 import { EditProfileValidation } from "@/app/features/users/schemas/editProfile.schema";
 import { formatZodErrors } from "@/app/utils/formatZodErrors";
+import { parseJsonBody } from "@/app/utils/parseJsonBody";
 
 export async function GET() {
   try {
@@ -33,7 +34,7 @@ export async function GET() {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await parseJsonBody(req);
 
     const parsed = EditProfileValidation.safeParse(body);
 

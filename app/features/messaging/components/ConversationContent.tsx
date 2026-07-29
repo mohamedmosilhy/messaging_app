@@ -1,12 +1,14 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 
 import { ErrorState } from "@/app/components/shared/error-state";
 import { getConversationRequest } from "../actions/getConversationRequest";
 import { useConversationMessages } from "../hooks/useConversationMessages";
 import { useSendMessage } from "../hooks/useSendMessage";
+import type { GetConversationsResponse } from "../types/conversation.types";
 import { ConversationHeader } from "./ConversationHeader";
 import { ConversationSkeleton } from "./ConversationSkeleton";
 import { MessageComposer } from "./MessageComposer";
@@ -18,12 +20,34 @@ export function ConversationContent({
   conversationId: string;
 }) {
   const { data: session } = useSession();
+  const queryClient = useQueryClient();
   const conversationQuery = useQuery({
     queryKey: ["conversation", conversationId],
     queryFn: () => getConversationRequest(conversationId),
   });
   const messagesQuery = useConversationMessages(conversationId);
   const messageMutation = useSendMessage(conversationId);
+
+  useEffect(() => {
+    queryClient.setQueryData<GetConversationsResponse>(
+      ["conversations"],
+      (oldData) => {
+        if (!oldData) return oldData;
+
+        return {
+          ...oldData,
+          data: {
+            ...oldData.data,
+            conversations: oldData.data.conversations.map((conversation) =>
+              conversation.conversationId === conversationId
+                ? { ...conversation, unreadCount: 0 }
+                : conversation,
+            ),
+          },
+        };
+      },
+    );
+  }, [conversationId, conversationQuery.data, queryClient]);
 
   if (conversationQuery.isLoading || messagesQuery.isLoading) {
     return <ConversationSkeleton />;
@@ -58,14 +82,13 @@ export function ConversationContent({
         isLoadOlderError={messagesQuery.isFetchNextPageError}
         messages={messagesQuery.messages}
         onLoadOlder={messagesQuery.fetchNextPage}
+        onRemoveMessage={messageMutation.removeFailedMessage}
+        onRetryMessage={messageMutation.retryMessage}
       />
       <MessageComposer
-        errorMessage={messageMutation.error?.message}
-        isPending={messageMutation.isPending}
+        conversationId={conversationId}
         key={conversationId}
-        onSend={(content, onSuccess) =>
-          messageMutation.sendMessage(content, { onSuccess })
-        }
+        onSend={messageMutation.sendMessage}
       />
     </section>
   );

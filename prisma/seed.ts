@@ -483,7 +483,7 @@ async function createDirectConversation(
 
   let lastMessage: { id: string; createdAt: Date } | null = null;
 
-  for (const message of seed.messages) {
+  for (const [messageIndex, message] of seed.messages.entries()) {
     const sender = users.get(message.from);
 
     if (!sender || (sender.id !== first.id && sender.id !== second.id)) {
@@ -496,6 +496,7 @@ async function createDirectConversation(
       data: {
         conversationId: conversation.id,
         senderId: sender.id,
+        clientId: `seed-${conversation.id}-${messageIndex}`,
         content: message.content,
         createdAt: message.at,
       },

@@ -1,5 +1,8 @@
 import { getConversation } from "@/app/features/messaging";
 import { AppError } from "@/app/lib/errors/AppError";
+import { ValidationError } from "@/app/lib/errors/ValidationError";
+import { ConversationParamsValidation } from "@/app/features/messaging/schemas/messaging.schema";
+import { formatZodErrors } from "@/app/utils/formatZodErrors";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -7,10 +10,14 @@ export async function GET(
   { params }: { params: Promise<{ conversationId: string }> },
 ) {
   try {
-    const { conversationId } = await params;
+    const parsed = ConversationParamsValidation.safeParse(await params);
+
+    if (!parsed.success) {
+      throw new ValidationError(formatZodErrors(parsed.error));
+    }
 
     const res = await getConversation({
-      conversationId,
+      conversationId: parsed.data.conversationId,
     });
 
     return NextResponse.json(res);

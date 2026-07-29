@@ -45,47 +45,41 @@ Owned by Next.js routing:
 ## Current local state
 
 Forms use `useState` for values, submitting flags, and field errors.
-`MessageComposer` owns its current draft and `MessageTimeline` owns only the
-jump-to-latest visibility state. Search keeps the raw query locally, derives a
-debounced value, and leaves result pages in React Query. Profile settings keep
-an editable snapshot and the last server-confirmed snapshot for dirty/reset
-behavior.
+`useConversationDraft` owns a browser-storage value keyed by conversation ID,
+while `MessageTimeline` owns only the jump-to-latest visibility state. Search
+keeps the raw query locally, derives a debounced value, and leaves result pages
+in React Query. Profile settings keep an editable snapshot and the last
+server-confirmed snapshot for dirty/reset behavior.
 
 After profile success, Auth.js `session.update` replaces the JWT-owned public
 profile fields. The protected server layout then receives the refreshed
 identity through `router.refresh`.
 
-## Recommended draft model
+## Draft model
 
-The Phase 2 composer clears after success and retains the current draft after
-failure. Phase 4 should also make drafts survive moving between conversations.
-
-A small client store or reducer keyed by conversation ID is appropriate:
-
-```ts
-type Drafts = Record<string, string>;
-```
-
-This does not replace React Query because drafts are unsaved client-owned data.
+Drafts use `localStorage` keys shaped as `relay:draft:<conversationId>`.
+`useSyncExternalStore` keeps React subscribed to local and cross-tab changes
+without moving unsaved text into React Query. Submission clears the draft
+immediately because the optimistic/failed bubble becomes the recoverable
+record.
 
 ## Mutation state
 
-A single `isPending` flag is not enough for a mature composer. Each temporary
-message should express:
+Each temporary message expresses:
 
 - `sending`;
 - `failed`;
 - `sent` through the real server model.
 
-This can live as a UI extension around cached message data or in a dedicated
-outbox model, but server DTOs should not pretend temporary states are persisted.
+`sending` and `failed` are UI-only extensions around cached message data.
+Persisted rows have no delivery-status column.
 
 ## Unread state
 
-The server is authoritative. Opening a conversation should immediately update
-the inbox cache for responsiveness, then reconcile with the server. Future
-real-time reads should use a stable read marker rather than allowing independent
-clients to guess at counts.
+The server is authoritative. Opening a conversation immediately changes the
+matching inbox cache row to zero while the conversation GET performs the
+persistent reset. Future real-time reads should use a stable read marker rather
+than allowing independent clients to guess at counts.
 
 ## State rules
 

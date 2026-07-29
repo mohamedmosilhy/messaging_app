@@ -26,6 +26,8 @@ type MessageTimelineProps = {
   isLoadOlderError: boolean;
   isFetchingNextPage: boolean;
   onLoadOlder: () => Promise<unknown>;
+  onRemoveMessage: (clientId: string) => void;
+  onRetryMessage: (message: MessageResponse) => void;
 };
 
 function messagesAreGrouped(
@@ -52,6 +54,8 @@ export function MessageTimeline({
   isLoadOlderError,
   isFetchingNextPage,
   onLoadOlder,
+  onRemoveMessage,
+  onRetryMessage,
 }: MessageTimelineProps) {
   const latestMessageId = messages.at(-1)?.id;
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -203,6 +207,8 @@ export function MessageTimeline({
                     endsGroup={endsGroup}
                     isMine={message.senderId === currentUserId}
                     message={message}
+                    onRemove={onRemoveMessage}
+                    onRetry={onRetryMessage}
                     startsGroup={startsGroup}
                   />
                 </Fragment>

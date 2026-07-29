@@ -21,6 +21,7 @@ export type GetMessagesResponse = {
 
 export const messageResponseSelect = {
   id: true,
+  clientId: true,
   senderId: true,
   conversationId: true,
   content: true,
@@ -33,10 +34,14 @@ export const messageResponseSelect = {
 
 export type SendMessageRequest = {
   conversationId: string;
+  clientId: string;
   content: string;
 };
 
+export type MessageDeliveryStatus = "sending" | "failed";
+
 export type MessageResponse = {
+  clientId: string;
   content: string;
   id: string;
   createdAt: Date;
@@ -50,7 +55,8 @@ export type MessageResponse = {
     avatarUrl: string | null;
   };
   senderId: string;
-  isOptimistic?: boolean;
+  deliveryStatus?: MessageDeliveryStatus;
+  deliveryError?: string;
 };
 
 export type SendMessageResponse = {

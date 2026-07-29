@@ -1,3 +1,5 @@
+import { Prisma } from "@/generated/prisma/client";
+import { ForbiddenError } from "@/app/lib/errors/ForbiddenError";
 import { requireCurrentUserId } from "@/app/utils/requireCurrentUserId";
 import {
   messageResponseSelect,
@@ -17,7 +19,13 @@ export async function sendMessage(
   if (!currUserId) {
     throw new UnauthorizedError("Authentication required");
   }
-  // validation
+
+  if (!req.clientId || req.clientId.length > 64) {
+    throw new ValidationError({
+      clientId: "A valid client message ID is required",
+    });
+  }
+
   const content = req.content.trim();
 
   if (!content) {
@@ -29,58 +37,131 @@ export async function sendMessage(
       content: "Content must be less than 1000 characters",
     });
   }
-  // authorization
-
   const conversation = await requireConversationParticipant(
     req.conversationId,
     currUserId,
   );
 
-  // transaction
-
-  const message = await prisma.$transaction(async (tx) => {
-    const createdMessage = await tx.message.create({
-      data: {
+  const existingMessage = await prisma.message.findUnique({
+    where: {
+      senderId_clientId: {
         senderId: currUserId,
-        content,
-        conversationId: conversation.id,
+        clientId: req.clientId,
       },
-      select: messageResponseSelect,
-    });
-
-    await tx.conversation.update({
-      where: {
-        id: conversation.id,
-      },
-      data: {
-        lastMessageAt: createdMessage.createdAt,
-        lastMessageId: createdMessage.id,
-      },
-    });
-
-    await tx.participation.updateMany({
-      where: {
-        conversationId: conversation.id,
-        userId: {
-          not: currUserId,
-        },
-      },
-      data: {
-        unreadCount: {
-          increment: 1,
-        },
-      },
-    });
-
-    return createdMessage;
+    },
+    select: messageResponseSelect,
   });
 
-  // return
+  if (existingMessage) {
+    if (existingMessage.conversationId !== conversation.id) {
+      throw new ValidationError({
+        clientId:
+          "This client message ID was already used in another conversation",
+      });
+    }
 
-  return {
-    success: true,
-    data: {
-      message,
-    },
-  };
+    return {
+      success: true,
+      data: { message: existingMessage },
+    };
+  }
+
+  const otherParticipantIds = conversation.participants
+    .map((participant) => participant.user.id)
+    .filter((participantId) => participantId !== currUserId);
+
+  const blockingRelationship = otherParticipantIds.length
+    ? await prisma.block.findFirst({
+        where: {
+          OR: [
+            {
+              blockerId: currUserId,
+              blockedId: { in: otherParticipantIds },
+            },
+            {
+              blockerId: { in: otherParticipantIds },
+              blockedId: currUserId,
+            },
+          ],
+        },
+        select: { blockerId: true },
+      })
+    : null;
+
+  if (blockingRelationship) {
+    throw new ForbiddenError("You cannot send a message in this conversation");
+  }
+
+  try {
+    const message = await prisma.$transaction(async (tx) => {
+      const createdMessage = await tx.message.create({
+        data: {
+          senderId: currUserId,
+          clientId: req.clientId,
+          content,
+          conversationId: conversation.id,
+        },
+        select: messageResponseSelect,
+      });
+
+      await tx.conversation.update({
+        where: {
+          id: conversation.id,
+        },
+        data: {
+          lastMessageAt: createdMessage.createdAt,
+          lastMessageId: createdMessage.id,
+        },
+      });
+
+      await tx.participation.updateMany({
+        where: {
+          conversationId: conversation.id,
+          userId: {
+            not: currUserId,
+          },
+        },
+        data: {
+          unreadCount: {
+            increment: 1,
+          },
+        },
+      });
+
+      return createdMessage;
+    });
+
+    return {
+      success: true,
+      data: {
+        message,
+      },
+    };
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      const concurrentlyCreatedMessage = await prisma.message.findUnique({
+        where: {
+          senderId_clientId: {
+            senderId: currUserId,
+            clientId: req.clientId,
+          },
+        },
+        select: messageResponseSelect,
+      });
+
+      if (concurrentlyCreatedMessage?.conversationId === conversation.id) {
+        return {
+          success: true,
+          data: {
+            message: concurrentlyCreatedMessage,
+          },
+        };
+      }
+    }
+
+    throw error;
+  }
 }

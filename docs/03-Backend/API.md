@@ -24,8 +24,8 @@ domain errors use:
 }
 ```
 
-Not every client request currently preserves the server error body; some replace
-it with a generic `Error`. Standardizing this is recommended.
+The message-send client preserves the server's user-safe error message.
+Machine-readable error codes remain a future improvement.
 
 ## Authentication
 
@@ -95,7 +95,7 @@ The body must contain at least one meaningful field at the service boundary.
 Query parameters:
 
 - `query`: required non-empty prefix;
-- `limit`: clamped by the service to 1–50;
+- `limit`: validated as an integer from 1–50;
 - `cursor`: optional user ID.
 
 Returns public profiles and `nextCursor`.
@@ -131,16 +131,15 @@ Body:
 }
 ```
 
-Returns an existing or newly created direct conversation ID. The route
-currently passes the body directly to the service; a Zod transport schema is
-recommended.
+Returns an existing or newly created direct conversation ID. The route uses a
+strict Zod transport schema.
 
 ### `GET /api/conversations/:conversationId`
 
 Verifies participation, resets the caller's unread count, and returns the
 conversation summary and other participants.
 
-The route currently contains a debug `console.log` that should be removed.
+The conversation ID path parameter is validated before the service runs.
 
 ## Messages
 
@@ -167,7 +166,8 @@ Returns:
 }
 ```
 
-The service clamps the limit to 1–50.
+The route requires both cursor fields together and validates the cursor
+timestamp before the service runs.
 
 ### `POST /api/conversations/:conversationId/messages`
 
@@ -175,12 +175,15 @@ Body:
 
 ```json
 {
+  "clientId": "5e917563-b1db-43df-bfd7-c5cc3f2ff488",
   "content": "Hello"
 }
 ```
 
 The service trims content, rejects empty text, limits stored text to 1,000
-characters, verifies participation, and runs the send transaction.
+characters, verifies participation, rejects blocked pairs, and runs the send
+transaction. Repeating the same `clientId` for the same sender returns the
+existing message instead of inserting a duplicate.
 
 ## Status mapping
 
@@ -197,9 +200,5 @@ Unexpected failures return a generic `500`.
 ## Recommended API contract work
 
 - add a stable machine-readable error `code`;
-- validate every body and cursor date with Zod;
-- return `400` for malformed JSON;
-- parse response JSON on failed client requests;
 - add request correlation IDs and structured server logging;
 - add rate limits before public deployment;
-- add client message ID to the send contract.

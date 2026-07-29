@@ -150,8 +150,8 @@ Acceptance criteria:
 As a user on an unstable connection, I want to understand whether my message
 was sent so that I do not resend it accidentally.
 
-This story requires per-message mutation state and a client-generated
-idempotency key. It should be finished before WebSocket delivery.
+This story is implemented with per-message mutation state and a
+client-generated idempotency key.
 
 ## Accessibility stories
 

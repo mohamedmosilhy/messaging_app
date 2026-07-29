@@ -73,11 +73,13 @@ A message belongs to one sender and conversation.
 Important fields:
 
 - sender and conversation foreign keys;
+- client-generated identity scoped uniquely per sender;
 - text content;
 - created and updated timestamps.
 
-The current model has no delivery state, edit/delete marker, reply relation, or
-client-generated idempotency key.
+The current model has no persisted delivery state, edit/delete marker, or reply
+relation. Sending/failed are client-only states; `clientId` is the durable
+idempotency identity.
 
 ## Block
 

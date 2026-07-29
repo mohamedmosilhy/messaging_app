@@ -114,12 +114,14 @@ retry, and empty states.
 
 ## Review recommendations
 
-These are improvements discovered during the repository review rather than
-claims about completed behavior:
+Completed review recommendations:
 
-- add message idempotency before automatic retry or WebSockets;
-- enforce blocking again when sending to an existing conversation;
-- replace whole-cache optimistic rollback with message-specific rollback;
+- message idempotency before automatic retry or WebSockets;
+- send-time block enforcement for existing conversations;
+- message-specific optimistic failure handling.
+
+Remaining recommendations:
+
 - decide whether an opened conversation may exist before its first message;
 - evolve unread state for multi-device real-time behavior;
 - add automated coverage for the critical business rules.

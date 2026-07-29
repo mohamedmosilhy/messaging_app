@@ -9,14 +9,18 @@ The database remains the source of truth. WebSockets notify clients about
 committed state; they do not replace service validation, authorization,
 transactions, or history endpoints.
 
-## Prerequisites
+## Completed prerequisites
 
-- Add client-generated message IDs and database idempotency.
-- Make optimistic rollback safe for concurrent sends.
-- Define a read-marker strategy.
-- Enforce blocks while sending.
-- Standardize message DTOs and API errors.
-- Add integration tests for sending and participation.
+- Client-generated message IDs and database idempotency.
+- Optimistic updates safe for concurrent sends.
+- Send-time block enforcement.
+- Stable message DTO identity across optimistic and stored states.
+- Service tests for idempotent retry and send-time blocking.
+
+## Remaining prerequisite
+
+- Define and implement a multi-client read-marker strategy.
+- Expand PostgreSQL integration coverage for sending and participation.
 
 ## Connection lifecycle
 

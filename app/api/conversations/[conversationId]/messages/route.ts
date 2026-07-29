@@ -1,6 +1,14 @@
 import { getMessages } from "@/app/features/messaging";
 import { sendMessage } from "@/app/features/messaging/services/sendMessage.service";
 import { AppError } from "@/app/lib/errors/AppError";
+import { ValidationError } from "@/app/lib/errors/ValidationError";
+import {
+  ConversationParamsValidation,
+  MessagesQueryValidation,
+  SendMessageValidation,
+} from "@/app/features/messaging/schemas/messaging.schema";
+import { formatZodErrors } from "@/app/utils/formatZodErrors";
+import { parseJsonBody } from "@/app/utils/parseJsonBody";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -14,27 +22,34 @@ export async function GET(
   },
 ) {
   try {
-    const { conversationId } = await params;
+    const parsedParams = ConversationParamsValidation.safeParse(await params);
+
+    if (!parsedParams.success) {
+      throw new ValidationError(formatZodErrors(parsedParams.error));
+    }
 
     const searchParams = request.nextUrl.searchParams;
+    const parsedQuery = MessagesQueryValidation.safeParse({
+      limit: searchParams.get("limit") ?? undefined,
+      cursorId: searchParams.get("cursorId") ?? undefined,
+      cursorCreatedAt: searchParams.get("cursorCreatedAt") ?? undefined,
+    });
 
-    const parsedLimit = Number(searchParams.get("limit"));
-    const limit = Number.isFinite(parsedLimit) ? parsedLimit : 20;
-
-    const cursorId = searchParams.get("cursorId");
-    const cursorCreatedAt = searchParams.get("cursorCreatedAt");
+    if (!parsedQuery.success) {
+      throw new ValidationError(formatZodErrors(parsedQuery.error));
+    }
 
     const cursor =
-      cursorId && cursorCreatedAt
+      parsedQuery.data.cursorId && parsedQuery.data.cursorCreatedAt
         ? {
-            id: cursorId,
-            createdAt: cursorCreatedAt,
+            id: parsedQuery.data.cursorId,
+            createdAt: parsedQuery.data.cursorCreatedAt,
           }
         : undefined;
 
     const res = await getMessages({
-      conversationId,
-      limit,
+      conversationId: parsedParams.data.conversationId,
+      limit: parsedQuery.data.limit,
       cursor,
     });
 
@@ -69,12 +84,23 @@ export async function POST(
   },
 ) {
   try {
-    const { conversationId } = await params;
+    const parsedParams = ConversationParamsValidation.safeParse(await params);
 
-    const body = await request.json();
+    if (!parsedParams.success) {
+      throw new ValidationError(formatZodErrors(parsedParams.error));
+    }
+
+    const body = await parseJsonBody(request);
+    const parsedBody = SendMessageValidation.safeParse(body);
+
+    if (!parsedBody.success) {
+      throw new ValidationError(formatZodErrors(parsedBody.error));
+    }
+
     const res = await sendMessage({
-      conversationId,
-      content: body.content,
+      conversationId: parsedParams.data.conversationId,
+      clientId: parsedBody.data.clientId,
+      content: parsedBody.data.content,
     });
     return NextResponse.json(res);
   } catch (error) {

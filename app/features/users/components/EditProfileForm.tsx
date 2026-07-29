@@ -217,7 +217,7 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
             </div>
           ) : null}
 
-          <div className="flex flex-col-reverse gap-2 border-t border-white/8 pt-5 sm:flex-row sm:justify-end">
+          <div className="sticky bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-10 -mx-2 flex flex-col-reverse gap-2 rounded-2xl border border-white/10 bg-card/95 p-3 shadow-[0_1rem_3rem_oklch(0_0_0/0.35)] backdrop-blur-xl sm:flex-row sm:justify-end">
             <Button
               disabled={!isDirty}
               onClick={reset}

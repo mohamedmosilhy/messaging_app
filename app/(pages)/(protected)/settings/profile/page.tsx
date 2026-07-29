@@ -9,12 +9,12 @@ const ProfilePage = async () => {
   const user = await getCurrentUser();
 
   return (
-    <PageContainer>
+    <PageContainer className="pb-24">
       <PageHeader
         description="Manage the public details people see in conversations."
         title="Profile settings"
       />
-      <Card className="overflow-hidden border-white/10 bg-card/65 shadow-[0_1.5rem_5rem_oklch(0_0_0/0.22)] backdrop-blur-xl">
+      <Card className="overflow-visible border-white/10 bg-card/65 shadow-[0_1.5rem_5rem_oklch(0_0_0/0.22)] backdrop-blur-xl">
         <CardContent className="p-5 sm:p-7">
           <EditProfileForm
             user={{

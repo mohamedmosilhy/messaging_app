@@ -6,8 +6,10 @@ I built this messaging application from scratch as a full-stack learning
 project. I focused first on data modeling, authentication, services, API
 routes, React Query, pagination, unread state, and optimistic sending. I then
 built the complete premium dark presentation across the public, authentication,
-inbox, conversation, discovery, profile, and settings experiences. My next
-milestone is behavior hardening before real-time delivery.
+inbox, conversation, discovery, profile, and settings experiences. I then
+hardened the HTTP message workflow with idempotency, concurrent optimistic
+sends, retryable failures, drafts, route validation, and send-time block
+checks. My next milestone is real-time delivery.
 
 These documents explain what I have made, why I made the main decisions, what
 is incomplete, and how I plan to continue. Review findings are explicitly
@@ -87,6 +89,9 @@ labeled as recommendations so they are not confused with implemented features.
   presentation, composer, scroll behavior, favicon, and Phase 3 handoff.
 - [Phase 3 Report](./06-Engineering/Phase-3-Report.md) — completed premium dark
   system, remaining pages, search pagination, and session refresh behavior.
+- [Phase 4 Report](./06-Engineering/Phase-4-Report.md) — completed idempotent
+  send path, concurrent optimistic behavior, drafts, validation, and database
+  hardening.
 
 ### 7. Reference
 
@@ -117,14 +122,13 @@ docs/
 
 ## Current project summary
 
-The core architecture, HTTP messaging foundation, and complete Phase 1–3
-presentation are real and established.
+The core architecture, hardened HTTP messaging workflow, and complete Phase
+1–3 presentation are real and established.
 The strongest completed areas are service separation, participant
 authorization, direct-conversation uniqueness, stable message pagination,
-transactional send metadata, seeded edge cases, and the first optimistic cache
-workflow.
+transactional send metadata, sender-scoped idempotency, stable cursor indexes,
+seeded edge cases, and concurrency-safe optimistic cache behavior.
 
 The main unfinished areas are broader database/automated-browser coverage,
-concurrency-safe retry/idempotency, complete block behavior, multi-client read
-state, and real-time delivery. The roadmap intentionally handles those in that
-order.
+block/unblock product controls, multi-client read markers, and real-time
+delivery. The roadmap intentionally handles those in that order.

@@ -52,15 +52,15 @@ initial loading, next-page loading, empty results, and request failure.
 
 `useSendMessage` handles optimistic cache work. It also invalidates the inbox
 after settlement so direct cache changes are checked against authoritative
-server data.
+server data. Each mutation owns a client message ID, marks only its matching
+bubble on failure, and can coexist with other pending sends.
 
 ## Recommended defaults
 
 Define defaults deliberately rather than relying on library behavior:
 
 - small retry count for safe reads;
-- no automatic blind retry for non-idempotent message POST until an idempotency
-  key exists;
+- retry message POSTs only with their original client ID;
 - stale times based on data volatility;
 - refetch on reconnect;
 - useful garbage-collection time for recently visited threads;

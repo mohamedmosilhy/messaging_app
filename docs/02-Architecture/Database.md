@@ -24,7 +24,8 @@ the PostgreSQL driver adapter.
 - `Conversation.participantKey`;
 - `Conversation.lastMessageId`;
 - participation composite key;
-- block composite key.
+- block composite key;
+- `Message(senderId, clientId)`.
 
 The `participantKey` constraint is especially important because service-level
 checks alone cannot prevent two simultaneous requests from creating duplicates.
@@ -33,21 +34,20 @@ checks alone cannot prevent two simultaneous requests from creating duplicates.
 
 - `Conversation.lastMessageAt`;
 - `Participation.conversationId`;
-- `Message.conversationId`;
+- `Message(conversationId, createdAt, id)`.
 
 The participation primary key begins with `userId`, which supports retrieving a
 user's participations.
 
-### Recommended index
-
 The history query filters by conversation and orders/cursors by creation time
-and ID. Add and measure:
+and ID. Its implemented index matches that access path:
 
 ```prisma
 @@index([conversationId, createdAt, id])
 ```
 
-This should be validated with realistic data and a PostgreSQL query plan.
+It should still be measured with production-scale data and a PostgreSQL query
+plan.
 
 ## Transaction boundaries
 
@@ -92,14 +92,13 @@ must not run against valuable data.
 
 ## Migration notes
 
-Migrations currently establish the main models and later add
-`Participation.unreadCount`. Future behavioral changes such as idempotency or
-read markers must be introduced through migrations, not manual production
-schema edits.
+The Phase 4 migration adds `Message.clientId`, backfills existing messages from
+their unique server IDs, creates the sender/client unique key, and replaces the
+single-column history index with the stable cursor index. Future read markers
+must also be introduced through migrations, not manual production schema edits.
 
 ## Recommendations
 
-- add client message IDs with an appropriate unique scope;
 - decide foreign-key deletion behavior before implementing deletion;
 - consider `lastReadMessageId` on participation;
 - validate database constraints against group-chat plans;

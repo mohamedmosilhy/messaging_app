@@ -1,111 +1,98 @@
 # Optimistic Updates
 
-## What I implemented
+## Implemented send model
 
-The current send hook makes a message appear before the server responds.
-
-### Mutation start
-
-1. Cancel the active messages query.
-2. Save the previous infinite-query cache.
-3. Require available cached pages and session user.
-4. Generate `temp-${crypto.randomUUID()}`.
-5. Build a temporary message using the draft and session profile.
-6. Append it to the newest page.
-
-### Success
-
-1. Find the temporary message from mutation context.
-2. Replace it with the returned database message.
-3. Update the matching inbox preview.
-4. Move that conversation to the top.
-5. Invalidate the inbox after settlement.
-
-### Failure
-
-The previous full message cache snapshot is restored.
-
-## What works well
-
-- The sender sees immediate feedback.
-- The optimistic bubble shows a sending clock.
-- A successful message changes to a sent check.
-- Server IDs and timestamps replace temporary values.
-- The inbox does not wait for a second fetch after success.
-- A final invalidation reconciles the inbox.
-- The implementation understands that infinite-query data has nested pages.
-
-## Important distinction
-
-The message bubble is pre-response optimistic. The inbox change currently
-happens in `onSuccess`, so it is an eager direct cache update after success.
-Moving the preview in `onMutate` would make the inbox itself fully optimistic.
-
-## Edge cases to handle
-
-### Local validation
-
-The composer trims before submission, prevents blank messages, and prevents
-content longer than 1,000 characters. The service still performs the
-authoritative validation.
-
-### Draft behavior
-
-The composer clears after success. On failure, rollback removes the optimistic
-bubble while the draft remains in the composer with an actionable error and
-retry instruction.
-
-### Concurrent sends
-
-Restoring a full snapshot for one failure can remove another send that
-succeeded later. Rollback should remove or mark only the failed temporary ID.
-
-### Failed bubble
-
-Phase 2 makes failure visible and preserves the draft. A persistent failed
-bubble with retry/remove actions requires targeted rollback and idempotency, so
-it remains part of Phase 4.
-
-### Missing temporary item
-
-If refetching or another cache update removes the temporary record, success
-should merge the server message if it is not already present.
-
-### Duplicate delivery
-
-The same message may later arrive through:
-
-- optimistic insertion;
-- HTTP response;
-- WebSocket event;
-- reconnect refetch.
-
-Add a client-generated message ID stored by the server, then deduplicate on
-both client and database.
-
-### Session profile
-
-The temporary sender uses session profile fields. Refresh the Auth.js session
-after profile edits to avoid old display names or avatars.
-
-## Target state machine
+Every logical send starts with a browser-generated UUID. That `clientId`
+travels through the optimistic message, HTTP request, stored row, response, and
+future real-time event. It is the stable identity used while the database ID is
+not known.
 
 ```text
 draft
-  -> sending(temp/client ID)
-     -> sent(server ID)
-     -> failed(retry/remove)
+  -> sending(clientId, temporary UI id)
+     -> sent(clientId, server id)
+     -> failed(clientId)
+        -> retry(same clientId)
+        -> remove from local cache
 ```
 
-Retry reuses the client ID. The server returns the existing stored message if
-that ID was already committed.
+## Mutation start
 
-## Acceptance tests
+1. The composer trims and validates the draft.
+2. `useSendMessage` creates a UUID and submits `{ clientId, content }`.
+3. The active message query is cancelled to avoid an older response
+   overwriting the insertion.
+4. A temporary message is appended to the newest infinite-query page.
+5. The bubble has `deliveryStatus: "sending"` and uses the active session
+   profile.
+6. The composer clears immediately, so another message can be sent without
+   waiting.
 
-- Bubble appears before the response.
-- Server response replaces it once.
-- Failed send remains actionable.
-- Two pending messages may resolve out of order.
-- One failure does not erase another success.
-- Retry cannot create a duplicate.
-- Inbox preview and message list converge after refetch/socket delivery.
+Retry uses the same path, but finds the existing failed bubble by `clientId`
+and changes only that bubble back to `sending`.
+
+## Success
+
+The hook replaces the matching client ID with the authoritative server DTO. It
+also removes an already-present copy with the same server ID, which prepares
+the cache for HTTP/socket arrival in either order.
+
+The matching inbox preview is updated only when the returned message is not
+older than its current preview. The conversation is moved to the top and the
+inbox is invalidated after settlement for authoritative reconciliation.
+
+## Failure
+
+A failure does not restore a snapshot of the entire messages cache. Only the
+message with the failed mutation's `clientId` changes to:
+
+```ts
+{
+  deliveryStatus: "failed";
+  deliveryError: string;
+}
+```
+
+The bubble remains in chronological context and exposes Retry and Remove.
+Retry reuses the original client ID. Remove deletes only that failed local
+bubble.
+
+## Why concurrent sends are safe
+
+Whole-cache rollback is unsafe when two sends overlap: an older failed
+mutation can restore a snapshot that predates a later successful mutation.
+Phase 4 uses targeted updates, so completion order does not affect unrelated
+messages.
+
+The database adds a second safety boundary:
+
+```prisma
+@@unique([senderId, clientId])
+```
+
+If the browser retries after the first request committed but its response was
+lost, the service returns the stored message. If two requests race, the unique
+constraint chooses one row and the losing request reads that row.
+
+## Draft behavior
+
+Drafts are browser-owned state, not server state. `useConversationDraft` stores
+one value under `relay:draft:<conversationId>`. Navigating between threads
+therefore restores the correct text. A submitted draft clears immediately; a
+failed message remains recoverable through its persistent bubble.
+
+## Remaining real-time integration
+
+A future `message.created` event must merge by `clientId` and server `id` using
+the same cache path. Reconnect still refetches message history as the
+authoritative recovery mechanism.
+
+## Verified rules
+
+- a bubble appears before the response;
+- several messages may remain pending together;
+- one failure does not erase another mutation;
+- a failed bubble is retryable or removable;
+- retry uses the same stable client ID;
+- the database cannot store two rows for one sender/client ID;
+- the inbox is reconciled after settlement.

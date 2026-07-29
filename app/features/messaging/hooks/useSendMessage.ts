@@ -6,31 +6,49 @@ import {
 import { useSession } from "next-auth/react";
 
 import { sendMessageRequest } from "../actions/sendMessageRequest";
+import { GetConversationsResponse } from "../types/conversation.types";
 import {
   GetMessagesResponse,
   MessageResponse,
   SendMessageResponse,
 } from "../types/messages.types";
-import { GetConversationsResponse } from "../types/conversation.types";
 
-type SendMessageContext = {
-  previousMessages?: InfiniteData<GetMessagesResponse>;
-  temporaryMessageId?: string;
+type SendMessageVariables = {
+  clientId: string;
+  content: string;
 };
+
+const getMessageError = (error: Error) =>
+  error.message || "The message could not be sent.";
 
 export function useSendMessage(conversationId: string) {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
-
   const messagesQueryKey = ["messages", conversationId] as const;
 
   function updateMessages(
     oldData: InfiniteData<GetMessagesResponse> | undefined,
     updater: (messages: MessageResponse[]) => MessageResponse[],
   ) {
-    if (!oldData) {
-      return oldData;
-    }
+    if (!oldData) return oldData;
+
+    return {
+      ...oldData,
+      pages: oldData.pages.map((page) => ({
+        ...page,
+        data: {
+          ...page.data,
+          messages: updater(page.data.messages),
+        },
+      })),
+    };
+  }
+
+  function appendToNewestPage(
+    oldData: InfiniteData<GetMessagesResponse> | undefined,
+    message: MessageResponse,
+  ) {
+    if (!oldData) return oldData;
 
     return {
       ...oldData,
@@ -40,7 +58,7 @@ export function useSendMessage(conversationId: string) {
               ...page,
               data: {
                 ...page.data,
-                messages: updater(page.data.messages),
+                messages: [...page.data.messages, message],
               },
             }
           : page,
@@ -51,38 +69,56 @@ export function useSendMessage(conversationId: string) {
   const mutation = useMutation<
     SendMessageResponse,
     Error,
-    string,
-    SendMessageContext
+    SendMessageVariables
   >({
-    mutationFn: (content: string) =>
+    mutationFn: ({ clientId, content }) =>
       sendMessageRequest({
         conversationId,
+        clientId,
         content,
       }),
 
-    onMutate: async (content) => {
-      await queryClient.cancelQueries({
-        queryKey: messagesQueryKey,
-      });
+    onMutate: async ({ clientId, content }) => {
+      await queryClient.cancelQueries({ queryKey: messagesQueryKey });
 
-      const previousMessages =
+      if (!session?.user) return;
+
+      const cachedMessages =
         queryClient.getQueryData<InfiniteData<GetMessagesResponse>>(
           messagesQueryKey,
         );
+      const alreadyExists = cachedMessages?.pages.some((page) =>
+        page.data.messages.some((message) => message.clientId === clientId),
+      );
 
-      if (!previousMessages || !session?.user) {
-        return {};
+      if (alreadyExists) {
+        queryClient.setQueryData(
+          messagesQueryKey,
+          (oldData: InfiniteData<GetMessagesResponse> | undefined) =>
+            updateMessages(oldData, (messages) =>
+              messages.map((message) =>
+                message.clientId === clientId
+                  ? {
+                      ...message,
+                      deliveryStatus: "sending",
+                      deliveryError: undefined,
+                    }
+                  : message,
+              ),
+            ),
+        );
+        return;
       }
 
-      const temporaryMessageId = `temp-${crypto.randomUUID()}`;
-
-      const optimisticMessage: MessageResponse & { isOptimistic: true } = {
-        id: temporaryMessageId,
+      const now = new Date();
+      const optimisticMessage: MessageResponse = {
+        id: `temp-${clientId}`,
+        clientId,
         senderId: session.user.id,
         conversationId,
         content,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: now,
+        updatedAt: now,
         sender: {
           id: session.user.id,
           username: session.user.username,
@@ -90,101 +126,134 @@ export function useSendMessage(conversationId: string) {
           bio: session.user.bio,
           avatarUrl: session.user.avatarUrl,
         },
-        isOptimistic: true,
+        deliveryStatus: "sending",
       };
 
       queryClient.setQueryData(
         messagesQueryKey,
         (oldData: InfiniteData<GetMessagesResponse> | undefined) =>
-          updateMessages(oldData, (messages) => [
-            ...messages,
-            optimisticMessage,
-          ]),
+          appendToNewestPage(oldData, optimisticMessage),
       );
-
-      return {
-        previousMessages,
-        temporaryMessageId,
-      };
     },
 
-    onSuccess: (data, _content, context) => {
+    onSuccess: (data, { clientId }) => {
       queryClient.setQueryData(
         messagesQueryKey,
-        (oldData: InfiniteData<GetMessagesResponse> | undefined) =>
-          updateMessages(oldData, (messages) =>
-            messages.map((message) =>
-              message.id === context?.temporaryMessageId
-                ? data.data.message
-                : message,
-            ),
-          ),
+        (oldData: InfiniteData<GetMessagesResponse> | undefined) => {
+          let reconciled = false;
+          const withoutDuplicate = updateMessages(oldData, (messages) =>
+            messages.flatMap((message) => {
+              const matchesServerMessage =
+                message.clientId === clientId ||
+                message.id === data.data.message.id;
+
+              if (!matchesServerMessage) return [message];
+              if (reconciled) return [];
+
+              reconciled = true;
+              return [data.data.message];
+            }),
+          );
+
+          return reconciled
+            ? withoutDuplicate
+            : appendToNewestPage(withoutDuplicate, data.data.message);
+        },
       );
 
       queryClient.setQueryData<GetConversationsResponse>(
         ["conversations"],
         (oldData) => {
-          if (!oldData) {
+          if (!oldData) return oldData;
+
+          const target = oldData.data.conversations.find(
+            (item) => item.conversationId === conversationId,
+          );
+
+          if (
+            !target ||
+            (target.lastMessageAt &&
+              new Date(target.lastMessageAt).getTime() >
+                new Date(data.data.message.createdAt).getTime())
+          ) {
             return oldData;
           }
 
-          const updatedConversations = oldData.data.conversations.map(
-            (conv) => {
-              if (conv.conversationId !== conversationId) {
-                return conv;
-              }
-
-              return {
-                ...conv,
-                lastMessage: data.data.message.content,
-                lastMessageAt: data.data.message.createdAt,
-              };
-            },
-          );
-
-          const updatedConversation = updatedConversations.find(
-            (conv) => conv.conversationId === conversationId,
-          );
-
-          if (!updatedConversation) {
-            return oldData;
-          }
-
-          const otherConversations = updatedConversations.filter(
-            (conv) =>
-              conv.conversationId !== updatedConversation.conversationId,
-          );
+          const updatedTarget = {
+            ...target,
+            lastMessage: data.data.message.content,
+            lastMessageAt: data.data.message.createdAt,
+          };
 
           return {
             ...oldData,
-
             data: {
               ...oldData.data,
-
-              conversations: [updatedConversation, ...otherConversations],
+              conversations: [
+                updatedTarget,
+                ...oldData.data.conversations.filter(
+                  (item) => item.conversationId !== conversationId,
+                ),
+              ],
             },
           };
         },
       );
     },
 
-    onError: (_error, _content, context) => {
-      if (context?.previousMessages) {
-        queryClient.setQueryData(messagesQueryKey, context.previousMessages);
-      }
+    onError: (error, { clientId }) => {
+      queryClient.setQueryData(
+        messagesQueryKey,
+        (oldData: InfiniteData<GetMessagesResponse> | undefined) =>
+          updateMessages(oldData, (messages) =>
+            messages.map((message) =>
+              message.clientId === clientId
+                ? {
+                    ...message,
+                    deliveryStatus: "failed",
+                    deliveryError: getMessageError(error),
+                  }
+                : message,
+            ),
+          ),
+      );
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: ["conversations"],
       });
     },
   });
 
+  function sendMessage(content: string) {
+    mutation.mutate({ content, clientId: crypto.randomUUID() });
+  }
+
+  function retryMessage(message: MessageResponse) {
+    mutation.mutate({
+      clientId: message.clientId,
+      content: message.content,
+    });
+  }
+
+  function removeFailedMessage(clientId: string) {
+    queryClient.setQueryData(
+      messagesQueryKey,
+      (oldData: InfiniteData<GetMessagesResponse> | undefined) =>
+        updateMessages(oldData, (messages) =>
+          messages.filter(
+            (message) =>
+              message.clientId !== clientId ||
+              message.deliveryStatus !== "failed",
+          ),
+        ),
+    );
+  }
+
   return {
-    sendMessage: mutation.mutate,
-    isPending: mutation.isPending,
-    isError: mutation.isError,
-    error: mutation.error,
+    sendMessage,
+    retryMessage,
+    removeFailedMessage,
   };
 }
