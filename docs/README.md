@@ -1,6 +1,6 @@
 # Messaging App Documentation
 
-Last reviewed against the repository: August 7, 2026
+Last reviewed against the repository: August 8, 2026
 
 I built this messaging application from scratch as a full-stack learning
 project. I focused first on data modeling, authentication, services, API
@@ -73,6 +73,9 @@ labeled as recommendations so they are not confused with implemented features.
 
 ### 5. Real-time
 
+- [SSE Implementation Guide](./05-Realtime/SSE-Implementation-Guide.md) — an
+  easy, code-based walkthrough of SSE, durable events, reconnection, cache
+  updates, read markers, failures, and how to rebuild the pattern yourself.
 - [Real-Time Plan](./05-Realtime/Realtime-Plan.md) — prerequisites,
   connection lifecycle, authorization, reconnection, and completion criteria.
 - [Events](./05-Realtime/Events.md) — proposed event envelope and contracts.
