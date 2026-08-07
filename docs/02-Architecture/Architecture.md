@@ -144,6 +144,13 @@ features/
     schemas/
     services/
     types/
+  blocking/
+    actions/
+    components/
+    hooks/
+    schemas/
+    services/
+    types/
   users/
     actions/
     components/

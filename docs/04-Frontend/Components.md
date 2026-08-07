@@ -60,6 +60,17 @@ The profile form previews the avatar, tracks dirty state, retains returned
 values after success, refreshes the Auth.js session, and supports reset. Search
 results and public profiles share safe open-conversation behavior.
 
+### Blocking
+
+- `BlockUserButton` provides block/unblock state, confirmation, pending state,
+  error feedback, and compact/full variants.
+- `BlockedUsersList` provides loading, empty, error, success, profile-link, and
+  unblock states for the management page.
+
+Profile actions and conversation headers consume the standalone control. The
+active message composer becomes read-only with an explanatory status whenever
+either block direction prevents interaction.
+
 ### Messaging
 
 - `ConversationList`;

@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { UserAvatar } from "@/app/components/shared/user-avatar";
 import { Button } from "@/app/components/ui/button";
+import { BlockUserButton } from "@/app/features/blocking/components/BlockUserButton";
 import type { GetConversationResponse } from "../types/conversation.types";
 import { MobileConversationHeader } from "./MobileConversationHeader";
 
@@ -28,16 +29,23 @@ export function ConversationHeader({ conversation }: ConversationHeaderProps) {
         </p>
       </div>
       {participant ? (
-        <Button
-          aria-label={`View ${conversation.title}'s profile`}
-          asChild
-          size="icon"
-          variant="ghost"
-        >
-          <Link href={`/users/${participant.username}`}>
-            <Info aria-hidden="true" />
-          </Link>
-        </Button>
+        <div className="flex items-center gap-1">
+          <BlockUserButton
+            compact
+            displayName={conversation.title}
+            targetUserId={participant.id}
+          />
+          <Button
+            aria-label={`View ${conversation.title}'s profile`}
+            asChild
+            size="icon"
+            variant="ghost"
+          >
+            <Link href={`/users/${participant.username}`}>
+              <Info aria-hidden="true" />
+            </Link>
+          </Button>
+        </div>
       ) : null}
     </header>
   );

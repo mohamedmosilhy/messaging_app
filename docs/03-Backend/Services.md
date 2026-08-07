@@ -59,6 +59,31 @@ product decision.
 - updates selected editable fields;
 - returns the updated profile.
 
+## Blocking services
+
+### `getBlockedUsers`
+
+- requires authentication;
+- returns only blocks owned by the current user;
+- selects public profile fields and an ISO block timestamp;
+- orders newest blocks first.
+
+### `getBlockStatus`
+
+- rejects self and missing targets;
+- evaluates both block directions;
+- exposes whether the current user owns a block and a combined interaction
+  flag without disclosing the reverse direction.
+
+### `blockUser` and `unblockUser`
+
+- require authentication and enforce a per-user mutation limit;
+- reject self and missing targets;
+- use idempotent upsert/delete behavior;
+- mutate only the current user's direction;
+- preserve conversation and message history;
+- return the authoritative relationship status after the command.
+
 ## Messaging services
 
 ### `openConversation`

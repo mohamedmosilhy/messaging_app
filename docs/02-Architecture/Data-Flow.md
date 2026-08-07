@@ -66,6 +66,24 @@ Search result action
   -> navigate to thread
 ```
 
+## Block and unblock
+
+```text
+Profile/thread/settings control
+  -> blocking React Query mutation
+  -> POST /api/blocks or DELETE /api/blocks/:targetUserId
+  -> validate target and authenticate
+  -> enforce mutation rate limit
+  -> reject self or missing target
+  -> idempotently upsert/delete caller-owned Block
+  -> return privacy-safe relationship status
+  -> reconcile status, blocked-list, and discovery queries
+  -> disable/enable the active composer when interaction state changes
+```
+
+Existing history remains readable. After unblocking, interaction becomes
+available only when the reverse block direction is also absent.
+
 ## Read conversation
 
 ```text

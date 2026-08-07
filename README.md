@@ -37,7 +37,8 @@ private or sensitive information.
 - Persistent failed-message Retry and Remove actions.
 - Transactional latest-message metadata and unread counts.
 - Per-conversation browser drafts.
-- Block-aware discovery, conversation creation, and sending.
+- Standalone block/unblock controls, blocked-account management, and
+  block-aware discovery, conversation creation, and sending.
 - Responsive desktop/mobile application shell.
 - Accessible loading, empty, error, keyboard, and focus states.
 - Strict API validation, structured errors, request IDs, and health checks.

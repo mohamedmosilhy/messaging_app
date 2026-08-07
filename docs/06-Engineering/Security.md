@@ -25,7 +25,11 @@
 - Every new real-time subscription must repeat participant authorization.
 - Every future edit/delete/read command must verify the target belongs to the
   authorized conversation.
-- Blocking is checked at send time.
+- Blocking is checked during discovery, conversation opening, and every send.
+- Block/unblock commands authenticate the caller, mutate only the caller-owned
+  direction, reject self/missing targets, and are rate limited.
+- Relationship status does not disclose that the other account initiated a
+  reverse-direction block.
 
 ## Input security
 
@@ -45,6 +49,7 @@ Implemented database-backed limits:
 - conversation opening;
 - message sending;
 - message-history reads.
+- blocking mutations.
 
 Phase 5 must also limit:
 

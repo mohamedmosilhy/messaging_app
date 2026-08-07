@@ -92,12 +92,20 @@ The composite primary key prevents duplicate rows for the same direction.
 Product rules often treat either direction as preventing new contact, which is
 how search and opening currently behave.
 
+The standalone blocking feature lets a user create, list, and remove only
+their own block direction. Relationship status returns whether the current
+user owns a block and a combined `canInteract` value; it does not reveal that
+the other account initiated the reverse direction.
+
 ## Current invariants
 
 - username and email are unique;
 - a direct participant pair has one `participantKey`;
 - one user has one participation per conversation;
 - one block direction appears once;
+- a user cannot block themselves through the application service;
+- either block direction prevents discovery, opening, and new messages;
+- blocking preserves existing conversation history;
 - only participants access conversation history;
 - message creation and conversation preview updates commit together;
 - message pages are stably ordered.
@@ -106,7 +114,6 @@ how search and opening currently behave.
 
 - direct conversations contain exactly two distinct users;
 - group conversations require a title and membership rules;
-- blocked pairs cannot send in an existing thread;
 - retried client sends create at most one message;
 - latest-message metadata always references a message in the same conversation;
 - the product either permits or forbids empty conversations consistently.

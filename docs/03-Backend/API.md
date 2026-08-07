@@ -111,6 +111,29 @@ Query parameters:
 
 Returns public profiles and `nextCursor`.
 
+## Blocking
+
+### `GET /api/blocks`
+
+Returns public profiles for blocks created by the current user, newest first.
+Each row includes the block timestamp.
+
+### `POST /api/blocks`
+
+Accepts a strict `{ "targetUserId": "..." }` body and creates the
+caller-owned direction idempotently. Self-block and missing-user targets are
+rejected.
+
+### `GET /api/blocks/:targetUserId`
+
+Returns `isBlockedByCurrentUser` and a combined `canInteract` flag. The
+response does not identify the other account as the blocker.
+
+### `DELETE /api/blocks/:targetUserId`
+
+Removes only the caller-owned direction idempotently. `canInteract` remains
+false when the reverse direction still exists.
+
 ## Conversations
 
 ### `GET /api/conversations`

@@ -13,17 +13,21 @@ const MAX_MESSAGE_LENGTH = 1000;
 type MessageComposerProps = {
   conversationId: string;
   onSend: (content: string) => void;
+  disabled?: boolean;
+  disabledReason?: string;
 };
 
 export function MessageComposer({
   conversationId,
   onSend,
+  disabled = false,
+  disabledReason,
 }: MessageComposerProps) {
   const [content, setContent] = useConversationDraft(conversationId);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const trimmedContent = content.trim();
   const isOverLimit = content.length > MAX_MESSAGE_LENGTH;
-  const canSend = trimmedContent.length > 0 && !isOverLimit;
+  const canSend = trimmedContent.length > 0 && !isOverLimit && !disabled;
 
   function submitMessage(event?: FormEvent) {
     event?.preventDefault();
@@ -55,10 +59,11 @@ export function MessageComposer({
           aria-describedby="message-help"
           aria-invalid={isOverLimit}
           className="max-h-36 min-h-9 flex-1 resize-none overflow-y-auto border-0 bg-transparent px-2 py-2 shadow-none focus-visible:ring-0"
+          disabled={disabled}
           id="message-composer"
           onChange={(event) => setContent(event.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Write a message"
+          placeholder={disabled ? "Messaging unavailable" : "Write a message"}
           ref={textareaRef}
           rows={1}
           value={content}
@@ -77,7 +82,9 @@ export function MessageComposer({
         className="mt-1.5 flex items-center justify-between px-1 text-[0.7rem] text-muted-foreground"
         id="message-help"
       >
-        <span>Enter to send · Shift + Enter for a new line</span>
+        <span role={disabledReason ? "status" : undefined}>
+          {disabledReason ?? "Enter to send · Shift + Enter for a new line"}
+        </span>
         <span
           className={cn(
             "tabular-nums",

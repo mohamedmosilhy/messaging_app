@@ -165,6 +165,17 @@ still belongs to Phase 5 because it requires real-time read and delivery events.
 - Audited unused files/dependencies and removed confirmed dead code.
 - Deployed the application and documented the live demo.
 
+## Standalone blocking feature
+
+**Status:** Completed on August 7, 2026. See the
+[blocking feature report](../06-Engineering/Blocking-Feature-Report.md).
+
+- Added standalone blocking services, schemas, types, actions, hooks, and UI.
+- Added authenticated list, status, block, and unblock API contracts.
+- Added profile/thread controls and blocked-account settings.
+- Reconciled block state with discovery and composer availability.
+- Added mutation rate limiting and service coverage.
+
 ## Ownership
 
 I built the data, services, API, client state, complete presentation,

@@ -11,6 +11,8 @@ nests it inside `SessionProvider`.
 - `["conversation", conversationId]`;
 - `["messages", conversationId]`;
 - `["users", "search", debouncedQuery]`.
+- `["blocking", "list"]`;
+- `["blocking", "status", targetUserId]`.
 
 These are understandable, but query-key factory helpers will prevent small key
 differences as filters and pagination grow.
@@ -54,6 +56,12 @@ initial loading, next-page loading, empty results, and request failure.
 after settlement so direct cache changes are checked against authoritative
 server data. Each mutation owns a client message ID, marks only its matching
 bubble on failure, and can coexist with other pending sends.
+
+Blocking optimistically marks interaction unavailable and rolls back on error;
+unblocking waits for the server because a reverse block may remain. Both
+mutations replace the target status with the response, then invalidate the
+caller's blocked-account list and all cached discovery pages. Conversation and
+profile consumers share the same status key.
 
 ## Recommended defaults
 

@@ -2,7 +2,8 @@
 
 ## Current status
 
-Vitest covers registration, message sending, idempotency, blocks, and the
+Vitest covers registration, message sending, idempotency, blocking commands,
+block relationship privacy/directionality, and the
 database-backed rate limiter. Authentication, hashing, participant lookup, and
 Prisma boundaries are mocked so the normal unit command never modifies a
 developer database.
@@ -55,6 +56,8 @@ Use a dedicated PostgreSQL test database. Highest-priority cases:
 - send rejection after a block;
 - idempotent retry;
 - read marker/count behavior.
+- block/unblock idempotency, self rejection, directionality, and reverse-block
+  behavior.
 
 ### Component/hook tests
 

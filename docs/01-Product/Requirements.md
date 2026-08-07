@@ -57,6 +57,17 @@ delivery will follow after the HTTP and optimistic workflows are reliable.
 - Only a participant can retrieve a conversation.
 - The inbox is ordered by latest-message time.
 
+### Blocking
+
+- A user can block another user from a profile or existing conversation.
+- A user can review and unblock accounts from a dedicated settings page.
+- Blocking and unblocking are safe to repeat.
+- A user cannot block themselves or a missing account.
+- Either block direction prevents discovery, opening a conversation, and
+  sending new messages.
+- Existing conversation history remains readable after a block.
+- The interface does not reveal whether the other account initiated a block.
+
 ### Messages
 
 - Only a participant can retrieve or send messages.

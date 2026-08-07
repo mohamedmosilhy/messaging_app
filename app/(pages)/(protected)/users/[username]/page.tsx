@@ -10,6 +10,7 @@ import { getUserProfile } from "@/app/features/users";
 import { StartConversationButton } from "@/app/features/users/components/StartConversationButton";
 import { NotFoundError } from "@/app/lib/errors/NotFoundError";
 import { auth } from "@/auth";
+import { BlockUserButton, getBlockStatus } from "@/app/features/blocking";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -30,6 +31,7 @@ export default async function UserProfilePage({ params }: Props) {
   }
 
   const isOwnProfile = session?.user?.id === user.data.id;
+  const blockStatus = isOwnProfile ? null : await getBlockStatus(user.data.id);
 
   return (
     <PageContainer className="max-w-4xl justify-center">
@@ -65,7 +67,23 @@ export default async function UserProfilePage({ params }: Props) {
                 </Link>
               </Button>
             ) : (
-              <StartConversationButton targetUserId={user.data.id} />
+              <div className="flex flex-col items-stretch gap-2 sm:items-end">
+                {blockStatus?.data.canInteract ? (
+                  <StartConversationButton targetUserId={user.data.id} />
+                ) : (
+                  <p
+                    className="max-w-56 text-xs text-muted-foreground"
+                    role="status"
+                  >
+                    Messaging is unavailable for this account.
+                  </p>
+                )}
+                <BlockUserButton
+                  displayName={user.data.displayName}
+                  initialStatus={blockStatus ?? undefined}
+                  targetUserId={user.data.id}
+                />
+              </div>
             )}
           </div>
 

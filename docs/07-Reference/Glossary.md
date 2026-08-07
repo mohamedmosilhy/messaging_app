@@ -44,6 +44,16 @@ The property that retrying the same command does not create duplicate effects.
 A stable record of the latest message a participant has read, proposed as an
 alternative/foundation to mutable unread counters.
 
+**Block direction**
+
+One caller-owned `blockerId -> blockedId` relationship. Either direction makes
+interaction unavailable, but a user can remove only the direction they own.
+
+**Interaction status**
+
+The privacy-safe blocking DTO: whether the current user owns a block plus a
+combined indication of whether the pair can currently discover/message.
+
 ## Architecture terms
 
 **Route handler**  

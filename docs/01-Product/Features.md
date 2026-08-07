@@ -27,6 +27,19 @@ what I intentionally plan to build later.
 - Search result limiting and service-level cursor response.
 - Block-aware search filtering.
 
+### Blocking
+
+- Directional block and unblock commands.
+- Idempotent block creation and removal.
+- Self-block and missing-target validation.
+- Privacy-safe relationship status.
+- Blocked-account list and management page.
+- Profile and conversation-header block controls.
+- Immediate composer disabling when either block direction exists.
+- Existing conversation history remains visible after blocking.
+- React Query reconciliation for status, blocked lists, and discovery.
+- Rate-limited blocking mutations.
+
 ### Direct conversations
 
 - Open an existing direct conversation.
@@ -112,12 +125,6 @@ what I intentionally plan to build later.
 
 ## Partially implemented features
 
-### Blocking
-
-The `Block` model exists. Search, new-conversation opening, and sending in an
-existing thread respect both directions of a block. There is no block/unblock
-command or UI yet.
-
 ### Unread state
 
 Unread counts are persisted, incremented transactionally, returned in the
@@ -137,7 +144,6 @@ services and UI should be treated as direct-message behavior only.
 - Message delivery/read receipts.
 - Presence and typing.
 - Conversation-list pagination.
-- Block/unblock product controls.
 - Message editing, deletion, or reactions.
 - Attachments or uploads.
 - Group-chat behavior.

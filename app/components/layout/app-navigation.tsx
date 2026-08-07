@@ -4,6 +4,7 @@ import {
   MessageSquareText,
   Search,
   Settings2,
+  ShieldBan,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -43,7 +44,13 @@ const navigationItems: NavigationItem[] = [
     label: "Profile settings",
     href: "/settings/profile",
     icon: Settings2,
-    isActive: (pathname) => pathname.startsWith("/settings"),
+    isActive: (pathname) => pathname === "/settings/profile",
+  },
+  {
+    label: "Blocked accounts",
+    href: "/settings/blocked",
+    icon: ShieldBan,
+    isActive: (pathname) => pathname === "/settings/blocked",
   },
 ];
 

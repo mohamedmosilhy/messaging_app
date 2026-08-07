@@ -1,6 +1,6 @@
 # Current Implementation Status
 
-Reviewed against the repository on July 29, 2026.
+Reviewed against the repository on August 7, 2026.
 
 ## Complete enough for the current MVP foundation
 
@@ -27,6 +27,10 @@ Reviewed against the repository on July 29, 2026.
 - Immediate unread-cache reconciliation.
 - Strict transport validation and malformed-JSON handling.
 - Send-time block enforcement.
+- Standalone block/unblock services and authenticated APIs.
+- Privacy-safe block relationship status and mutation rate limiting.
+- Profile and conversation block controls.
+- Blocked-account settings and React Query reconciliation.
 - Database-backed rate limits for sensitive and high-volume operations.
 - Correlated structured API errors and a database health endpoint.
 - CSP, HSTS in production, and defensive browser headers.
@@ -46,7 +50,6 @@ The application also has an original Relay favicon.
 
 ## Partial areas
 
-- block model/filtering/send enforcement without block commands;
 - unread counters without real-time/multi-device read markers;
 - group enum without group behavior;
 - profile email/username editing is intentionally unavailable.
@@ -62,7 +65,7 @@ The application also has an original Relay favicon.
 - TypeScript was pinned to compatible version `6.0.3`.
 - `pnpm lint`: passed with zero warnings.
 - `pnpm typecheck`: passed.
-- `pnpm test`: ten tests passed.
+- `pnpm test`: sixteen tests passed.
 - Playwright covers the critical flow on desktop and mobile.
 - axe-core reports no critical or serious violations on covered screens.
 - `pnpm peers check`: passed.
@@ -87,7 +90,7 @@ The application also has an original Relay favicon.
 
 ## Next recommended action
 
-Phase 6 is complete. Review its
-[implementation report](../06-Engineering/Phase-6-Report.md). Phase 5 remains
-available for the project author to implement WebSocket delivery and stable
-multi-client read markers as a learning exercise.
+The standalone blocking feature is complete; review its
+[implementation report](../06-Engineering/Blocking-Feature-Report.md). Phase 5
+remains available for the project author to implement WebSocket delivery and
+stable multi-client read markers as a learning exercise.

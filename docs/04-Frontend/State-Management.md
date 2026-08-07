@@ -13,6 +13,7 @@ Owned by React Query:
 - conversation detail;
 - message pages;
 - user search results;
+- block relationship status and blocked-account list;
 - send mutation state.
 
 ### Session state
@@ -80,6 +81,13 @@ The server is authoritative. Opening a conversation immediately changes the
 matching inbox cache row to zero while the conversation GET performs the
 persistent reset. Future real-time reads should use a stable read marker rather
 than allowing independent clients to guess at counts.
+
+## Blocking state
+
+PostgreSQL is authoritative and React Query owns browser copies. A status DTO
+contains the caller-owned direction plus a combined `canInteract` value. Block
+and unblock mutations reconcile that status and invalidate the blocked list
+and discovery pages. No component infers the reverse direction.
 
 ## State rules
 

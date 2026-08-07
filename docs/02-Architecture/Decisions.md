@@ -5,11 +5,15 @@ still need to be finalized.
 
 ## Feature-based organization
 
-**Decision:** group code by `auth`, `users`, and `messaging`.
+**Decision:** group code by `auth`, `blocking`, `users`, and `messaging`.
 
 **Reason:** a feature can contain its service, types, validation, requests,
 hooks, and UI. This is easier to navigate than separating the whole repository
 into one global components folder, one services folder, and one types folder.
+
+Blocking is standalone because its commands, relationship state, management
+surface, and policies are a distinct domain boundary used by both users and
+messaging.
 
 ## Services own business rules
 

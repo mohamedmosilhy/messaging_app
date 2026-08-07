@@ -91,6 +91,34 @@ Acceptance criteria:
 - the selected action is disabled while opening;
 - success navigates to the correct thread.
 
+## Blocking stories
+
+### Block an account
+
+As a user, I want to block another account so that neither of us can discover
+or message the other while the block exists.
+
+Acceptance criteria:
+
+- block controls are available from profiles and existing conversations;
+- blocking is confirmed and safe to repeat;
+- the composer becomes unavailable immediately;
+- new conversation opening and sending are also rejected on the server;
+- existing history remains visible;
+- the interface does not disclose who initiated the other block direction.
+
+### Manage blocked accounts
+
+As a user, I want to review and unblock accounts so that I can reverse my own
+blocking decisions.
+
+Acceptance criteria:
+
+- the list includes only blocks created by the current user;
+- unblocking is safe to repeat;
+- discovery and relationship state are reconciled after unblocking;
+- interaction remains unavailable if the other account still has a block.
+
 ## Inbox stories
 
 ### View conversations

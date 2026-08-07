@@ -118,6 +118,7 @@ remain shared across serverless instances.
 - authenticated landing actions replace sign-in actions;
 - inbox and long history load;
 - message creation updates the thread and inbox;
+- profile/thread block controls and blocked-account settings load;
 - profile settings Save/Reset controls are visible;
 - response security headers are present;
 - invalid credentials and malformed payloads do not leak internal details.

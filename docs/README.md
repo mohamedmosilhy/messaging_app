@@ -1,6 +1,6 @@
 # Messaging App Documentation
 
-Last reviewed against the repository: July 29, 2026
+Last reviewed against the repository: August 7, 2026
 
 I built this messaging application from scratch as a full-stack learning
 project. I focused first on data modeling, authentication, services, API
@@ -11,7 +11,9 @@ hardened the HTTP message workflow with idempotency, concurrent optimistic
 sends, retryable failures, drafts, route validation, and send-time block
 checks. I then completed production readiness with security controls,
 observability, deterministic test data, browser/accessibility coverage, and a
-Vercel deployment. I intentionally reserved real-time delivery for my own
+Vercel deployment. I then completed blocking as a standalone feature with
+commands, APIs, relationship state, profile/thread controls, and blocked-account
+management. I intentionally reserved real-time delivery for my own
 WebSocket practice.
 
 These documents explain what I have made, why I made the main decisions, what
@@ -97,6 +99,9 @@ labeled as recommendations so they are not confused with implemented features.
   hardening.
 - [Phase 6 Report](./06-Engineering/Phase-6-Report.md) — completed production
   security, testing, performance, cleanup, seed, and deployment work.
+- [Blocking Feature Report](./06-Engineering/Blocking-Feature-Report.md) —
+  completed standalone block/unblock services, APIs, client state, controls,
+  management UI, and tests.
 
 ### 7. Reference
 
@@ -134,6 +139,6 @@ authorization, direct-conversation uniqueness, stable message pagination,
 transactional send metadata, sender-scoped idempotency, stable cursor indexes,
 seeded edge cases, and concurrency-safe optimistic cache behavior.
 
-The main unfinished product areas are block/unblock controls, multi-client read
-markers, and real-time delivery. Phase 5 is intentionally owned by the project
-author as a WebSocket learning exercise.
+The main unfinished product areas are multi-client read markers and real-time
+delivery. Phase 5 is intentionally owned by the project author as a WebSocket
+learning exercise.

@@ -13,6 +13,7 @@ messaging_app/
 │   │   └── ui/
 │   ├── features/
 │   │   ├── auth/
+│   │   ├── blocking/
 │   │   ├── messaging/
 │   │   └── users/
 │   ├── hooks/
@@ -57,6 +58,14 @@ messaging_app/
 - profile edit validation and request;
 - current/public/edit/search response types;
 - profile form, paginated search results, and open-conversation actions.
+
+## Blocking feature
+
+- directional block/unblock and relationship-status services;
+- strict transport schemas and authenticated API request actions;
+- React Query status, list, and mutation hooks;
+- reusable profile/thread control and blocked-account list;
+- dedicated `/settings/blocked` management page.
 
 ## Messaging feature
 

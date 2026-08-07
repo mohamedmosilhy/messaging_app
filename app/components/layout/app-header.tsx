@@ -10,7 +10,8 @@ function getPageTitle(pathname: string) {
   if (pathname === "/dashboard/conversations") return "Inbox";
   if (pathname.startsWith("/dashboard/conversations/")) return "Conversation";
   if (pathname === "/search") return "New chat";
-  if (pathname.startsWith("/settings")) return "Profile settings";
+  if (pathname === "/settings/profile") return "Profile settings";
+  if (pathname === "/settings/blocked") return "Blocked accounts";
   if (pathname.startsWith("/users/")) return "Contact profile";
   return "Relay";
 }

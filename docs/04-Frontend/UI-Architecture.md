@@ -52,6 +52,8 @@ supports Enter to send or Shift+Enter for a new line.
 - `/dashboard/conversations/[conversationId]` renders the selected thread in
   the content pane and a mobile back action.
 - Settings, discovery, and profile pages render inside the same shell.
+- `/settings/blocked` renders standalone blocked-account management inside the
+  same shell.
 - Global and protected route groups have loading, error, and not-found
   boundaries.
 
@@ -123,6 +125,8 @@ Relay branding, colors, assets, and values.
 - `useSearchQuery` owns typed infinite search state.
 - `EditProfileForm` owns its editable snapshot while Auth.js owns the updated
   authenticated identity.
+- blocking hooks own relationship server state; profile, thread, and settings
+  components consume the standalone blocking feature.
 
 Avoid:
 

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { useBlockStatus } from "@/app/features/blocking/hooks/useBlocking";
 
 import { ErrorState } from "@/app/components/shared/error-state";
 import { getConversationRequest } from "../actions/getConversationRequest";
@@ -27,6 +28,8 @@ export function ConversationContent({
   });
   const messagesQuery = useConversationMessages(conversationId);
   const messageMutation = useSendMessage(conversationId);
+  const otherParticipantId = conversationQuery.data?.data.participants[0]?.id;
+  const blockStatus = useBlockStatus(otherParticipantId);
 
   useEffect(() => {
     queryClient.setQueryData<GetConversationsResponse>(
@@ -87,6 +90,18 @@ export function ConversationContent({
       />
       <MessageComposer
         conversationId={conversationId}
+        disabled={
+          Boolean(otherParticipantId) &&
+          (blockStatus.isLoading ||
+            blockStatus.data?.data.canInteract === false)
+        }
+        disabledReason={
+          blockStatus.isLoading
+            ? "Checking messaging availability…"
+            : blockStatus.data?.data.canInteract === false
+              ? "Messaging is unavailable while either account has blocked the other."
+              : undefined
+        }
         key={conversationId}
         onSend={messageMutation.sendMessage}
       />

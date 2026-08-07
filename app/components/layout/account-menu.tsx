@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, LogOut, UserRound } from "lucide-react";
+import { ChevronsUpDown, LogOut, ShieldBan, UserRound } from "lucide-react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
@@ -67,6 +67,15 @@ export function AccountMenu({ user }: { user: ShellUser }) {
               >
                 <UserRound aria-hidden="true" />
                 Profile settings
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link
+                href="/settings/blocked"
+                onClick={() => setOpenMobile(false)}
+              >
+                <ShieldBan aria-hidden="true" />
+                Blocked accounts
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
