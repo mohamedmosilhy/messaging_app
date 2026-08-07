@@ -86,5 +86,9 @@ pnpm db:seed
 The post-install script generates Prisma Client automatically. TypeScript is
 pinned to `6.0.3`, which satisfies the installed lint tooling.
 
+`pnpm db:deploy` applies the real-time event/read-marker migration. Real-time
+uses the same `DATABASE_URL`, Auth.js session, and application origin; no
+additional service credentials are required.
+
 Playwright runs Chromium at desktop and Pixel 7 sizes. The seeded E2E command
 resets the configured database first and must target disposable data.

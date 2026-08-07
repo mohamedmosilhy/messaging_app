@@ -98,14 +98,27 @@ message.
 defer persistence until the first send. The earlier idea that conversations
 never exist without messages does not match the current implementation.
 
-## Unread decision
+## Read markers
 
-**Current behavior:** each participation stores a mutable count; fetching
-conversation detail resets it.
+**Decision:** participation stores `lastReadMessageId` and `lastReadAt`, while
+the unread count remains a derived, denormalized inbox value.
 
-**Decision still required:** before multi-device real-time behavior, consider
-`lastReadMessageId` or `lastReadAt`. A read marker is easier to reconcile than
-independent counters across clients.
+**Reason:** markers advance monotonically across tabs/devices. The read command
+validates conversation membership, derives messages after the marker, and
+publishes a read event.
+
+## Serverless real-time transport
+
+**Decision:** use authenticated same-origin Server-Sent Events backed by a
+durable PostgreSQL event log and per-user deliveries.
+
+**Reason:** Vercel application instances do not host a durable in-process
+WebSocket server. Database-backed events fan out across instances, become
+visible only after commit, and require no new third-party credentials.
+
+**Trade-off:** each active client performs a lightweight bounded database poll
+inside its SSE stream. A dedicated pub/sub provider can replace this transport
+behind the same contracts at larger scale.
 
 ## Recommendation labels
 

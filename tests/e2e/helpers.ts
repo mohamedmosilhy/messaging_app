@@ -14,4 +14,5 @@ export async function signIn(page: Page) {
   await expect(
     page.getByRole("heading", { name: "Messages", exact: true }),
   ).toBeVisible();
+  await expect(page.getByText("Live", { exact: true })).toBeVisible();
 }

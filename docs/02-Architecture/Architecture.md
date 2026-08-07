@@ -29,6 +29,10 @@ Prisma query or transaction
 PostgreSQL
 ```
 
+Committed message/read mutations also create durable events in PostgreSQL.
+An authenticated SSE route delivers those events to authorized browsers, and
+the real-time provider merges them into the same React Query caches.
+
 ## Layers
 
 ### Presentation
@@ -161,6 +165,14 @@ features/
     actions/
     components/
     hooks/
+    services/
+    types/
+    utils/
+  realtime/
+    actions/
+    components/
+    hooks/
+    schemas/
     services/
     types/
     utils/

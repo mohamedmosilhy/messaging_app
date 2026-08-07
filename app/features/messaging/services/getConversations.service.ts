@@ -48,6 +48,7 @@ export async function getConversations(): Promise<GetConversationsResponse> {
     ({ conversation, unreadCount }) => {
       const baseConversation = {
         conversationId: conversation.id,
+        lastMessageId: conversation.lastMessageId,
         lastMessage: conversation.lastMessage?.content ?? null,
         lastMessageAt: conversation.lastMessageAt,
         unreadCount,

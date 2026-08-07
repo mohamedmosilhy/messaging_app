@@ -36,6 +36,11 @@ Reviewed against the repository on August 7, 2026.
 - CSP, HSTS in production, and defensive browser headers.
 - Playwright desktop/mobile and axe-core accessibility coverage.
 - Vercel production deployment.
+- Authenticated Server-Sent Event delivery.
+- Durable per-user event fan-out across serverless instances.
+- Reconnect refetch and event/message deduplication.
+- Stable per-participant read markers and read events.
+- Connection/offline status presentation.
 
 ## Presentation status
 
@@ -50,7 +55,7 @@ The application also has an original Relay favicon.
 
 ## Partial areas
 
-- unread counters without real-time/multi-device read markers;
+- read markers without delivery/read-receipt bubble presentation;
 - group enum without group behavior;
 - profile email/username editing is intentionally unavailable.
 
@@ -90,7 +95,7 @@ The application also has an original Relay favicon.
 
 ## Next recommended action
 
-The standalone blocking feature is complete; review its
-[implementation report](../06-Engineering/Blocking-Feature-Report.md). Phase 5
-remains available for the project author to implement WebSocket delivery and
-stable multi-client read markers as a learning exercise.
+Review the completed
+[real-time delivery report](../06-Engineering/Realtime-Delivery-Report.md),
+then consider typing/presence only if the product needs those ephemeral
+features.

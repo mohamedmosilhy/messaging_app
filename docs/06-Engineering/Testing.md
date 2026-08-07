@@ -4,7 +4,9 @@
 
 Vitest covers registration, message sending, idempotency, blocking commands,
 block relationship privacy/directionality, and the
-database-backed rate limiter. Authentication, hashing, participant lookup, and
+database-backed rate limiter. It also covers real-time authorization/cursors,
+cache deduplication, optimistic/event convergence, and monotonic read markers.
+Authentication, hashing, participant lookup, and
 Prisma boundaries are mocked so the normal unit command never modifies a
 developer database.
 
@@ -85,6 +87,7 @@ Recommended next expansions:
 - intercepted slow/failing message requests and idempotent retry;
 - registration and profile mutation;
 - two-session unread behavior;
+- two-session live delivery and forced reconnect behavior;
 - keyboard-only assertions beyond axe automation.
 
 ## Test data

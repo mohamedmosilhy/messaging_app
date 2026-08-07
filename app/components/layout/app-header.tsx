@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Separator } from "@/app/components/ui/separator";
 import { SidebarTrigger } from "@/app/components/ui/sidebar";
 import { cn } from "@/app/lib/utils";
+import { RealtimeStatus } from "@/app/features/realtime";
 
 function getPageTitle(pathname: string) {
   if (pathname === "/dashboard/conversations") return "Inbox";
@@ -32,6 +33,7 @@ export function AppHeader() {
       <SidebarTrigger aria-label="Toggle navigation" />
       <Separator className="h-4!" orientation="vertical" />
       <p className="truncate text-sm font-medium">{getPageTitle(pathname)}</p>
+      <RealtimeStatus />
     </header>
   );
 }

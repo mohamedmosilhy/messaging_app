@@ -15,6 +15,7 @@ messaging_app/
 │   │   ├── auth/
 │   │   ├── blocking/
 │   │   ├── messaging/
+│   │   ├── realtime/
 │   │   └── users/
 │   ├── hooks/
 │   ├── lib/
@@ -77,6 +78,14 @@ messaging_app/
   and designed state components;
 - message/date presentation formatters;
 - messaging response/cursor types.
+
+## Real-time feature
+
+- authenticated EventSource provider and connection status;
+- durable event creation/delivery and read-marker services;
+- read request action and strict schemas;
+- shared versioned event contracts;
+- React Query message/inbox reconciliation utilities.
 
 ## Shared code
 

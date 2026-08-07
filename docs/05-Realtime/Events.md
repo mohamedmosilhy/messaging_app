@@ -1,5 +1,9 @@
 # Real-Time Events
 
+These contracts are implemented over the authenticated `/api/realtime` SSE
+stream. Durable payloads are stored in PostgreSQL and delivered only to current
+participants with a per-user delivery row.
+
 ## Envelope
 
 Use one versionable envelope:
@@ -44,6 +48,7 @@ Carries minimal inbox metadata when latest activity changes.
 ```ts
 type ConversationUpdatedData = {
   conversationId: string;
+  lastMessageId: string;
   lastMessage: string | null;
   lastMessageAt: string | null;
 };
@@ -93,11 +98,12 @@ Presence is approximate and should not be presented as guaranteed truth.
 
 ## Client-to-server commands
 
-Initial commands:
+Implemented command:
 
-- subscribe/unsubscribe conversation;
 - mark conversation read;
-- typing start/stop.
+
+Subscription is implicit in the authenticated private stream. Typing
+start/stop remains deferred.
 
 Message sending can remain HTTP at first.
 
@@ -111,3 +117,4 @@ Message sending can remain HTTP at first.
 - Publish happens after commit.
 - Authorization applies to delivery, not only subscription request.
 - Handlers are idempotent and tolerate duplicate/out-of-order delivery.
+- Durable events expire after 24 hours; HTTP refetch covers longer gaps.

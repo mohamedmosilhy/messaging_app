@@ -77,10 +77,18 @@ Persisted rows have no delivery-status column.
 
 ## Unread state
 
-The server is authoritative. Opening a conversation immediately changes the
-matching inbox cache row to zero while the conversation GET performs the
-persistent reset. Future real-time reads should use a stable read marker rather
-than allowing independent clients to guess at counts.
+The server is authoritative. A conversation GET does not mutate read state.
+`MessageTimeline` observes the latest committed message marker and sends a read
+command only while that marker and the document are visible. PostgreSQL stores
+the monotonic marker and derived unread count; read events reconcile other
+tabs/devices.
+
+## Real-time state
+
+The connection lifecycle is client state owned by `RealtimeProvider`.
+Delivered durable data is merged into React Query, then the relevant HTTP
+queries are invalidated. Cached messages remain usable while offline or
+reconnecting.
 
 ## Blocking state
 

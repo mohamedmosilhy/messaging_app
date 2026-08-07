@@ -4,6 +4,7 @@ import Link from "next/link";
 import { UserAvatar } from "@/app/components/shared/user-avatar";
 import { Button } from "@/app/components/ui/button";
 import { BlockUserButton } from "@/app/features/blocking/components/BlockUserButton";
+import { RealtimeStatus } from "@/app/features/realtime";
 import type { GetConversationResponse } from "../types/conversation.types";
 import { MobileConversationHeader } from "./MobileConversationHeader";
 
@@ -27,6 +28,9 @@ export function ConversationHeader({ conversation }: ConversationHeaderProps) {
         <p className="truncate text-xs text-muted-foreground">
           {participant ? `@${participant.username}` : "Direct conversation"}
         </p>
+      </div>
+      <div className="hidden sm:flex md:hidden">
+        <RealtimeStatus />
       </div>
       {participant ? (
         <div className="flex items-center gap-1">

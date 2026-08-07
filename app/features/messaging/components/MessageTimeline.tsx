@@ -26,6 +26,7 @@ type MessageTimelineProps = {
   isLoadOlderError: boolean;
   isFetchingNextPage: boolean;
   onLoadOlder: () => Promise<unknown>;
+  onLatestRead: (messageId: string) => void;
   onRemoveMessage: (clientId: string) => void;
   onRetryMessage: (message: MessageResponse) => void;
 };
@@ -54,15 +55,20 @@ export function MessageTimeline({
   isLoadOlderError,
   isFetchingNextPage,
   onLoadOlder,
+  onLatestRead,
   onRemoveMessage,
   onRetryMessage,
 }: MessageTimelineProps) {
   const latestMessageId = messages.at(-1)?.id;
   const viewportRef = useRef<HTMLDivElement>(null);
+  const latestMarkerRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
   const previousLastMessageIdRef = useRef(latestMessageId);
   const anchorHeightRef = useRef<number | null>(null);
   const [showJumpButton, setShowJumpButton] = useState(false);
+  const latestCommittedMessage = [...messages]
+    .reverse()
+    .find((message) => !message.deliveryStatus);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     const viewport = viewportRef.current;
@@ -98,16 +104,46 @@ export function MessageTimeline({
 
   useEffect(() => {
     const latestMessage = messages.at(-1);
-    const hasOwnNewMessage =
-      latestMessage?.id !== previousLastMessageIdRef.current &&
-      latestMessage?.senderId === currentUserId;
+    const hasNewMessage =
+      latestMessage?.id !== previousLastMessageIdRef.current;
+    const shouldFollowMessage =
+      latestMessage?.senderId === currentUserId || !showJumpButton;
 
-    if (initializedRef.current && hasOwnNewMessage) {
+    if (initializedRef.current && hasNewMessage && shouldFollowMessage) {
       scrollToBottom();
     }
 
     previousLastMessageIdRef.current = latestMessage?.id;
-  }, [currentUserId, messages, scrollToBottom]);
+  }, [currentUserId, messages, scrollToBottom, showJumpButton]);
+
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    const marker = latestMarkerRef.current;
+
+    if (!viewport || !marker || !latestCommittedMessage) return;
+
+    let isLatestVisible = false;
+    const reportRead = () => {
+      if (isLatestVisible && document.visibilityState === "visible") {
+        onLatestRead(latestCommittedMessage.id);
+      }
+    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isLatestVisible = Boolean(entry?.isIntersecting);
+        reportRead();
+      },
+      { root: viewport, threshold: 1 },
+    );
+
+    observer.observe(marker);
+    document.addEventListener("visibilitychange", reportRead);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", reportRead);
+    };
+  }, [latestCommittedMessage, onLatestRead]);
 
   async function loadOlderMessages() {
     const viewport = viewportRef.current;
@@ -216,6 +252,7 @@ export function MessageTimeline({
             })}
           </ul>
         )}
+        <div aria-hidden="true" className="h-px" ref={latestMarkerRef} />
       </div>
 
       {showJumpButton ? (

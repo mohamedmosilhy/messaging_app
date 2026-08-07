@@ -139,9 +139,24 @@ Acceptance criteria:
 As a user, I want unread counts to update predictably so that I know which
 threads need attention.
 
-Current behavior resets the count when conversation detail is fetched. Future
-behavior should distinguish opening a route from actually reading messages and
-must converge across tabs/devices.
+The latest committed message is marked read only while its viewport marker and
+the browser document are visible. The server advances a stable marker and
+publishes read state so tabs/devices converge.
+
+### Receive a message live
+
+As a user, I want committed messages to arrive without refreshing so that a
+conversation feels immediate.
+
+Acceptance criteria:
+
+- only participants receive the event;
+- an optimistic/HTTP/event copy becomes one message;
+- inactive conversations reconcile their preview and unread state;
+- active conversations follow incoming messages only when already near the
+  latest content;
+- offline/reconnecting state is visible;
+- reconnect refetches authoritative state without duplicates.
 
 ## Message stories
 

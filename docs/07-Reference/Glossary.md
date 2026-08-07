@@ -41,8 +41,18 @@ Making optimistic/cache state agree with authoritative server state.
 The property that retrying the same command does not create duplicate effects.
 
 **Read marker**  
-A stable record of the latest message a participant has read, proposed as an
-alternative/foundation to mutable unread counters.
+A stable record of the latest message a participant has read. It is persisted
+on participation and advances monotonically across clients.
+
+**Durable event**
+
+A committed, expiring PostgreSQL event used to notify authorized clients. It
+is a recovery/fan-out record, not the source of truth for messages.
+
+**Server-Sent Events (SSE)**
+
+The authenticated one-way HTTP stream used to deliver committed Relay events
+to browsers. Commands such as send and mark-read remain HTTP requests.
 
 **Block direction**
 

@@ -74,13 +74,15 @@ Define defaults deliberately rather than relying on library behavior:
 - useful garbage-collection time for recently visited threads;
 - global handling for authentication expiration.
 
-## Future socket integration
+## Real-time integration
 
-Socket events should update the same React Query caches:
+SSE events update the same React Query caches:
 
 - merge `message.created` by stable IDs;
-- update or invalidate inbox metadata;
-- update unread/read data;
+- update and invalidate inbox metadata;
+- reconcile current-user unread/read data;
 - refetch relevant queries after reconnect.
 
-Do not create a separate socket-only message store that can disagree with HTTP.
+The provider keeps a bounded event-ID deduplication set, while extracted cache
+utilities also deduplicate by server and client message IDs. There is no
+separate real-time-only message store.

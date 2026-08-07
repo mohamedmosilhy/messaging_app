@@ -91,9 +91,13 @@ The workspace and sidebar establish responsive composition. Conversation rows
 use valid list semantics, shared avatars, unread badges, selected state,
 previews, and timestamps.
 
-`ConversationContent` now only coordinates the conversation query, messages
-query, session identity, and send mutation. The other components own one
-presentation concern each.
+`ConversationContent` coordinates the conversation query, messages query,
+session identity, send mutation, and visible-message read marker. The other
+components own one presentation concern each.
+
+`RealtimeProvider` owns the authenticated EventSource lifecycle and cache
+reconciliation. `RealtimeStatus` exposes Live, Connecting, Reconnecting, and
+Offline state in the application and conversation headers.
 
 ## Implemented messaging composition
 

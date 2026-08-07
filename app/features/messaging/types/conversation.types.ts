@@ -33,6 +33,7 @@ export type GetConversationResponse = {
 
 export type ConversationListItem = {
   conversationId: string;
+  lastMessageId: string | null;
   title: string;
   unreadCount: number;
   avatarUrl: string | null;

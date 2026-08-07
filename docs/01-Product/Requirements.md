@@ -8,9 +8,8 @@ feature. I wanted to build a reliable direct-messaging foundation first, keep
 the responsibilities separated, and use the first UI only as a way to test the
 system.
 
-The next product milestone is to replace that test UI with a polished,
-responsive experience inspired by familiar messaging applications. Real-time
-delivery will follow after the HTTP and optimistic workflows are reliable.
+The polished responsive UI, HTTP/optimistic workflow, production hardening,
+blocking, and core real-time delivery are now complete.
 
 ## Product goals
 
@@ -22,8 +21,8 @@ delivery will follow after the HTTP and optimistic workflows are reliable.
 - The inbox shows the latest message and unread count.
 - Sending feels immediate through optimistic UI.
 - The application remains understandable and maintainable as it grows.
-- The same business rules are enforced regardless of the UI or future
-  WebSocket transport.
+- The same business rules are enforced regardless of HTTP or real-time
+  transport.
 
 ## Current functional requirements
 
@@ -78,7 +77,16 @@ delivery will follow after the HTTP and optimistic workflows are reliable.
 - Messages with identical timestamps remain stably ordered.
 - Creating a message, updating the latest-message metadata, and incrementing
   recipient unread counts happen in one transaction.
-- Opening conversation detail resets the current participant's unread count.
+- A visible latest committed message advances the participant read marker.
+
+### Real-time delivery
+
+- Authenticated sessions receive committed message/read events without refresh.
+- Only current conversation participants receive an event.
+- HTTP responses, optimistic messages, events, and refetches deduplicate.
+- Reconnect resumes after the last event and refetches authoritative state.
+- Read markers never move backwards across tabs/devices.
+- Socket failure never prevents HTTP history or sending.
 
 ## Experience requirements for the next UI
 
@@ -102,7 +110,7 @@ delivery will follow after the HTTP and optimistic workflows are reliable.
 - The production build, lint, typecheck, and automated tests must pass.
 - User content is rendered as text, never trusted HTML.
 - The application must remain usable on slow networks and after reconnection.
-- Future socket events must be deduplicated with HTTP and optimistic results.
+- Real-time events are deduplicated with HTTP and optimistic results.
 
 ## Current non-goals
 
@@ -113,7 +121,7 @@ delivery will follow after the HTTP and optimistic workflows are reliable.
 - Calls.
 - End-to-end encryption.
 - Push notifications.
-- Typing and presence before core real-time delivery is stable.
+- Typing and presence.
 
 ## Success criteria
 
@@ -127,12 +135,11 @@ retry, and empty states.
 
 Completed review recommendations:
 
-- message idempotency before automatic retry or WebSockets;
+- message idempotency before automatic retry or real-time delivery;
 - send-time block enforcement for existing conversations;
 - message-specific optimistic failure handling.
 
 Remaining recommendations:
 
 - decide whether an opened conversation may exist before its first message;
-- evolve unread state for multi-device real-time behavior;
 - add automated coverage for the critical business rules.

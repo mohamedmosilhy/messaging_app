@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   findBlock: vi.fn(),
   transaction: vi.fn(),
   enforceRateLimit: vi.fn(),
+  createRealtimeEvent: vi.fn(),
 }));
 
 vi.mock("@/app/utils/requireCurrentUserId", () => ({
@@ -37,6 +38,10 @@ vi.mock("@/app/lib/rate-limit", () => ({
   rateLimits: {
     sendMessage: { limit: 60, windowMs: 60_000 },
   },
+}));
+
+vi.mock("@/app/features/realtime/services/realtime-events.service", () => ({
+  createRealtimeEvent: mocks.createRealtimeEvent,
 }));
 
 import { sendMessage } from "@/app/features/messaging/services/sendMessage.service";
@@ -81,6 +86,7 @@ describe("sendMessage service", () => {
       },
       participation: {
         updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+        update: vi.fn().mockResolvedValue({}),
       },
     };
 
@@ -124,6 +130,28 @@ describe("sendMessage service", () => {
         unreadCount: { increment: 1 },
       },
     });
+    expect(tx.participation.update).toHaveBeenCalledWith({
+      where: {
+        userId_conversationId: {
+          userId: "user-1",
+          conversationId: "conversation-1",
+        },
+      },
+      data: {
+        lastReadMessageId: "message-1",
+        lastReadAt: message.createdAt,
+        unreadCount: 0,
+      },
+    });
+    expect(mocks.createRealtimeEvent).toHaveBeenCalledTimes(2);
+    expect(mocks.createRealtimeEvent).toHaveBeenCalledWith(
+      tx,
+      expect.objectContaining({
+        type: "message.created",
+        conversationId: "conversation-1",
+        recipientIds: ["user-1", "user-2"],
+      }),
+    );
     expect(result.data.message).toEqual(message);
   });
 

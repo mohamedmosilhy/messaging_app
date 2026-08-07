@@ -11,6 +11,8 @@ contains:
 - `Message`;
 - `Block`;
 - `RateLimitBucket`;
+- `RealtimeEvent`;
+- `RealtimeEventDelivery`;
 - `ConversationType`.
 
 Prisma Client is generated into `generated/prisma`, and the application uses
@@ -27,7 +29,8 @@ the PostgreSQL driver adapter.
 - participation composite key;
 - block composite key;
 - `Message(senderId, clientId)`;
-- `RateLimitBucket.key`.
+- `RateLimitBucket.key`;
+- real-time delivery composite key `(eventId, userId)`.
 
 The `participantKey` constraint is especially important because service-level
 checks alone cannot prevent two simultaneous requests from creating duplicates.
@@ -37,7 +40,10 @@ checks alone cannot prevent two simultaneous requests from creating duplicates.
 - `Conversation.lastMessageAt`;
 - `Participation.conversationId`;
 - `Message(conversationId, createdAt, id)`;
-- `RateLimitBucket.expiresAt`.
+- `RateLimitBucket.expiresAt`;
+- `RealtimeEvent(conversationId, occurredAt, id)`;
+- `RealtimeEvent.expiresAt`;
+- `RealtimeEventDelivery(userId, eventId)`.
 
 The participation primary key begins with `userId`, which supports retrieving a
 user's participations.
@@ -67,10 +73,20 @@ One transaction:
 
 1. creates the message;
 2. updates `lastMessageAt` and `lastMessageId`;
-3. increments unread counts for other participants.
+3. increments unread counts for other participants;
+4. advances the sender's read marker;
+5. stores message and conversation events with participant deliveries.
 
 This avoids a stored message with a stale inbox preview or missing unread
-increment.
+increment. Events become visible to other serverless instances only when the
+transaction commits.
+
+### Mark read
+
+A serializable transaction validates and advances the participant marker,
+derives unread messages after that marker, and stores `conversation.read`.
+Serialization conflicts retry so an older tab cannot move a newer marker
+backwards.
 
 ## Cursor behavior
 
@@ -99,16 +115,19 @@ must not run against valuable data.
 
 The Phase 4 migration adds `Message.clientId`, backfills existing messages from
 their unique server IDs, creates the sender/client unique key, and replaces the
-single-column history index with the stable cursor index. Future read markers
-must also be introduced through migrations, not manual production schema edits.
+single-column history index with the stable cursor index.
 
 The Phase 6 migration adds shared fixed-window rate-limit buckets. Identifiers
 are hashed before storage, new windows clean expired rows, and the expiry index
 supports bounded cleanup.
 
+The real-time migration adds read-marker fields plus durable event and
+per-user delivery tables. Events expire after 24 hours; reconnect refetches
+HTTP state, so this is a recovery window rather than permanent message
+storage.
+
 ## Recommendations
 
 - decide foreign-key deletion behavior before implementing deletion;
-- consider `lastReadMessageId` on participation;
 - validate database constraints against group-chat plans;
 - continue measuring high-volume queries with production-like data.

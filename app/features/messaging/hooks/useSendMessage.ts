@@ -12,6 +12,7 @@ import {
   MessageResponse,
   SendMessageResponse,
 } from "../types/messages.types";
+import { mergeMessageIntoCache } from "@/app/features/realtime/utils/realtime-cache";
 
 type SendMessageVariables = {
   clientId: string;
@@ -136,29 +137,11 @@ export function useSendMessage(conversationId: string) {
       );
     },
 
-    onSuccess: (data, { clientId }) => {
+    onSuccess: (data) => {
       queryClient.setQueryData(
         messagesQueryKey,
-        (oldData: InfiniteData<GetMessagesResponse> | undefined) => {
-          let reconciled = false;
-          const withoutDuplicate = updateMessages(oldData, (messages) =>
-            messages.flatMap((message) => {
-              const matchesServerMessage =
-                message.clientId === clientId ||
-                message.id === data.data.message.id;
-
-              if (!matchesServerMessage) return [message];
-              if (reconciled) return [];
-
-              reconciled = true;
-              return [data.data.message];
-            }),
-          );
-
-          return reconciled
-            ? withoutDuplicate
-            : appendToNewestPage(withoutDuplicate, data.data.message);
-        },
+        (oldData: InfiniteData<GetMessagesResponse> | undefined) =>
+          mergeMessageIntoCache(oldData, data.data.message),
       );
 
       queryClient.setQueryData<GetConversationsResponse>(
@@ -181,6 +164,7 @@ export function useSendMessage(conversationId: string) {
 
           const updatedTarget = {
             ...target,
+            lastMessageId: data.data.message.id,
             lastMessage: data.data.message.content,
             lastMessageAt: data.data.message.createdAt,
           };

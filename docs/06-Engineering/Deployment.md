@@ -20,6 +20,9 @@ for Vercel functions.
 - production `AUTH_URL`;
 - optional `HASHING_SALT`, defaulting to `10`.
 
+Real-time delivery is same-origin and uses the existing database/session
+configuration; it adds no external provider secret.
+
 The root `.env.example` contains safe local placeholders. Real values belong in
 Vercel environment settings and must never be committed.
 
@@ -153,6 +156,8 @@ high-risk migration:
 - The production database connection must be pooled.
 - Message history uses the composite cursor index.
 - Database-backed rate limits work across instances.
-- Inbox pagination and read markers remain future scaling/product work.
-- Phase 5 real-time infrastructure must support authenticated subscriptions,
-  reconnect recovery, and multi-instance event distribution.
+- Inbox pagination remains future scaling/product work.
+- Authenticated SSE uses durable PostgreSQL deliveries for reconnect recovery
+  and multi-instance distribution.
+- The current database-backed stream is appropriate for the demo scale; move
+  the same contracts to dedicated pub/sub infrastructure before high fan-out.

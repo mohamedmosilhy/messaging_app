@@ -11,6 +11,8 @@ import { ValidationError } from "@/app/lib/errors/ValidationError";
 import { requireConversationParticipant } from "../utils/requireConversationParticipant";
 import { prisma } from "@/app/lib/prisma";
 import { enforceRateLimit, rateLimits } from "@/app/lib/rate-limit";
+import { createRealtimeEvent } from "@/app/features/realtime/services/realtime-events.service";
+import { toRealtimeMessage } from "@/app/features/realtime/types/realtime.types";
 
 export async function sendMessage(
   req: SendMessageRequest,
@@ -132,6 +134,44 @@ export async function sendMessage(
           unreadCount: {
             increment: 1,
           },
+        },
+      });
+
+      await tx.participation.update({
+        where: {
+          userId_conversationId: {
+            userId: currUserId,
+            conversationId: conversation.id,
+          },
+        },
+        data: {
+          lastReadMessageId: createdMessage.id,
+          lastReadAt: createdMessage.createdAt,
+          unreadCount: 0,
+        },
+      });
+
+      const recipientIds = conversation.participants.map(({ user }) => user.id);
+
+      await createRealtimeEvent(tx, {
+        type: "message.created",
+        conversationId: conversation.id,
+        recipientIds,
+        data: {
+          message: toRealtimeMessage(createdMessage),
+          clientMessageId: createdMessage.clientId,
+        },
+      });
+
+      await createRealtimeEvent(tx, {
+        type: "conversation.updated",
+        conversationId: conversation.id,
+        recipientIds,
+        data: {
+          conversationId: conversation.id,
+          lastMessageId: createdMessage.id,
+          lastMessage: createdMessage.content,
+          lastMessageAt: createdMessage.createdAt.toISOString(),
         },
       });
 

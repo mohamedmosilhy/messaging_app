@@ -3,8 +3,9 @@
 
 # Relay
 
-A production-ready direct-messaging application with optimistic delivery,
-secure sessions, cursor pagination, and a premium responsive interface.
+A production-ready direct-messaging application with real-time delivery,
+optimistic sending, secure sessions, cursor pagination, and a premium
+responsive interface.
 
 [Live demo](https://relay-messaging-app.vercel.app) ·
 [Documentation](./docs/README.md) ·
@@ -34,6 +35,10 @@ private or sensitive information.
 - Stable `createdAt` + `id` cursor pagination.
 - Concurrent optimistic sends with per-message failure state.
 - Sender-scoped message idempotency and safe retries.
+- Authenticated real-time delivery over Server-Sent Events.
+- Durable PostgreSQL event fan-out across Vercel instances.
+- Reconnect recovery and HTTP/socket-result deduplication.
+- Stable per-participant read markers with cross-tab unread convergence.
 - Persistent failed-message Retry and Remove actions.
 - Transactional latest-message metadata and unread counts.
 - Per-conversation browser drafts.
@@ -62,6 +67,7 @@ private or sensitive information.
 | Framework      | Next.js 16 App Router, React 19, TypeScript |
 | Styling        | Tailwind CSS 4, shadcn/ui, Radix UI, Lucide |
 | Server state   | TanStack React Query                        |
+| Real-time      | Server-Sent Events, PostgreSQL event log    |
 | Authentication | Auth.js credentials sessions, bcrypt        |
 | Validation     | Zod                                         |
 | Database       | PostgreSQL, Prisma ORM, Prisma PG adapter   |

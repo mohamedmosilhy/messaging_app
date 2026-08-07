@@ -450,8 +450,12 @@ async function resetDatabase() {
   // Conversation.lastMessageId points back to Message, so break that reference
   // before deleting messages and conversations.
   await prisma.$transaction([
+    prisma.realtimeEvent.deleteMany(),
     prisma.conversation.updateMany({
       data: { lastMessageId: null, lastMessageAt: null },
+    }),
+    prisma.participation.updateMany({
+      data: { lastReadMessageId: null, lastReadAt: null },
     }),
     prisma.rateLimitBucket.deleteMany(),
     prisma.block.deleteMany(),

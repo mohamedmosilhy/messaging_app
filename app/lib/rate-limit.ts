@@ -19,6 +19,8 @@ export const rateLimits = {
   openConversation: { limit: 30, windowMs: 60_000 },
   sendMessage: { limit: 60, windowMs: 60_000 },
   messageHistory: { limit: 120, windowMs: 60_000 },
+  realtimeConnection: { limit: 30, windowMs: 60_000 },
+  conversationRead: { limit: 120, windowMs: 60_000 },
   blockingMutation: { limit: 30, windowMs: 60_000 },
 } as const;
 

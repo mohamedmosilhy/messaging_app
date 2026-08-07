@@ -124,18 +124,19 @@ active session immediately.
 
 - Slow, failed, repeated, and concurrent sends behave predictably.
 - Automatic retry cannot duplicate a message.
-- HTTP and future socket results can be deduplicated.
+- HTTP and real-time results can be deduplicated.
 
-All exit criteria are satisfied for the HTTP workflow. Multi-client convergence
-still belongs to Phase 5 because it requires real-time read and delivery events.
+All exit criteria are satisfied for the HTTP workflow and now feed the
+completed Phase 5 real-time convergence path.
 
 ## Phase 5: real-time delivery
 
-**Status:** Reserved for the project author as a WebSocket learning exercise.
+**Status:** Completed on August 7, 2026. See the
+[real-time delivery report](../06-Engineering/Realtime-Delivery-Report.md).
 
 ### Work
 
-- Authenticate socket connections.
+- Authenticate real-time connections.
 - Authorize conversation subscriptions.
 - Publish events after database transactions commit.
 - Merge and deduplicate message events.
@@ -149,6 +150,11 @@ still belongs to Phase 5 because it requires real-time read and delivery events.
 - Reconnection loses and duplicates no messages.
 - Unauthorized subscriptions fail.
 - unread/read state converges across clients.
+
+The completed implementation uses authenticated Server-Sent Events backed by
+a durable PostgreSQL event log. This fits the existing Vercel serverless
+deployment while preserving the planned authorization, reconnection,
+deduplication, and source-of-truth rules. Typing and presence remain deferred.
 
 ## Phase 6: production readiness
 
@@ -179,6 +185,4 @@ still belongs to Phase 5 because it requires real-time read and delivery events.
 ## Ownership
 
 I built the data, services, API, client state, complete presentation,
-behavioral hardening, and production-readiness work. Real-time delivery remains
-deliberately unimplemented so I can build the WebSocket layer myself as focused
-practice.
+behavioral hardening, production-readiness work, and real-time delivery layer.

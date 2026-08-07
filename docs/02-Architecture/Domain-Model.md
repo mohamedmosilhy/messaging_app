@@ -15,10 +15,14 @@ Conversation
  └── points to an optional latest Message
 
 Participation
- └── connects one User to one Conversation and stores unread state
+ └── connects one User to one Conversation and stores unread/read state
 
 Message
  └── belongs to one sender and one conversation
+
+RealtimeEvent
+ ├── belongs to one Conversation
+ └── has authorized per-user deliveries
 ```
 
 ## User
@@ -61,7 +65,8 @@ Its composite primary key is `(userId, conversationId)`.
 It currently stores:
 
 - membership creation time;
-- unread count.
+- unread count;
+- latest read message and read timestamp.
 
 This entity is the correct place for future per-user conversation settings such
 as read position, archive state, mute state, or role.
@@ -109,6 +114,9 @@ the other account initiated the reverse direction.
 - only participants access conversation history;
 - message creation and conversation preview updates commit together;
 - message pages are stably ordered.
+- read markers only advance to messages in their conversation;
+- real-time deliveries are unique per event/user pair;
+- current participation is rechecked during event delivery.
 
 ## Invariants to add or clarify
 

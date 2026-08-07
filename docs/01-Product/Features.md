@@ -80,6 +80,21 @@ what I intentionally plan to build later.
 - Direct inbox preview and order update after successful send.
 - Authoritative inbox invalidation after mutation settlement.
 
+### Real-time delivery and reads
+
+- Authenticated same-origin Server-Sent Event connection.
+- Durable PostgreSQL event log and per-user deliveries across serverless
+  instances.
+- Participant authorization at event delivery time.
+- Transactional `message.created`, `conversation.updated`, and
+  `conversation.read` events.
+- Client deduplication by event, server-message, and client-message IDs.
+- Exponential browser-managed reconnect with authoritative query refetch.
+- Visible connection, reconnecting, and offline states.
+- Stable `lastReadMessageId` and `lastReadAt` participation state.
+- Read commands only advance markers and derive remaining unread counts.
+- Cross-tab/device unread convergence through read events.
+
 ### Presentation
 
 - Semantic Tailwind design system and shadcn/ui primitives.
@@ -125,13 +140,6 @@ what I intentionally plan to build later.
 
 ## Partially implemented features
 
-### Unread state
-
-Unread counts are persisted, incremented transactionally, returned in the
-inbox, reset on conversation-detail retrieval, and immediately reconciled to
-zero in the React Query inbox cache. A simple counter still needs a stable
-read-marker design for multi-device reads.
-
 ### Group preparation
 
 The schema includes `ConversationType.GROUP` and an optional title. Current
@@ -139,8 +147,6 @@ services and UI should be treated as direct-message behavior only.
 
 ## Not implemented yet
 
-- WebSocket or Server-Sent Events.
-- Polling.
 - Message delivery/read receipts.
 - Presence and typing.
 - Conversation-list pagination.
@@ -148,7 +154,6 @@ services and UI should be treated as direct-message behavior only.
 - Attachments or uploads.
 - Group-chat behavior.
 - Notifications.
-- Automated browser tests.
 
 ## Important wording
 

@@ -51,10 +51,9 @@ Implemented database-backed limits:
 - message-history reads.
 - blocking mutations.
 
-Phase 5 must also limit:
-
-- socket connection/subscription;
-- typing events.
+Real-time connection opens are authenticated and rate limited. Event batches
+require both a current-user delivery and current conversation participation.
+Future typing events will need their own rate limit.
 
 Vercel function logs provide correlated unexpected-error events. A dedicated
 security analytics product is still recommended for sustained brute-force,
@@ -79,10 +78,10 @@ spam, and abnormal-volume alerting.
 
 ## Real-time security
 
-- Authenticate the connection.
-- Authorize each subscription.
+- The same-origin SSE connection uses the Auth.js session.
+- Each event query verifies delivery ownership and current participation.
 - Do not trust client sender IDs.
-- Apply payload size and event-rate limits.
+- Connection opens are database-rate-limited.
 - Publish only committed, user-safe DTOs.
 - Remove access when membership changes.
 - Treat presence as privacy-sensitive.

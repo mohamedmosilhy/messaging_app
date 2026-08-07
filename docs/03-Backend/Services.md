@@ -121,7 +121,6 @@ This avoids resource enumeration.
 ### `getConversation`
 
 - requires identity and participation;
-- resets the caller's unread count;
 - returns the other participant for direct-message presentation.
 
 Group behavior is not complete because title calculation assumes the direct
@@ -149,6 +148,27 @@ conversation model.
 - increments unread counts for other participants;
 - recovers from a concurrent unique-key race by reading the committed message.
 - enforces a per-user send limit.
+- advances the sender read marker;
+- stores durable message/conversation events in the send transaction.
+
+## Real-time services
+
+### `markConversationRead`
+
+- authenticates and authorizes the participant;
+- validates that the marker message belongs to the conversation;
+- never moves an existing marker backwards;
+- derives remaining unread messages after the marker;
+- uses a serializable transaction with conflict retries;
+- stores a durable `conversation.read` event for all participants.
+
+### Real-time event services
+
+- create versioned, expiring events and unique per-user deliveries;
+- resume after an authorized `Last-Event-ID` cursor;
+- filter every batch by delivery ownership and current participation;
+- return events in stable occurrence/ID order;
+- remove expired recovery events.
 
 ## Service design rules
 

@@ -170,8 +170,8 @@ strict Zod transport schema.
 
 ### `GET /api/conversations/:conversationId`
 
-Verifies participation, resets the caller's unread count, and returns the
-conversation summary and other participants.
+Verifies participation and returns the conversation summary and other
+participants. This read is side-effect free.
 
 The conversation ID path parameter is validated before the service runs.
 
@@ -218,6 +218,25 @@ The service trims content, rejects empty text, limits stored text to 1,000
 characters, verifies participation, rejects blocked pairs, and runs the send
 transaction. Repeating the same `clientId` for the same sender returns the
 existing message instead of inserting a duplicate.
+
+### `POST /api/conversations/:conversationId/read`
+
+Accepts a strict `{ "messageId": "..." }` body. The service verifies that the
+message belongs to an authorized conversation, advances the caller's marker
+without moving it backwards, derives remaining unread state, and publishes a
+`conversation.read` event.
+
+## Real-time
+
+### `GET /api/realtime`
+
+Opens an authenticated `text/event-stream`. An optional ISO `since` query is
+bounded to a five-minute initial replay window. Browser reconnects send
+`Last-Event-ID`, and delivery resumes strictly after that authorized event.
+
+The stream emits version-one `relay` events, checks current participation,
+sends keepalives, closes after a bounded interval, and relies on native
+EventSource reconnection. Expired events are removed and never sent.
 
 ## Status mapping
 

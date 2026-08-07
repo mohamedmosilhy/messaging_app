@@ -13,8 +13,9 @@ checks. I then completed production readiness with security controls,
 observability, deterministic test data, browser/accessibility coverage, and a
 Vercel deployment. I then completed blocking as a standalone feature with
 commands, APIs, relationship state, profile/thread controls, and blocked-account
-management. I intentionally reserved real-time delivery for my own
-WebSocket practice.
+management. I then completed authenticated real-time delivery, durable
+serverless fan-out, reconnect recovery, cache deduplication, and stable
+multi-client read markers.
 
 These documents explain what I have made, why I made the main decisions, what
 is incomplete, and how I plan to continue. Review findings are explicitly
@@ -99,6 +100,9 @@ labeled as recommendations so they are not confused with implemented features.
   hardening.
 - [Phase 6 Report](./06-Engineering/Phase-6-Report.md) — completed production
   security, testing, performance, cleanup, seed, and deployment work.
+- [Real-Time Delivery Report](./06-Engineering/Realtime-Delivery-Report.md) —
+  completed authenticated SSE transport, durable events, reconnect recovery,
+  cache convergence, and read markers.
 - [Blocking Feature Report](./06-Engineering/Blocking-Feature-Report.md) —
   completed standalone block/unblock services, APIs, client state, controls,
   management UI, and tests.
@@ -139,6 +143,6 @@ authorization, direct-conversation uniqueness, stable message pagination,
 transactional send metadata, sender-scoped idempotency, stable cursor indexes,
 seeded edge cases, and concurrency-safe optimistic cache behavior.
 
-The main unfinished product areas are multi-client read markers and real-time
-delivery. Phase 5 is intentionally owned by the project author as a WebSocket
-learning exercise.
+Core real-time message delivery and multi-client read markers are complete.
+Typing, presence, delivery/read-receipt presentation, and larger-scale event
+infrastructure remain optional follow-up work.

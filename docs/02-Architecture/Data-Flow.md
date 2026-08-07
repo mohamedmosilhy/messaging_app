@@ -92,12 +92,11 @@ ConversationContent
   -> GET /api/conversations/:id
   -> getConversation
   -> authenticate and require participation
-  -> reset current unreadCount
   -> return other participant summary
 ```
 
-The GET currently mutates unread state. The inbox client cache is not directly
-updated by this flow.
+Conversation detail reads are side-effect free. The visible latest-message
+marker issues the explicit read command described below.
 
 ## Read messages
 
@@ -128,6 +127,8 @@ Composer
        create message
        update conversation latest metadata
        increment other unread counts
+       advance the sender read marker
+       persist durable message/conversation events
   -> replace matching client ID
   -> update inbox preview/order
   -> invalidate inbox
@@ -136,12 +137,13 @@ Composer
 On error, only the matching client ID becomes a persistent failed bubble with
 retry/remove actions.
 
-## Future real-time flow
+## Real-time delivery flow
 
 ```text
 Committed send transaction
-  -> publish message.created
-  -> authorized conversation subscribers
+  -> committed message.created + conversation.updated events
+  -> authenticated /api/realtime SSE stream
+  -> current-participant delivery filter
   -> deduplicate by server and client message IDs
   -> merge into message cache
   -> update inbox cache
@@ -149,3 +151,16 @@ Committed send transaction
 
 HTTP remains the source-of-truth fallback for initial loads, reconnection, and
 missed events.
+
+## Mark conversation read
+
+```text
+Latest committed message becomes visible
+  -> POST /api/conversations/:id/read
+  -> authenticate and authorize participation
+  -> validate the message belongs to the conversation
+  -> serializable transaction advances lastReadMessageId only
+  -> derive unread messages after the marker
+  -> persist conversation.read event
+  -> all current-user tabs reconcile the inbox
+```

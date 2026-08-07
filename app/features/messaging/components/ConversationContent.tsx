@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useBlockStatus } from "@/app/features/blocking/hooks/useBlocking";
+import { useMarkConversationRead } from "@/app/features/realtime";
 
 import { ErrorState } from "@/app/components/shared/error-state";
 import { getConversationRequest } from "../actions/getConversationRequest";
 import { useConversationMessages } from "../hooks/useConversationMessages";
 import { useSendMessage } from "../hooks/useSendMessage";
-import type { GetConversationsResponse } from "../types/conversation.types";
 import { ConversationHeader } from "./ConversationHeader";
 import { ConversationSkeleton } from "./ConversationSkeleton";
 import { MessageComposer } from "./MessageComposer";
@@ -21,36 +21,20 @@ export function ConversationContent({
   conversationId: string;
 }) {
   const { data: session } = useSession();
-  const queryClient = useQueryClient();
   const conversationQuery = useQuery({
     queryKey: ["conversation", conversationId],
     queryFn: () => getConversationRequest(conversationId),
   });
   const messagesQuery = useConversationMessages(conversationId);
   const messageMutation = useSendMessage(conversationId);
+  const { markRead } = useMarkConversationRead(conversationId);
   const otherParticipantId = conversationQuery.data?.data.participants[0]?.id;
   const blockStatus = useBlockStatus(otherParticipantId);
 
-  useEffect(() => {
-    queryClient.setQueryData<GetConversationsResponse>(
-      ["conversations"],
-      (oldData) => {
-        if (!oldData) return oldData;
-
-        return {
-          ...oldData,
-          data: {
-            ...oldData.data,
-            conversations: oldData.data.conversations.map((conversation) =>
-              conversation.conversationId === conversationId
-                ? { ...conversation, unreadCount: 0 }
-                : conversation,
-            ),
-          },
-        };
-      },
-    );
-  }, [conversationId, conversationQuery.data, queryClient]);
+  const handleLatestRead = useCallback(
+    (messageId: string) => markRead(messageId),
+    [markRead],
+  );
 
   if (conversationQuery.isLoading || messagesQuery.isLoading) {
     return <ConversationSkeleton />;
@@ -85,6 +69,7 @@ export function ConversationContent({
         isLoadOlderError={messagesQuery.isFetchNextPageError}
         messages={messagesQuery.messages}
         onLoadOlder={messagesQuery.fetchNextPage}
+        onLatestRead={handleLatestRead}
         onRemoveMessage={messageMutation.removeFailedMessage}
         onRetryMessage={messageMutation.retryMessage}
       />
