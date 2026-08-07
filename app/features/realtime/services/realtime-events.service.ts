@@ -42,11 +42,6 @@ export async function createRealtimeEvent<Type extends RealtimeEventType>(
   return eventId;
 }
 
-type EventCursor = {
-  id: string;
-  occurredAt: Date;
-};
-
 async function resolveCursor(userId: string, lastEventId?: string) {
   if (!lastEventId) return null;
 
@@ -111,14 +106,4 @@ export async function deleteExpiredRealtimeEvents() {
   await prisma.realtimeEvent.deleteMany({
     where: { expiresAt: { lt: new Date() } },
   });
-}
-
-export function getLastEventCursor(
-  events: RealtimeEventEnvelope[],
-): EventCursor | null {
-  const event = events.at(-1);
-
-  return event
-    ? { id: event.eventId, occurredAt: new Date(event.occurredAt) }
-    : null;
 }

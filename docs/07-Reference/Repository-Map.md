@@ -97,7 +97,8 @@ messaging_app/
 - `app/lib/route-response.ts`: uniform correlated API error responses.
 - `app/lib/logger.ts`: structured, redacted server logs.
 - `app/lib/utils.ts`: UI class-name composition.
-- `app/hooks`: debounce, search query, and responsive viewport hooks.
+- `app/hooks`: shared debounce and responsive viewport hooks.
+- `app/features/users/hooks`: user-search query hooks.
 - `app/providers`: Auth.js and React Query providers.
 - `app/utils`: session user helper, URLs, Zod formatting.
 - `app/icon.svg`: original Relay browser and metadata icon.

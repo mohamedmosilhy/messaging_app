@@ -13,7 +13,7 @@ import {
   InputGroupInput,
 } from "@/app/components/ui/input-group";
 import { UserSearchResult } from "@/app/features/users/components/UserSearchResult";
-import { useSearchQuery } from "@/app/hooks/useSearchQuery";
+import { useSearchQuery } from "@/app/features/users/hooks/useSearchQuery";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");

@@ -5,7 +5,7 @@ import { UnauthorizedError } from "./app/lib/errors/UnauthorizedError";
 import { TooManyRequestsError } from "./app/lib/errors/TooManyRequestsError";
 import { getClientIdentifier } from "./app/lib/client-identifier";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, auth } = NextAuth({
   providers: [
     Credentials({
       credentials: {

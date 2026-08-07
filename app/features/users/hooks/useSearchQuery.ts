@@ -5,7 +5,7 @@ import {
   SearchUsersResponse,
   type PublicProfile,
 } from "@/app/features/users/types/search-user.types";
-import { useDebounce } from "./useDebounce";
+import { useDebounce } from "@/app/hooks/useDebounce";
 
 export function useSearchQuery(query: string) {
   const normalizedQuery = query.trim();

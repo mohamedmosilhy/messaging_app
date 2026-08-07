@@ -8,19 +8,19 @@ export type RealtimeMessage = Omit<
   updatedAt: string;
 };
 
-export type MessageCreatedData = {
+type MessageCreatedData = {
   message: RealtimeMessage;
   clientMessageId: string;
 };
 
-export type ConversationUpdatedData = {
+type ConversationUpdatedData = {
   conversationId: string;
   lastMessageId: string;
   lastMessage: string;
   lastMessageAt: string;
 };
 
-export type ConversationReadData = {
+type ConversationReadData = {
   conversationId: string;
   userId: string;
   lastReadMessageId: string;

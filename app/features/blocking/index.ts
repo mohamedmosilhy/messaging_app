@@ -6,4 +6,3 @@ export {
 } from "./services/blocking.service";
 export { BlockUserButton } from "./components/BlockUserButton";
 export { BlockedUsersList } from "./components/BlockedUsersList";
-export { useBlockStatus } from "./hooks/useBlocking";

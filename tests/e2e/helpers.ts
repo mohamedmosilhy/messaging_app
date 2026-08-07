@@ -1,6 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 
-export const demoAccount = {
+const demoAccount = {
   email: "mohamed@example.com",
   password: "Test12345",
 };

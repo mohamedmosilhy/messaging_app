@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-export const BlockingTargetIdValidation = z
+const BlockingTargetIdValidation = z
   .string({ error: "User ID is required." })
   .trim()
   .min(1, "User ID is required.")

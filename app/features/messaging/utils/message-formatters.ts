@@ -10,7 +10,7 @@ const fullDateFormatter = new Intl.DateTimeFormat(undefined, {
   year: "numeric",
 });
 
-export function toMessageDate(value: Date | string) {
+function toMessageDate(value: Date | string) {
   return value instanceof Date ? value : new Date(value);
 }
 

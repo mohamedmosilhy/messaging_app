@@ -10,7 +10,7 @@ import {
 } from "../actions/blockingRequest";
 import type { BlockStatusResponse } from "../types/blocking.types";
 
-export const blockingKeys = {
+const blockingKeys = {
   all: ["blocking"] as const,
   list: ["blocking", "list"] as const,
   status: (targetUserId: string) =>

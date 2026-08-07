@@ -1,4 +1,4 @@
-export type BlockStatus = {
+type BlockStatus = {
   targetUserId: string;
   isBlockedByCurrentUser: boolean;
   canInteract: boolean;
@@ -9,7 +9,7 @@ export type BlockStatusResponse = {
   data: BlockStatus;
 };
 
-export type BlockedUser = {
+type BlockedUser = {
   id: string;
   username: string;
   displayName: string;

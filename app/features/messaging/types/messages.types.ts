@@ -38,7 +38,7 @@ export type SendMessageRequest = {
   content: string;
 };
 
-export type MessageDeliveryStatus = "sending" | "failed";
+type MessageDeliveryStatus = "sending" | "failed";
 
 export type MessageResponse = {
   clientId: string;
