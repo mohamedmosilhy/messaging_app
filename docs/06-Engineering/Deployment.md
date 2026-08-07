@@ -74,8 +74,10 @@ uses:
 vercel --prod
 ```
 
-Vercel builds the local source, runs Prisma generation through `postinstall`,
-and deploys the Next.js application. Migrations remain an explicit operation;
+Vercel builds the local source and runs Prisma generation as the first step of
+the build command. Keeping generation in `build` makes fresh and cache-restored
+deployments deterministic even when the package manager skips `postinstall`
+for an unchanged dependency tree. Migrations remain an explicit operation;
 they are not hidden inside every preview build.
 
 ## Health and observability
